@@ -1,0 +1,58 @@
+name: UltraBan
+main: com.modcrafting.ultraban.UltraBan
+version: 0.0.4
+website: http://modcrafting.com
+author: Deathmarine
+description: >
+             Administration Plugin for Bukkit.
+commands:
+  kick:
+    description: Kick a player
+    usage: /<command> player [reason] - Kick a player
+  tempban:
+    description: Temporarily ban a player
+    usage: /<command> player time timeform [reason] - Temporarily ban a player
+  ban:
+    description: Ban a player
+    usage: /<command> player [reason] - Ban a player
+  unban:
+    description: Unban a player
+    usage: /<command> player - Unban a player
+  checkban:
+    description: Check if a player is banned
+    usage: /<command>
+  ureload:
+    description: Reload the banlist
+    usage: /<command>
+  ipban:
+    description: IP-ban a player
+    usage: /<command> player [reason]
+  exportbans:
+    description: Export bans to banned-players.txt
+    usage: /<command>
+  warn:
+    description: Warn a player
+    usage: /<command> player [reason] - Warn a player
+  fine:
+    description: Fine a player
+    usage: /<command> player [amt] - Fine a player
+  editban:
+    description: Edit a ban
+    usage: /<command> <list/load/id/save/view/reason/time/cancel/help>
+    aliases: [eb,eban]
+  uhelp:
+    description: Shows Help
+    usage: /<command>
+  uversion:
+    description: Shows current Ultra Version
+    usage: /<command>
+    aliases: [uv,uver]
+  empty:
+    description: Empties defined players inventory.
+    usage: /<command> player - Empty a players inventory
+  forcespawn:
+    description: Sends player to spawn/home
+    usage: /<command> player - Sends player to spawn/home
+  starve:
+    description: Removes food from player
+    usage: /<command> player - Removes food from player
