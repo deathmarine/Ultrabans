@@ -1,5 +1,5 @@
-name: UltraBan
-main: com.modcrafting.ultraban.UltraBan
+name: UltraBans
+main: com.modcrafting.ultrabans.UltraBan
 version: 0.0.4
 website: http://modcrafting.com
 author: Deathmarine
