@@ -18,6 +18,6 @@
 	<classpathentry kind="lib" path="/Vault/lib/Permissions.jar"/>
 	<classpathentry kind="lib" path="/Vault/lib/PermissionsBukkit-1.2.jar"/>
 	<classpathentry kind="lib" path="/Vault/lib/PermissionsEx.jar"/>
-	<classpathentry kind="lib" path="C:/Users/jmccurry/Minecraft/Vault.jar"/>
+	<classpathentry kind="lib" path="lib/Vault.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -17,6 +17,8 @@ import org.bukkit.util.config.Configuration;
 
 import com.modcrafting.ultrabans.UltraBan;
 import com.modcrafting.ultrabans.db.MySQLDatabase;
+import com.modcrafting.ultrabans.hooks.Checkvault;
+import com.modcrafting.ultrabans.hooks.Hooks;
 import com.modcrafting.ultrabans.util.Util;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
@@ -24,6 +26,7 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 public class Commands extends UltraBan{
 	MySQLDatabase db;
 	Util util;
+	Checkvault hooks;
 	public Configuration properties = new Configuration(new File("plugins/UltraBan/config.yml"));
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		String commandName = command.getName().toLowerCase();
@@ -560,9 +563,9 @@ public class Commands extends UltraBan{
 				MsgVictim = MsgVictim.replaceAll("%victim%", p);
 				victim.sendMessage(Util.formatMessage(MsgVictim));
 			}
-			if(this.setupEconomy()){
+			if(hooks.hookVault()){
 				double amtd = Double.valueOf(amt.trim()); //Covert + Take Whitespace if any
-				economy.withdrawPlayer(victim.getName(), amtd); //Amount Absolute Value
+				Hooks.economy.withdrawPlayer(victim.getName(), amtd);
 			}
 			log.log(Level.INFO, "[UltraBan] " + admin + " fined player " + p + " amount of " + amt + ".");
 			db.addPlayer(p, amt, admin, 0, 4);
