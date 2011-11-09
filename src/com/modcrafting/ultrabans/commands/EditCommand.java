@@ -19,8 +19,8 @@ public class EditCommand implements CommandExecutor{
 	MySQLDatabase db;
 	UltraBan plugin;
 
-	public EditCommand(UltraBan plugin){
-		this.plugin = plugin;
+	public EditCommand(UltraBan ultraBan){
+		this.plugin = ultraBan;
 	}
 
 	private String banType(int num){

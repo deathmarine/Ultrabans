@@ -13,7 +13,7 @@ import com.modcrafting.ultrabans.UltraBan;
 
 // Needs to work along side editban or disable editban. ID number issue.
 
-public class FlatFileDatabase extends Database{
+public abstract class FlatFileDatabase extends Database{
 	
 	public void initialize(UltraBan plugin){
 		

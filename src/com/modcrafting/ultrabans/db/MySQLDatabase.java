@@ -77,16 +77,16 @@ public class MySQLDatabase{
 			"PRIMARY KEY (`name`)" + 
 			") ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
 	
-	public void initialize(UltraBan plugin){
-		this.plugin = plugin;
+	public void initialize(UltraBan ultraBan){
+		this.plugin = ultraBan;
 		Connection conn = getSQLConnection();
 		
-		String mysqlTable = plugin.getConfiguration().getString("mysql-table");
+		String mysqlTable = ultraBan.getConfiguration().getString("mysql-table");
 		
 		if (conn == null) {
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Could not establish SQL connection. Disabling UltraBan");
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Adjust Settings in Config or set MySql: False");
-			plugin.getServer().getPluginManager().disablePlugin(plugin);
+			ultraBan.getServer().getPluginManager().disablePlugin(ultraBan);
 			return;
 		} else {
 			PreparedStatement ps = null;
@@ -118,19 +118,19 @@ public class MySQLDatabase{
 					while (rs.next()){
 					String pName = rs.getString("name").toLowerCase();
 					long pTime = rs.getLong("temptime");
-					plugin.bannedPlayers.add(pName);
+					ultraBan.bannedPlayers.add(pName);
 					if(pTime != 0){
-						plugin.tempBans.put(pName,pTime);
+						ultraBan.tempBans.put(pName,pTime);
 					}
 						if(rs.getInt("type") == 1){
 							System.out.println("Found IP ban!");
 							String ip = getAddress(pName);
-							plugin.bannedIPs.add(ip);
+							ultraBan.bannedIPs.add(ip);
 						}
 					}
 				}catch (NullPointerException ex){
-					UltraBan.log.log(Level.SEVERE, "[UltraBan] Run CreateTable.sql in /plugins/UltraBans");
-					plugin.getServer().getPluginManager().disablePlugin(plugin);
+					UltraBan.log.log(Level.SEVERE, "[UltraBan] Run CreateTable.sql in /plugins/UltraBan");
+					ultraBan.getServer().getPluginManager().disablePlugin(ultraBan);
 				}
 			} catch (SQLException ex) {
 				UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
@@ -148,14 +148,14 @@ public class MySQLDatabase{
 			}	
 
 			try {
-				if (!plugin.isEnabled()){
+				if (!ultraBan.isEnabled()){
 					return;
 				}
 				conn.close();
 				UltraBan.log.log(Level.INFO, "[UltraBan] Initialized db connection" );
 			} catch (SQLException e) {
 				e.printStackTrace();
-				plugin.getServer().getPluginManager().disablePlugin(plugin);
+				ultraBan.getServer().getPluginManager().disablePlugin(ultraBan);
 			}
 		}
 		

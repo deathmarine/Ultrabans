@@ -14,8 +14,8 @@ import com.modcrafting.ultrabans.util.Util;
 public class UltraBanPlayerListener extends PlayerListener {
 	UltraBan plugin;
 
-	public UltraBanPlayerListener(UltraBan instance) {
-		this.plugin = instance;
+	public UltraBanPlayerListener(UltraBan ultraBans) {
+		this.plugin = ultraBans;
 	}
 	@SuppressWarnings("deprecation")
 	public void onPlayerLogin(PlayerLoginEvent event){
