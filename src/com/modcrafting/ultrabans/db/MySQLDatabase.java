@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.config.Configuration;
 
 import com.modcrafting.ultrabans.UltraBan;
@@ -31,7 +32,7 @@ import com.modcrafting.ultrabans.commands.EditBan;
 
 @SuppressWarnings("deprecation")
 public class MySQLDatabase{
-	UltraBan plugin;
+	Plugin plugin;
 	
 	public static Connection getSQLConnection() {
 		Configuration Config = new Configuration(new File("plugins/UltraBan/config.yml"));
@@ -180,6 +181,30 @@ public class MySQLDatabase{
 	        return exists;
 	    }
 	    */
+	public void setAddress(String pName, String logIp){
+		String logip = plugin.getConfiguration().getString("mysql-table-ip");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getSQLConnection();
+			ps = conn.prepareStatement("INSERT INTO " + logip + " (name,lastip) VALUES(?,?)");
+			ps.setString(1, pName);
+			ps.setString(2, logIp);
+			ps.executeUpdate();
+		} catch (SQLException ex) {
+			UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				UltraBan.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+			}
+		}
+	}
+	
 	public String getAddress(String pName) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -238,9 +263,7 @@ public class MySQLDatabase{
 
 	}
 	public void addPlayer(String player, String reason, String admin, long tempTime , int type){
-//Next Project... Emulate Configuration
 		String mysqlTable = plugin.getConfiguration().getString("mysql-table");
-
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {

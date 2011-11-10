@@ -11,12 +11,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.modcrafting.ultrabans.db.MySQLDatabase;
 import com.modcrafting.ultrabans.util.Util;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class EditCommand implements CommandExecutor{
-	MySQLDatabase db;
 	UltraBan plugin;
 
 	public EditCommand(UltraBan ultraBan){
@@ -171,7 +169,7 @@ public class EditCommand implements CommandExecutor{
 					sender.sendMessage(ChatColor.RED + "Usage: reason add <text>");
 					return true;
 				}
-				ban.reason += " " + Util.combineSplit(2, args, " ");
+				ban.reason += " " + combineSplit(2, args, " ");
 				return true;
 			}
 
@@ -180,7 +178,7 @@ public class EditCommand implements CommandExecutor{
 					sender.sendMessage(ChatColor.RED + "Usage: reason set <text>");
 					return true;
 				}
-				ban.reason = Util.combineSplit(2, args, " ");
+				ban.reason = combineSplit(2, args, " ");
 				return true;
 			}
 		}
@@ -219,5 +217,15 @@ public class EditCommand implements CommandExecutor{
 			sender.sendMessage(ChatColor.GOLD+" | "+ChatColor.YELLOW+"Will be unbanned at " + shortTime.format((new Date(eb.endTime*1000))));
 		sender.sendMessage(ChatColor.GOLD+" | "+ChatColor.YELLOW+"Reason: " + ChatColor.GRAY + eb.reason);
 	}
+	public String combineSplit(int startIndex, String[] string, String seperator) {
+		StringBuilder builder = new StringBuilder();
 
+		for (int i = startIndex; i < string.length; i++) {
+			builder.append(string[i]);
+			builder.append(seperator);
+		}
+
+		builder.deleteCharAt(builder.length() - seperator.length()); // remove
+		return builder.toString();
+	}
 }

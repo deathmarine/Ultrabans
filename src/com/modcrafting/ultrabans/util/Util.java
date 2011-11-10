@@ -1,10 +1,18 @@
 package com.modcrafting.ultrabans.util;
 
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
+
 import com.modcrafting.ultrabans.UltraBan;
 
-public class Util {
-	UltraBan plugin;
-	public static String combineSplit(int startIndex, String[] string, String seperator) {
+public class Util extends UltraBan{
+	
+	public net.milkbowl.vault.economy.Economy economy = null;
+	Plugin plugin;
+	public Util(UltraBan ultraBan) {
+		this.plugin = ultraBan;
+	}
+	public String combineSplit(int startIndex, String[] string, String seperator) {
 		StringBuilder builder = new StringBuilder();
 
 		for (int i = startIndex; i < string.length; i++) {
@@ -37,19 +45,19 @@ public class Util {
 			sec /= 60;
 		return sec;
 	}
-	public String expandName(String Name) {
+	public String expandName(String p) {
 		int m = 0;
 		String Result = "";
-		for (int n = 0; n < plugin.getServer().getOnlinePlayers().length; n++) {
-			String str = plugin.getServer().getOnlinePlayers()[n].getName();
-			if (str.matches("(?i).*" + Name + ".*")) {
+		for (int n = 0; n < getServer().getOnlinePlayers().length; n++) {
+			String str = getServer().getOnlinePlayers()[n].getName();
+			if (str.matches("(?i).*" + p + ".*")) {
 				m++;
 				Result = str;
 				if(m==2) {
 					return null;
 				}
 			}
-			if (str.equalsIgnoreCase(Name))
+			if (str.equalsIgnoreCase(p))
 				return str;
 		}
 		if (m == 1)
@@ -58,14 +66,21 @@ public class Util {
 			return null;
 		}
 		if (m < 1) {
-			return Name;
+			return p;
 		}
-		return Name;
+		return p;
 	}
 
-	public static String formatMessage(String str){
+	public String formatMessage(String str){
 		String funnyChar = new Character((char) 167).toString();
 		str = str.replaceAll("&", funnyChar);
 		return str;
 	}
+	public boolean setupEconomy(){
+		RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+			if (economyProvider != null) {
+				economy = economyProvider.getProvider();
+			}
+				return (economy != null);
+		}
 }

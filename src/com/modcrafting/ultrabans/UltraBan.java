@@ -10,39 +10,32 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/* import net.milkbowl.vault.permission.Permission;
-import net.milkbowl.vault.permission.plugins.Permission_GroupManager;
-import net.milkbowl.vault.permission.plugins.Permission_Permissions3;
-import net.milkbowl.vault.permission.plugins.Permission_PermissionsEx;
-import net.milkbowl.vault.permission.plugins.Permission_bPermissions;
-*/
-import net.milkbowl.vault.Vault;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.economy.plugins.Economy_3co;
-import net.milkbowl.vault.economy.plugins.Economy_BOSE6;
-import net.milkbowl.vault.economy.plugins.Economy_BOSE7;
-import net.milkbowl.vault.economy.plugins.Economy_Essentials;
-import net.milkbowl.vault.economy.plugins.Economy_MultiCurrency;
-import net.milkbowl.vault.economy.plugins.Economy_iConomy4;
-import net.milkbowl.vault.economy.plugins.Economy_iConomy5;
-import net.milkbowl.vault.economy.plugins.Economy_iConomy6;
-import net.milkbowl.vault.permission.Permission;
-
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-// Why you change bukkit
 import org.bukkit.util.config.Configuration;
 
+import com.modcrafting.ultrabans.commands.Ban;
+import com.modcrafting.ultrabans.commands.Check;
 import com.modcrafting.ultrabans.commands.EditBan;
 import com.modcrafting.ultrabans.commands.EditCommand;
+import com.modcrafting.ultrabans.commands.Empty;
+import com.modcrafting.ultrabans.commands.Export;
+import com.modcrafting.ultrabans.commands.Fine;
+import com.modcrafting.ultrabans.commands.Help;
+import com.modcrafting.ultrabans.commands.Ipban;
+import com.modcrafting.ultrabans.commands.Kick;
+import com.modcrafting.ultrabans.commands.Reload;
+import com.modcrafting.ultrabans.commands.Spawn;
+import com.modcrafting.ultrabans.commands.Starve;
+import com.modcrafting.ultrabans.commands.Tempban;
+import com.modcrafting.ultrabans.commands.Unban;
+import com.modcrafting.ultrabans.commands.Version;
+import com.modcrafting.ultrabans.commands.Warn;
 import com.modcrafting.ultrabans.db.MySQLDatabase;
-import com.modcrafting.ultrabans.util.Util;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 @SuppressWarnings("deprecation")
@@ -51,45 +44,18 @@ public class UltraBan extends JavaPlugin {
 	public static final Logger log = Logger.getLogger("Minecraft");
 	Permissions CurrentPermissions = null;
 	public MySQLDatabase db;
-	Util util;
 	String maindir = "plugins/UltraBan/";
-	File Settings = new File(maindir + "config.properties");
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
 	public Map<String,Long> tempBans = new HashMap<String,Long>();
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
-	public static Vault vault = null;
 	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
 	public Configuration properties = new Configuration(new File("plugins/UltraBan/config.yml"));
-	public static Economy economy = null;
-	public static Permission permission = null;
 	//public static UltraBan plugin;
 	public boolean autoComplete;
 	//public boolean checkPermissions;
 	public boolean checkEconomy;
-	protected boolean setupEconomy(){
-	RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-		if (economyProvider != null) {
-			economy = economyProvider.getProvider();
-		}
-			return (economy != null);
-	}
-	public boolean setupPermissions() {
-		RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-		if (permissionProvider != null) {
-			permission = permissionProvider.getProvider();
-		}
-			return (permission != null);
-	}
-	public boolean getVault() {
-		RegisteredServiceProvider<Vault> Vault = getServer().getServicesManager().getRegistration(net.milkbowl.vault.Vault.class);
-		if (Vault != null) {
-			vault = Vault.getProvider();
-		}
-			return (vault != null);
-	}
 	
-		
 	public void onDisable() {
 		tempBans.clear();
 		bannedPlayers.clear();
@@ -100,7 +66,7 @@ public class UltraBan extends JavaPlugin {
 		if (!actual.exists()) {
 
 			InputStream input =
-				this.getClass().getResourceAsStream(name);
+				this.getClass().getResourceAsStream("/defaults/" + name);
 			if (input != null) {
 				FileOutputStream output = null;
 
@@ -131,39 +97,30 @@ public class UltraBan extends JavaPlugin {
 		}
 	}
 	public void onEnable() {
+		PluginDescriptionFile pdfFile = this.getDescription();
 		new File(maindir).mkdir();
 
-		createDefaultConfiguration("config.yml");
-		properties.load();
+		createDefaultConfiguration("config.yml"); //Swap for new setup
+		
 		//boolean useMysql = properties.getBoolean("mysql", false);
 		this.autoComplete = properties.getBoolean("auto-complete", true);
 		//this.checkPermissions = properties.getBoolean("usePermissions", true);
-		this.checkEconomy = properties.getBoolean("useFines", true);
+		this.checkEconomy = getConfig().getBoolean("useFines", true);
 		//if (useMysql){
-		 if (this.getVault()){
-			 //Vault.loadPermission(); Private? Why? :(
-			 loadEconomy();
-			 defaultPerms();
-			 }else{
-			 defaultPerms();
-			 }
+		loadCommands();
+		loadPerms();
+		
+		
 		db = new MySQLDatabase();
 		db.initialize(this);	
+		
 		PluginManager pm = getServer().getPluginManager();
-		if (!this.isEnabled()) return;
-		//if (!setupPermissions()) return;
 		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Highest, this);
 		pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
-		
-		getCommand("editban").setExecutor(new EditCommand(this));
-		
-		PluginDescriptionFile pdfFile = this.getDescription();
-		log.log(Level.INFO,pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
-		log.info(String.format("[%s] Enabled Version %s", getDescription().getName(), getDescription().getVersion()));
+		log.log(Level.INFO,"[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " is enabled!" );
 		
 	}
-
-	private void defaultPerms(){ //Fallback Permissions 3, Ex
+	private void loadPerms(){
 		 Plugin plugin = this.getServer().getPluginManager().getPlugin("Permissions");
 
 		 if (CurrentPermissions == null) {
@@ -176,104 +133,30 @@ public class UltraBan extends JavaPlugin {
 		 } else {
 		 this.getServer().getPluginManager().disablePlugin(this);
 		 }
-
-		 }
-	private void loadEconomy() {
-		// Try to load MultiCurrency
-		if (packageExists(new String[] { "me.ashtheking.currency.Currency", "me.ashtheking.currency.CurrencyList" })) {
-			Economy econ = new Economy_MultiCurrency(this);
-			getServer().getServicesManager().register(Economy.class, econ, this, ServicePriority.Normal);
-			log.info(String.format("[%s][Economy] MultiCurrency found: %s", getDescription().getName(), econ.isEnabled() ? "Loaded" : "Waiting"));
-		}
-
-		// Try to load 3co
-		if (packageExists(new String[] { "me.ic3d.eco.ECO" })) {
-			Economy econ = new Economy_3co(this);
-			getServer().getServicesManager().register(Economy.class, econ, this, ServicePriority.Normal);
-			log.info(String.format("[%s][Economy] 3co found: %s", getDescription().getName(), econ.isEnabled() ? "Loaded" : "Waiting"));
-		}
-
-		// Try to load BOSEconomy
-		if (packageExists(new String[] { "cosine.boseconomy.BOSEconomy", "cosine.boseconomy.CommandManager" })) {
-			Economy bose6 = new Economy_BOSE6(this);
-			getServer().getServicesManager().register(Economy.class, bose6, this, ServicePriority.Normal);
-			log.info(String.format("[%s][Economy] BOSEconomy6 found: %s", getDescription().getName(), bose6.isEnabled() ? "Loaded" : "Waiting"));
-		}
-
-		// Try to load BOSEconomy
-		if (packageExists(new String[] { "cosine.boseconomy.BOSEconomy", "cosine.boseconomy.CommandHandler" })) {
-			Economy bose7 = new Economy_BOSE7(this);
-			getServer().getServicesManager().register(net.milkbowl.vault.economy.Economy.class, bose7, this, ServicePriority.Normal);
-			log.info(String.format("[%s][Economy] BOSEconomy7 found: %s", getDescription().getName(), bose7.isEnabled() ? "Loaded" : "Waiting"));
-		}
-
-		// Try to load Essentials Economy
-		if (packageExists(new String[] { "com.earth2me.essentials.api.Economy", "com.earth2me.essentials.api.NoLoanPermittedException", "com.earth2me.essentials.api.UserDoesNotExistException" })) {
-			Economy essentials = new Economy_Essentials(this);
-			getServer().getServicesManager().register(net.milkbowl.vault.economy.Economy.class, essentials, this, ServicePriority.Low);
-			log.info(String.format("[%s][Economy] Essentials Economy found: %s", getDescription().getName(), essentials.isEnabled() ? "Loaded" : "Waiting"));
-		}
-
-		// Try to load iConomy 4
-		if (packageExists(new String[] { "com.nijiko.coelho.iConomy.iConomy", "com.nijiko.coelho.iConomy.system.Account" })) {
-			Economy icon4 = new Economy_iConomy4(this);
-			getServer().getServicesManager().register(net.milkbowl.vault.economy.Economy.class, icon4, this, ServicePriority.High);
-			log.info(String.format("[%s][Economy] iConomy 4 found: ", getDescription().getName(), icon4.isEnabled() ? "Loaded" : "Waiting"));
-		}
-
-		// Try to load iConomy 5
-		if (packageExists(new String[] { "com.iConomy.iConomy", "com.iConomy.system.Account", "com.iConomy.system.Holdings" })) {
-			Economy icon5 = new Economy_iConomy5(this);
-			getServer().getServicesManager().register(net.milkbowl.vault.economy.Economy.class, icon5, this, ServicePriority.High);
-			log.info(String.format("[%s][Economy] iConomy 5 found: %s", getDescription().getName(), icon5.isEnabled() ? "Loaded" : "Waiting"));
-		}
-
-		// Try to load iConomy 6
-		if (packageExists(new String[] { "com.iCo6.iConomy" })) {
-			Economy icon6 = new Economy_iConomy6(this);
-			getServer().getServicesManager().register(Economy.class, icon6, this, ServicePriority.High);
-			log.info(String.format("[%s][Economy] iConomy 6 found: %s", getDescription().getName(), icon6.isEnabled() ? "Loaded" : "Waiting"));
-		}
 	}
-/*	private void loadPermission() {
-		// Try to load PermissionsEx
-		if (packageExists(new String[] { "ru.tehkode.permissions.bukkit.PermissionsEx" })) {
-			Permission ePerms = new Permission_Permissions3(this);
-			getServer().getServicesManager().register(Permission.class, ePerms, this, ServicePriority.Highest);
-			log.info(String.format("[%s][Permission] PermissionsEx found: %s", getDescription().getName(), ePerms.isEnabled() ? "Loaded" : "Waiting"));
-		}
+	public void loadCommands(){
 
-		//Try to load bPermissions
-		if (packageExists(new String[] {"de.bananaco.permissions.worlds.WorldPermissionsManager"} )) {
-			Permission bPerms = new Permission_bPermissions(this);
-			getServer().getServicesManager().register(Permission.class, bPerms, this, ServicePriority.Highest);
-			log.info(String.format("[%s][Permission] bPermissions found: %s", getDescription().getName(), bPerms.isEnabled() ? "Loaded" : "Waiting"));
-		}
-
-		// Try to load GroupManager
-		if (packageExists(new String[] { "org.anjocaido.groupmanager.GroupManager" })) {
-			Permission gPerms = new Permission_GroupManager(this);
-			getServer().getServicesManager().register(Permission.class, gPerms, this, ServicePriority.High);
-			log.info(String.format("[%s][Permission] GroupManager found: %s", getDescription().getName(), gPerms.isEnabled() ? "Loaded" : "Waiting"));
-		}
-		// Try to load Permissions 3 (Yeti)
-		if (packageExists(new String[] { "com.nijiko.permissions.ModularControl" })) {
-			Permission nPerms = new Permission_Permissions3(this);
-			getServer().getServicesManager().register(Permission.class, nPerms, this, ServicePriority.High);
-			log.info(String.format("[%s][Permission] Permissions 3 (Yeti) found: %s", getDescription().getName(), nPerms.isEnabled() ? "Loaded" : "Waiting"));
-		}
-
+		getCommand("ban").setExecutor(new Ban(this));
+		getCommand("checkban").setExecutor(new Check(this));
+		getCommand("editban").setExecutor(new EditCommand(this));
+		getCommand("empty").setExecutor(new Empty(this));
+		getCommand("exportbans").setExecutor(new Export(this));
+		getCommand("fine").setExecutor(new Fine(this));
+		getCommand("uhelp").setExecutor(new Help(this));
+		getCommand("ipban").setExecutor(new Ipban(this));
+		getCommand("kick").setExecutor(new Kick(this));
+		getCommand("ureload").setExecutor(new Reload(this));
+		getCommand("forcespawn").setExecutor(new Spawn(this));
+		getCommand("starve").setExecutor(new Starve(this));
+		getCommand("tempban").setExecutor(new Tempban(this));
+		getCommand("unban").setExecutor(new Unban(this));
+		getCommand("uversion").setExecutor(new Version(this));
+		getCommand("warn").setExecutor(new Warn(this));
+		
 	}
-	*/
-
-	private static boolean packageExists(String[] packages) {
-		try {
-			for (String pkg : packages) {
-				Class.forName(pkg);
-			}
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+	
 }
+
+		
+
+
