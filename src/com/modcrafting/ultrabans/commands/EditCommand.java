@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.modcrafting.ultrabans.util.Util;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class EditCommand implements CommandExecutor{
@@ -189,7 +188,7 @@ public class EditCommand implements CommandExecutor{
 				return true;
 			}
 
-			long time = Util.parseTimeSpec(args[2], args[3]);
+			long time = parseTimeSpec(args[2], args[3]);
 			if(time == 0){
 				sender.sendMessage(ChatColor.RED + "Invalid time format");
 				return true;
@@ -208,6 +207,27 @@ public class EditCommand implements CommandExecutor{
 		
 		return false;		
 
+	}
+	public static long parseTimeSpec(String time, String unit) {
+		long sec;
+		try {
+			sec = Integer.parseInt(time)*60;
+		} catch (NumberFormatException ex) {
+			return 0;
+		}
+		if (unit.startsWith("hour"))
+			sec *= 60;
+		else if (unit.startsWith("day"))
+			sec *= (60*24);
+		else if (unit.startsWith("week"))
+			sec *= (7*60*24);
+		else if (unit.startsWith("month"))
+			sec *= (30*60*24);
+		else if (unit.startsWith("min"))
+			sec *= 1;
+		else if (unit.startsWith("sec"))
+			sec /= 60;
+		return sec;
 	}
 
 	private void showBanInfo(EditBan eb, CommandSender sender){

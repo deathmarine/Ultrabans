@@ -10,15 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.modcrafting.ultrabans.db.MySQLDatabase;
-import com.modcrafting.ultrabans.util.Util;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Version implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
-	MySQLDatabase db;
 	UltraBan plugin;
-	Util util;
 	
 	public Version(UltraBan ultraBan) {
 		this.plugin = ultraBan;
