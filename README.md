@@ -1,5 +1,4 @@
 # Ultrabans - Administration Bukkit Plugin
-
 Tired of Paranoid Plugins? Take charge of your server.
 
 Ultrabans is an administration tool that gives the user 

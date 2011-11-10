@@ -100,9 +100,7 @@ public class UltraBan extends JavaPlugin {
 
 		createDefaultConfiguration("config.yml"); //Swap for new setup
 		
-		//this.useMysql = properties.getBoolean("mysql", false);
 		this.autoComplete = properties.getBoolean("auto-complete", true);
-		//this.checkPermissions = properties.getBoolean("usePermissions", true);
 		this.checkEconomy = properties.getBoolean("useFines", true);
 		
 		loadCommands();
