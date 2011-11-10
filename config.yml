@@ -1,27 +1,18 @@
-mysql: false
+#Other Databases are not available... yet#
+mysql: true
 mysql-database: 'jdbc:mysql://localhost:3306/minecraft'
 mysql-user: 'root'
 mysql-password: 'root'
+#Change these if you want to load a database#
+#First load will create these databases#
 mysql-table: banlist
 mysql-table-ip: banlistip
+#Disable this if you do not want to use the -s#
+#to silence broadcastss#
 auto-complete: true
+#Ultraban requires Vault for the Command /fines#
+#Disable this is you don't not want to use /fines#
+#Or would rather not use the Vault Library#
 useFine: true
-
-messages:
-    banMsgFailed: "&cPlayer &e%victim% &cis already banned!"
-    unbanMsg: "&aSuccessfully unbanned player &e%victim%&a!"
-    unbanMsgGlobal: "&e%victim% &6was unbanned by &e%player%&6!"
-    unbanMsgFailed: "&cFailed to unban &e%victim%&c!"
-    kickAllMsg: "%player% kicked everyone. Reason: %reason%"
-    kickMsgVictim: "You have been kicked by %player%. Reason: %reason%"
-    kickMsgBroadcast: "&e%victim% &6was kicked by &e%player%&6. Reason: &e%reason%"
-    kickMsgFailed: "&cKick failed: &6%victim% &cisn't online."
-    banMsgVictim: "You have been banned by %player%. Reason: %reason%"
-    banMsgBroadcast: "&e%victim% &6was banned by &e%player%&6. Reason: &e%reason%"
-    tempbanMsgVictim: "You have been temp. banned by %player%. Reason: %reason%"
-    tempbanMsgBroadcast: "&e%victim% &6was temp. banned by &e%player%&6. Reason: &e%reason%"
-    LoginTempban: "&cYou are banned until &e%time%&c! Reason: &e%reason%"
-    LoginBan: "&cYou are banned from this server! Reason: &e%reason%"
-    LoginIPBan: "&cThis IP is banned!"
-    fineMsgVictim: "You have been fined by %player% in the amount of %amt%"
-    fineMsgBroadcast: "&e%victim% &6was fined by &e%player%&6 in the amount of &e%amt%"
+#Bukkit depreciated the standard config#
+#Custom commands and messages are soone to come#

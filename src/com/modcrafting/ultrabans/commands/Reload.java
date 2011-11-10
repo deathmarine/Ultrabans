@@ -15,7 +15,6 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Reload implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
-	MySQLDatabase db;
 	UltraBan plugin;
 	
 	public Reload(UltraBan ultraBan) {
@@ -42,9 +41,9 @@ public class Reload implements CommandExecutor{
 			plugin.bannedPlayers.clear(); // Clear the HASHSET (RAM)
 			plugin.tempBans.clear();
 			plugin.bannedIPs.clear();
-			//new
-			db = new MySQLDatabase(); // Refill the HASHSET (RAM)
-			db.initialize(plugin);
+			log.log(Level.INFO, "[UltraBan] Unloading Ram, Reinitializing.");
+			plugin.db = new MySQLDatabase(); // Refill the HASHSET (RAM)
+			plugin.db.initialize(plugin);
 			
 			log.log(Level.INFO, "[UltraBan] " + admin + " reloaded the banlist.");
 			sender.sendMessage("§2Reloaded banlist.");

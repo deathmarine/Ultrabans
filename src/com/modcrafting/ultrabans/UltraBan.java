@@ -51,9 +51,7 @@ public class UltraBan extends JavaPlugin {
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
 	public Configuration properties = new Configuration(new File("plugins/UltraBan/config.yml"));
-	//public static UltraBan plugin;
 	public boolean autoComplete;
-	//public boolean checkPermissions;
 	public boolean checkEconomy;
 	
 	public void onDisable() {
@@ -66,7 +64,7 @@ public class UltraBan extends JavaPlugin {
 		if (!actual.exists()) {
 
 			InputStream input =
-				this.getClass().getResourceAsStream("/defaults/" + name);
+				this.getClass().getResourceAsStream(name);
 			if (input != null) {
 				FileOutputStream output = null;
 
@@ -102,11 +100,11 @@ public class UltraBan extends JavaPlugin {
 
 		createDefaultConfiguration("config.yml"); //Swap for new setup
 		
-		//boolean useMysql = properties.getBoolean("mysql", false);
+		//this.useMysql = properties.getBoolean("mysql", false);
 		this.autoComplete = properties.getBoolean("auto-complete", true);
 		//this.checkPermissions = properties.getBoolean("usePermissions", true);
-		this.checkEconomy = getConfig().getBoolean("useFines", true);
-		//if (useMysql){
+		this.checkEconomy = properties.getBoolean("useFines", true);
+		
 		loadCommands();
 		loadPerms();
 		
@@ -141,7 +139,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("editban").setExecutor(new EditCommand(this));
 		getCommand("empty").setExecutor(new Empty(this));
 		getCommand("exportbans").setExecutor(new Export(this));
-		getCommand("fine").setExecutor(new Fine(this));
+		if(checkEconomy) getCommand("fine").setExecutor(new Fine(this));
 		getCommand("uhelp").setExecutor(new Help(this));
 		getCommand("ipban").setExecutor(new Ipban(this));
 		getCommand("kick").setExecutor(new Kick(this));
