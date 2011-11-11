@@ -3,10 +3,10 @@ package com.modcrafting.ultrabans;
 
 import java.util.Date;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.entity.Player;
 
 public class UltraBanPlayerListener extends PlayerListener {
 	UltraBan plugin;

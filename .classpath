@@ -2,22 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="D:/Documents/Downloads/craftbukkit1337.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/3co.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/BOSEconomy6.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/BOSEconomy7.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/bpermissions.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/craftbukkit-0.0.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/Essentials.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/EssentialsGroupManager.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/iConomy4.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/iConomy5.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/iConomy6.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/mChat.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/MultiCurrency.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/Permissions.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/PermissionsBukkit-1.2.jar"/>
-	<classpathentry kind="lib" path="/Vault/lib/PermissionsEx.jar"/>
 	<classpathentry kind="lib" path="C:/Users/jmccurry/Minecraft/Vault.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/Downloads/craftbukkit1337.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/Downloads/Reconstruct/PermissionsEx-1.14-package/Permissions.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/Downloads/Reconstruct/PermissionsEx-1.14-package/PermissionsEx.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
