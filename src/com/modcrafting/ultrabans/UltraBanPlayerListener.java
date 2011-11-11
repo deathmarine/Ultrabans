@@ -46,7 +46,7 @@ public class UltraBanPlayerListener extends PlayerListener {
 		Player player = event.getPlayer();
 		String ip = player.getAddress().getAddress().getHostAddress();
 		plugin.db.setAddress(player.getName().toLowerCase(), ip);
-		System.out.println(player.getName() + " connect from ip " + ip);
+		System.out.println(player.getName() + " connected from ip:" + ip);
 		//Personalized copy
 		//player.sendMessage(ChatColor.GRAY + "Server is secured by" + ChatColor.GOLD + " Death's UltraBans");
 		if(plugin.bannedIPs.contains(ip)){
