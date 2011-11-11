@@ -60,6 +60,9 @@ public class UltraBan extends JavaPlugin {
 	public void onDisable() {
 		tempBans.clear();
 		bannedPlayers.clear();
+		bannedIPs.clear();
+		jailed.clear();
+		banEditors.clear();
 		System.out.println("UltraBan disabled.");
 	}
 	protected void createDefaultConfiguration(String name) {

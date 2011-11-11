@@ -212,7 +212,7 @@ public class MySQLDatabase{
 		String logip = plugin.getConfiguration().getString("mysql-table-ip");
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE name = ?"); //nullpointer
+			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
 			while (rs.next()){

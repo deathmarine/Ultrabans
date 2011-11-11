@@ -18,11 +18,18 @@ public class Jail implements CommandExecutor{
 
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
-		
-	public Jail(UltraBan ultraBan) {
+	public World world;
+	public String jworld;
+    public double x;
+    public int y;
+    public double z;
+    public int yaw;
+    public int pitch;
+    public Location setlp;
+    public Jail(UltraBan ultraBan) {
 			this.plugin = ultraBan;
 		}
-	public Location locJail;
+	
 	public boolean autoComplete;
 	public String expandName(String p) {
 			int m = 0;
@@ -64,53 +71,63 @@ public class Jail implements CommandExecutor{
 			}
 			if(auth){
 				if (args.length < 1) return false;
-				String p = args[0];
-				if(autoComplete) p = expandName(p);
-					if(args[0] == "set"){
-						Location setlp = player.getLocation();
-						plugin.jailed.add(p.toLowerCase());
+				if(args[0] == "set"){
+						this.setlp = player.getLocation();
 						setJail(setlp);
 						return true;
 					}
-					if(args[0] == "pardon"){
+				if(args[0] == "pardon"){
 						String victim = args[1];
 						if(autoComplete) victim = expandName(victim);
 						plugin.jailed.remove(victim.toLowerCase());
-						Player jailee = plugin.getServer().getPlayer(p);
-						World wtlp = jailee.getWorld();
-						Location tlp = wtlp.getSpawnLocation();
+						Player jailee = plugin.getServer().getPlayer(victim);
+						Location tlp = jailee.getWorld().getSpawnLocation();
 						jailee.teleport(tlp);
+						return true;
 					}
-
+				String p = args[0];
+				if(autoComplete) p = expandName(p);	
 				String admin = player.getName();
 				plugin.db.addPlayer(p, "Jailed", admin, 0, 6);
-				Player victim = plugin.getServer().getPlayer(p);
+				Player nvictim = plugin.getServer().getPlayer(p);
 				sender.sendMessage(ChatColor.GRAY + p + " is now in Jail!");
 				sender.sendMessage(ChatColor.GRAY + admin + " don't forget to let him out!");
-				victim.sendMessage(ChatColor.GRAY + "You've been Arrested.");
+				nvictim.sendMessage(ChatColor.GRAY + "You've been Arrested.");
+				plugin.jailed.add(p.toLowerCase());
 				Location tlp = getJail();
-				victim.teleport(tlp);
+				nvictim.teleport(tlp);
 			}
-			
 			return true;
 	}
-	public void setJail(Location setlp){
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-        config.set("jail.x", (int) setlp.getX());
-        config.set("jail.y", (int) setlp.getY());
-        config.set("jail.z", (int) setlp.getZ());
-        config.set("jail.world", setlp.getWorld().getName());
+	public void setJail(Location location) {
+        this.jworld = setlp.getWorld().getName();
+        this.x = setlp.getX();
+        this.y = setlp.getBlockY();
+        this.z = setlp.getZ();
+        this.yaw = Math.round(setlp.getYaw()) % 360;
+        this.pitch = Math.round(setlp.getPitch()) % 360;
+        YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+        config.set("jail.x", x);
+        config.set("jail.y", y);
+        config.set("jail.z", z);
+        config.set("jail.yaw", yaw);
+        config.set("jail.pitch", pitch);
+        config.set("jail.world", world);
         plugin.saveConfig();
-	}
-	public Location getJail(){
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-        config.get("jail.x", (int) locJail.getX());
-        config.get("jail.y", (int) locJail.getY());
-        config.get("jail.z", (int) locJail.getZ());
-        config.get("jail.world", locJail.getWorld().getName());
-        if(locJail != null){
-        	
+
+    }
+    public Location getJail(){
+    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+    		         config.get("jail.x", x);
+    		         config.get("jail.y", y);
+    		         config.get("jail.z", z);
+    		         config.get("jail.yaw", yaw);
+    		         config.get("jail.pitch", pitch);
+    		         config.get("jail.world", world);
+    		         return new Location(world, x, y, z, yaw, pitch);
+       
+            
         }
-		return locJail;
-	}
-}
+    }
+
+        
