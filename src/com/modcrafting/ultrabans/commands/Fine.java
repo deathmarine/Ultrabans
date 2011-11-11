@@ -88,8 +88,13 @@ public class Fine implements CommandExecutor{
 				victim.sendMessage(admin + " has fined you for: " + amt);
 			}
 			if(setupEconomy()){
-				double amtd = Double.valueOf(amt.trim()); //Covert + Take Whitespace if any
-				economy.withdrawPlayer(victim.getName(), amtd); //Amount Absolute Value
+				double bal = economy.getBalance(p);
+				double amtd = Double.valueOf(amt.trim());
+				if(amtd > bal){
+					economy.withdrawPlayer(victim.getName(), bal);	
+				}else{
+					economy.withdrawPlayer(victim.getName(), amtd);
+				}
 			}
 			log.log(Level.INFO, "[UltraBan] " + admin + " fined player " + p + " amount of " + amt + ".");
 			plugin.db.addPlayer(p, amt, admin, 0, 4);
