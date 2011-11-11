@@ -3,7 +3,10 @@ package com.modcrafting.ultrabans;
 
 import java.util.Date;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -56,4 +59,19 @@ public class UltraBanPlayerListener extends PlayerListener {
 			plugin.db.updateAddress(player.getName(), ip);
 		}
 	}
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
+		Player player = event.getPlayer();
+			if(plugin.jailed.contains(player.getName().toLowerCase())){
+				player.sendMessage(ChatColor.GRAY + " You cannot use commands while Jailed!");
+				event.setCancelled(true);
+			 }
+	}
+	public void onPlayerChat(PlayerChatEvent event){
+		 Player player = event.getPlayer();
+		 	if(plugin.jailed.contains(player.getName().toLowerCase())){
+		 		player.sendMessage(ChatColor.GRAY + " Your cry falls on deaf ears.");
+		 		event.setCancelled(true);
+		 	}
+	}
+		 
 }

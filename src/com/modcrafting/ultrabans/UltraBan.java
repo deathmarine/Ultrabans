@@ -48,6 +48,7 @@ public class UltraBan extends JavaPlugin {
 	String maindir = "plugins/UltraBan/";
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
+	public HashSet<String> jailed = new HashSet<String>();
 	public Map<String,Long> tempBans = new HashMap<String,Long>();
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);

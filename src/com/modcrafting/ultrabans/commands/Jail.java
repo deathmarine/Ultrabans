@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -67,15 +68,28 @@ public class Jail implements CommandExecutor{
 			if(auth){
 				if (args.length < 1) return false;
 				String p = args[0];
-				if(autoComplete)
-					p = expandName(p);
+				if(autoComplete) p = expandName(p);
 					if(args[0] == "set"){
 						Location setlp = player.getLocation();
+						plugin.jailed.add(p.toLowerCase());
 						setJail(setlp);
 						return true;
 					}
+					if(args[0] == "pardon"){
+						String victim = args[1];
+						if(autoComplete) victim = expandName(victim);
+						plugin.jailed.remove(victim.toLowerCase());
+						Player jailee = plugin.getServer().getPlayer(p);
+						World wtlp = jailee.getWorld();
+						Location tlp = wtlp.getSpawnLocation();
+						jailee.teleport(tlp);
+					}
+
+				String admin = player.getName();
+				plugin.db.addPlayer(p, "Jailed", admin, 0, 6);
 				Player victim = plugin.getServer().getPlayer(p);
 				sender.sendMessage(ChatColor.GRAY + p + " is now in Jail!");
+				sender.sendMessage(ChatColor.GRAY + admin + " don't forget to let him out!");
 				victim.sendMessage(ChatColor.GRAY + "You've been Arrested.");
 				Location tlp = getJail();
 				victim.teleport(tlp);
@@ -91,13 +105,15 @@ public class Jail implements CommandExecutor{
         config.set("jail.world", setlp.getWorld().getName());
         plugin.saveConfig();
 	}
-
 	public Location getJail(){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
         config.get("jail.x", (int) locJail.getX());
         config.get("jail.y", (int) locJail.getY());
         config.get("jail.z", (int) locJail.getZ());
         config.get("jail.world", locJail.getWorld().getName());
+        if(locJail != null){
+        	
+        }
 		return locJail;
 	}
 }
