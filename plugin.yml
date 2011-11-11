@@ -56,3 +56,6 @@ commands:
   starve:
     description: Removes food from player
     usage: /<command> player - Removes food from player
+  jail:
+    description: Jail player
+    usage: /<command> <set/pardon/player> player - pardon player

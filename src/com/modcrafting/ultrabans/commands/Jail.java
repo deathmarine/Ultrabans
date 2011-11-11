@@ -12,14 +12,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.modcrafting.ultrabans.db.MySQLDatabase;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Jail implements CommandExecutor{
 
 	public static final Logger log = Logger.getLogger("Minecraft");
-	
-	MySQLDatabase db;
 	UltraBan plugin;
 		
 	public Jail(UltraBan ultraBan) {
@@ -96,7 +93,7 @@ public class Jail implements CommandExecutor{
 			}
 			
 			return true;
-		}
+	}
 	public void setJail(Location setlp){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
         config.set("jail.x", (int) setlp.getX());
