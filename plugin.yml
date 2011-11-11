@@ -1,6 +1,6 @@
 name: UltraBan
 main: com.modcrafting.ultrabans.UltraBan
-version: 0.0.4
+version: 0.0.5
 website: http://modcrafting.com
 author: Deathmarine
 description: >
@@ -48,7 +48,7 @@ commands:
     usage: /<command>
     aliases: [uv,uver]
   empty:
-    description: Empties defined players inventory.
+    description: Empty player inventory.
     usage: /<command> player - Empty a players inventory
   forcespawn:
     description: Sends player to spawn/home
