@@ -38,24 +38,22 @@ public class Help implements CommandExecutor{
 		PluginDescriptionFile pdfFile = plugin.getDescription();
 		sender.sendMessage(ChatColor.GRAY + pdfFile.getName() + " version " + pdfFile.getVersion() + " Help System");
 		sender.sendMessage(ChatColor.BLUE + "Current User " + admin);
-		sender.sendMessage(ChatColor.GRAY + "-----------------------------------------------");
-		sender.sendMessage(ChatColor.BLUE + "Required Info {}" + ChatColor.GREEN + " Optional ()");
-		sender.sendMessage(ChatColor.GRAY + "/ban      {player} (-s) {reason}");
+		sender.sendMessage(ChatColor.BLUE + "Required Info {}" + ChatColor.GREEN + " Optional ()" + ChatColor.RED + " Silent -s");
+		sender.sendMessage(ChatColor.GRAY + "/ban       {player} (-s) {reason}");
 		sender.sendMessage(ChatColor.GRAY + "/tempban  {player} (-s) {amt} {sec/min/hour/day} {Reason}");
-		sender.sendMessage(ChatColor.GRAY + "/ipban    {player} (-s) {reason}");
+		sender.sendMessage(ChatColor.GRAY + "/ipban     {player} (-s) {reason}");
 		sender.sendMessage(ChatColor.GRAY + "/unban    {player}");
 		sender.sendMessage(ChatColor.GRAY + "/checkban {player}");
-		sender.sendMessage(ChatColor.GRAY + "/kick     {player} (-s) {reason}");
+		sender.sendMessage(ChatColor.GRAY + "/kick       {player} (-s) {reason}");
+		
 		sender.sendMessage(ChatColor.GRAY + "/warn     {player} (-s) {reason}");
 		sender.sendMessage(ChatColor.GRAY + "/fine     {player} (-s) {amt}");
 		sender.sendMessage(ChatColor.GRAY + "/empty    {player}");
 		sender.sendMessage(ChatColor.GRAY + "/forcespawn {player}");
 		sender.sendMessage(ChatColor.GRAY + "/starve     {player}");
 		sender.sendMessage(ChatColor.GRAY + "/editban  (help)");
-		sender.sendMessage(ChatColor.GRAY + "/exportbans");
-		sender.sendMessage(ChatColor.GRAY + "/uhelp");
-		sender.sendMessage(ChatColor.GRAY + "/ureload");
-		sender.sendMessage(ChatColor.GRAY + "/uversion");
+		sender.sendMessage(ChatColor.GRAY + "/jail (set/pardon/{player}) {player}");
+		sender.sendMessage(ChatColor.GRAY + "/uhelp /exportbans /ureload /uversion /exportbans");
 		return true;
 		}else{
 		sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
