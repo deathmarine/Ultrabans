@@ -76,6 +76,7 @@ public class Jail implements CommandExecutor{
 				if(args[0].equalsIgnoreCase("set")){
 						this.setlp = player.getLocation();
 						setJail(setlp);
+						sender.sendMessage(ChatColor.GRAY + "Jail has been set to " + ChatColor.AQUA + setlp.toString());
 						return true;
 				}
 				if(args[0].equalsIgnoreCase("pardon")){
@@ -85,6 +86,8 @@ public class Jail implements CommandExecutor{
 						Player jailee = plugin.getServer().getPlayer(jaile);
 						Location tlp = jailee.getWorld().getSpawnLocation();
 						jailee.teleport(tlp);
+						jailee.sendMessage(ChatColor.GRAY + "You've been released from Jail!");
+						sender.sendMessage(ChatColor.GRAY + jaile + " released from Jail!");
 						return true;
 				}
 				String p = args[0];

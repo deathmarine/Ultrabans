@@ -62,14 +62,14 @@ public class UltraBanPlayerListener extends PlayerListener {
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
 		Player player = event.getPlayer();
 			if(plugin.jailed.contains(player.getName().toLowerCase())){
-				player.sendMessage(ChatColor.GRAY + " You cannot use commands while Jailed!");
+				player.sendMessage(ChatColor.GRAY + "You cannot use commands while Jailed!");
 				event.setCancelled(true);
 			 }
 	}
 	public void onPlayerChat(PlayerChatEvent event){
 		 Player player = event.getPlayer();
 		 	if(plugin.jailed.contains(player.getName().toLowerCase())){
-		 		player.sendMessage(ChatColor.GRAY + " Your cry falls on deaf ears.");
+		 		player.sendMessage(ChatColor.GRAY + "Your cry falls on deaf ears.");
 		 		event.setCancelled(true);
 		 	}
 	}
