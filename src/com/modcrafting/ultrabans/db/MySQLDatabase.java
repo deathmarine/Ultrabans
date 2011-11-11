@@ -187,7 +187,7 @@ public class MySQLDatabase{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("INSERT INTO " + logip + " (name,lastip) VALUES(?,?)");
+			ps = conn.prepareStatement("INSERT INTO IF NOT EXISTS" + logip + " (name,lastip) VALUES(?,?)");
 			ps.setString(1, pName);
 			ps.setString(2, logIp);
 			ps.executeUpdate();
