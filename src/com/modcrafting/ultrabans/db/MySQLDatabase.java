@@ -1,7 +1,6 @@
 package com.modcrafting.ultrabans.db;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,9 +19,8 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.config.Configuration;
-
 import com.modcrafting.ultrabans.UltraBan;
 import com.modcrafting.ultrabans.commands.EditBan;
 
@@ -32,11 +30,12 @@ import com.modcrafting.ultrabans.commands.EditBan;
 
 @SuppressWarnings("deprecation")
 public class MySQLDatabase{
-	Plugin plugin;
+	static Plugin plugin;
 	
-	public static Connection getSQLConnection() {
-		Configuration Config = new Configuration(new File("plugins/UltraBan/config.yml"));
-		Config.load();
+	public Connection getSQLConnection() {
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		//Configuration Config = new Configuration(new File("plugins/UltraBan/config.yml"));
+		//Config.load();
 		String mysqlDatabase = Config.getString("mysql-database","jdbc:mysql://localhost:3306/minecraft");
 		String mysqlUser = Config.getString("mysql-user","root");
 		String mysqlPassword = Config.getString("mysql-password","root");
@@ -67,7 +66,7 @@ public class MySQLDatabase{
 			") ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
 	
 	public void initialize(UltraBan plugin){
-		this.plugin = plugin;
+		MySQLDatabase.plugin = plugin;
 		Connection conn = getSQLConnection();
 		
 		String mysqlTable = plugin.getConfiguration().getString("mysql-table");

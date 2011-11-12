@@ -38,14 +38,16 @@ import com.modcrafting.ultrabans.commands.Unban;
 import com.modcrafting.ultrabans.commands.Version;
 import com.modcrafting.ultrabans.commands.Warn;
 import com.modcrafting.ultrabans.db.MySQLDatabase;
+import com.modcrafting.ultrabans.util.RepData;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 @SuppressWarnings("deprecation")
 public class UltraBan extends JavaPlugin {
 
 	public static final Logger log = Logger.getLogger("Minecraft");
+	public RepData repdb;
 	Permissions CurrentPermissions = null;
-	public MySQLDatabase db;
+	public MySQLDatabase db = new MySQLDatabase();
 	public String maindir = "plugins/UltraBan/";
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
@@ -114,14 +116,7 @@ public class UltraBan extends JavaPlugin {
 		this.usesqlite = properties.getBoolean("sqlite", false);
 		loadCommands();
 		loadPerms();
-		
-		//if(useMysql) db = new MySQLDatabase();
-
-		//db = new SQLite();
-		//if(flat) db = new FlatFileDatabase();
-		db = new MySQLDatabase();
 		db.initialize(this);	
-		
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Highest, this);
 		pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);

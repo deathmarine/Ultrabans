@@ -90,7 +90,6 @@ public class Ban implements CommandExecutor{
 		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
 		plugin.db.addPlayer(p, reason, admin, 0, 0);
 		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
-
 		if(victim != null){
 			String adminMsg = plugin.properties.getString("messages.banMsgVictim", 
 			"You have been banned by %player%. Reason: %reason%");
