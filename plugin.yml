@@ -1,6 +1,6 @@
 name: UltraBan
 main: com.modcrafting.ultrabans.UltraBan
-version: 0.0.6
+version: 0.0.7
 website: http://modcrafting.com
 author: Deathmarine
 description: >
@@ -21,6 +21,9 @@ commands:
   checkban:
     description: Check if a player is banned
     usage: /<command>
+  permaban:
+    description: Unbannable Banning
+    usage: /<command> player [reason] - Permaban
   ureload:
     description: Reload the banlist
     usage: /<command>

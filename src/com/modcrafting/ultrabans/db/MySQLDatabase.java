@@ -66,16 +66,16 @@ public class MySQLDatabase{
 			"PRIMARY KEY (`name`)" + 
 			") ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
 	
-	public void initialize(UltraBan ultraBan){
-		this.plugin = ultraBan;
+	public void initialize(UltraBan plugin){
+		this.plugin = plugin;
 		Connection conn = getSQLConnection();
 		
-		String mysqlTable = ultraBan.getConfiguration().getString("mysql-table");
+		String mysqlTable = plugin.getConfiguration().getString("mysql-table");
 		
 		if (conn == null) {
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Could not establish SQL connection. Disabling UltraBan");
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Adjust Settings in Config or set MySql: False");
-			ultraBan.getServer().getPluginManager().disablePlugin(ultraBan);
+			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			return;
 		} else {
 			PreparedStatement ps = null;
@@ -107,19 +107,19 @@ public class MySQLDatabase{
 					while (rs.next()){
 					String pName = rs.getString("name").toLowerCase();
 					long pTime = rs.getLong("temptime");
-					ultraBan.bannedPlayers.add(pName);
+					plugin.bannedPlayers.add(pName);
 					if(pTime != 0){
-						ultraBan.tempBans.put(pName,pTime);
+						plugin.tempBans.put(pName,pTime);
 					}
 						if(rs.getInt("type") == 1){
 							System.out.println("Found IP ban!");
 							String ip = getAddress(pName);
-							ultraBan.bannedIPs.add(ip);
+							plugin.bannedIPs.add(ip);
 						}
 					}
 				}catch (NullPointerException ex){
 					UltraBan.log.log(Level.SEVERE, "[UltraBan] Run CreateTable.sql in /plugins/UltraBan");
-					ultraBan.getServer().getPluginManager().disablePlugin(ultraBan);
+					plugin.getServer().getPluginManager().disablePlugin(plugin);
 				}
 			} catch (SQLException ex) {
 				UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
@@ -137,14 +137,14 @@ public class MySQLDatabase{
 			}	
 
 			try {
-				if (!ultraBan.isEnabled()){
+				if (!plugin.isEnabled()){
 					return;
 				}
 				conn.close();
 				UltraBan.log.log(Level.INFO, "[UltraBan] Initialized db connection" );
 			} catch (SQLException e) {
 				e.printStackTrace();
-				ultraBan.getServer().getPluginManager().disablePlugin(ultraBan);
+				plugin.getServer().getPluginManager().disablePlugin(plugin);
 			}
 		}
 		
@@ -231,6 +231,39 @@ public class MySQLDatabase{
 		return true;
 
 	}
+	public boolean permaBan(String bname){
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try{
+			conn = getSQLConnection();
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? ORDER BY time DESC LIMIT 1");
+			ps.setString(1, bname);
+			rs = ps.executeQuery();
+			while (rs.next()){
+				if(rs.getInt("type") == 9){
+				return true;
+				}
+			}
+		} catch (SQLException ex) {
+			UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			return false;
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				UltraBan.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				return false;
+			}
+		}
+		return false;
+	}
+		
+		
+	
 	public void addPlayer(String player, String reason, String admin, long tempTime , int type){
 		String mysqlTable = plugin.getConfiguration().getString("mysql-table");
 		Connection conn = null;
@@ -456,7 +489,7 @@ public class MySQLDatabase{
 		}
 	}
 	public static String resourceToString(String name) {
-        InputStream input = UltraBan.class.getResourceAsStream("/default/" + name);
+        InputStream input = UltraBan.class.getResourceAsStream(name);
         Writer writer = new StringWriter();
         char[] buffer = new char[1024];
 

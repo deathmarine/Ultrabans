@@ -68,7 +68,13 @@ public class Unban implements CommandExecutor{
 		// Has enough arguments?
 		if (args.length < 1)return false;
 		String p = args[0];
-
+		
+		if(plugin.db.permaBan(p.toLowerCase())){
+			sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is PermaBanned.");
+			log.log(Level.INFO, "[UltraBan] " + p + " is PermaBanned.");
+			return true;
+		}
+			
 		if(plugin.bannedPlayers.remove(p.toLowerCase())){
 			plugin.db.removeFromBanlist(p);
 			plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);

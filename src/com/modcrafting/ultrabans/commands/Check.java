@@ -18,13 +18,14 @@ public class Check implements CommandExecutor{
 	
 	}private String banType(int num){
 		switch(num){
-		case 0: return "N";
+		case 0: return "B";
 		case 1: return "IP";
 		case 2: return "W";
 		case 3: return "K";
 		case 4: return "F";
 		case 5: return "UN";
 		case 6: return "J";
+		case 9: return "PB";
 		default: return "?";
 		}
 	}
