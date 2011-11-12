@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.modcrafting.ultrabans.db.MySQLDatabase;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Reload implements CommandExecutor{
@@ -37,12 +36,10 @@ public class Reload implements CommandExecutor{
 		}
 		
 		if (auth) {
-
 			plugin.bannedPlayers.clear(); // Clear the HASHSET (RAM)
 			plugin.tempBans.clear();
 			plugin.bannedIPs.clear();
 			log.log(Level.INFO, "[UltraBan] Unloading Ram, Reinitializing.");
-			plugin.db = new MySQLDatabase(); // Refill the HASHSET (RAM)
 			plugin.db.initialize(plugin);
 			
 			log.log(Level.INFO, "[UltraBan] " + admin + " reloaded the banlist.");

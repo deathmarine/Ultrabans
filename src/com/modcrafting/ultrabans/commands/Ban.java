@@ -1,6 +1,5 @@
 package com.modcrafting.ultrabans.commands;
 
-import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -9,21 +8,16 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.util.config.Configuration;
-
 import com.modcrafting.ultrabans.UltraBan;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
-@SuppressWarnings("deprecation")
 public class Ban implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
-	Configuration properties = new Configuration(new File("plugins/UltraBan/config.yml"));
 	public Ban(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
 	public boolean autoComplete;
-	
 	public String expandName(String p) {
 		int m = 0;
 		String Result = "";
@@ -70,7 +64,7 @@ public class Ban implements CommandExecutor{
 		}
 		// Has enough arguments?
 		if (args.length < 1) return false;
-		this.autoComplete = properties.getBoolean("auto-complete", true);
+		boolean autoComplete = plugin.properties.getBoolean("auto-complete", true);
 		String p = args[0]; // Get the victim's name
 		if(autoComplete) p = expandName(p); //If the admin has chosen to do so, autocomplete the name!
 		Player victim = plugin.getServer().getPlayer(p); // What player is really the victim?
@@ -86,28 +80,32 @@ public class Ban implements CommandExecutor{
 		}
 
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
-			properties.load();
-			String adminMsg = properties.getNode("messages").getString("banMsgFailed");
+			String adminMsg = plugin.properties.getString("messages.banMsgFailed", 
+			"&8Player &4%victim% &8is already banned!");
 			adminMsg = adminMsg.replaceAll("%victim%", p);
-			sender.sendMessage(ChatColor.GRAY + " You've banned " + 
-					ChatColor.BLUE + p +  ChatColor.GRAY + ": " + reason);
+			sender.sendMessage(formatMessage(adminMsg));
 			return true;
 		}
 
 		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
-		// Add player to database
 		plugin.db.addPlayer(p, reason, admin, 0, 0);
-
-		//Log in console
 		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 
-		if(victim != null){ // If he is online, kick him with a nice message :)
-			victim.kickPlayer(admin + " has banned you for: " + reason);
+		if(victim != null){
+			String adminMsg = plugin.properties.getString("messages.banMsgVictim", 
+			"You have been banned by %player%. Reason: %reason%");
+			adminMsg = adminMsg.replaceAll("%player%", admin);
+			adminMsg = adminMsg.replaceAll("%reason%", reason);
+			victim.kickPlayer(formatMessage(adminMsg));
 		}
 		
 		if(broadcast){
-			plugin.getServer().broadcastMessage(ChatColor.BLUE + p + ChatColor.GRAY + " was banned by " + 
-		ChatColor.DARK_GRAY + admin + ChatColor.GRAY + ": " + reason);
+			String adminMsgAll = plugin.properties.getString("messages.adminMsgAll", 
+			"&1%victim% &8was banned by &7%player%&8. Reason: &4%reason%");
+			adminMsgAll = adminMsgAll.replaceAll("%player%", admin);
+			adminMsgAll = adminMsgAll.replaceAll("%reason%", reason);
+			adminMsgAll = adminMsgAll.replaceAll("%victim%", p);
+			plugin.getServer().broadcastMessage(formatMessage(adminMsgAll));
 		}
 		return true;
 	}
@@ -122,5 +120,9 @@ public class Ban implements CommandExecutor{
 		builder.deleteCharAt(builder.length() - seperator.length()); // remove
 		return builder.toString();
 	}
-
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
+	}
 }
