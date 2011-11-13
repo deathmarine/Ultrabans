@@ -38,14 +38,12 @@ import com.modcrafting.ultrabans.commands.Unban;
 import com.modcrafting.ultrabans.commands.Version;
 import com.modcrafting.ultrabans.commands.Warn;
 import com.modcrafting.ultrabans.db.MySQLDatabase;
-import com.modcrafting.ultrabans.util.RepData;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 @SuppressWarnings("deprecation")
 public class UltraBan extends JavaPlugin {
 
 	public static final Logger log = Logger.getLogger("Minecraft");
-	public RepData repdb;
 	Permissions CurrentPermissions = null;
 	public MySQLDatabase db = new MySQLDatabase();
 	public String maindir = "plugins/UltraBan/";
@@ -59,8 +57,7 @@ public class UltraBan extends JavaPlugin {
 	public Configuration properties = new Configuration(new File("plugins/UltraBan/config.yml"));
 	public boolean autoComplete;
 	public boolean checkEconomy;
-	public boolean useMysql;
-	public boolean usesqlite;
+	public boolean checkJail;
 	public void onDisable() {
 		tempBans.clear();
 		bannedPlayers.clear();
@@ -109,11 +106,9 @@ public class UltraBan extends JavaPlugin {
 		new File(maindir).mkdir();
 
 		createDefaultConfiguration("config.yml"); //Swap for new setup
-		
 		this.autoComplete = properties.getBoolean("auto-complete", true);
 		this.checkEconomy = properties.getBoolean("useFines", true);
-		this.useMysql = properties.getBoolean("mysql", false);
-		this.usesqlite = properties.getBoolean("sqlite", false);
+		this.checkJail = properties.getBoolean("useJail", true);
 		loadCommands();
 		loadPerms();
 		db.initialize(this);	
@@ -159,7 +154,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("unban").setExecutor(new Unban(this));
 		getCommand("uversion").setExecutor(new Version(this));
 		getCommand("warn").setExecutor(new Warn(this));
-		getCommand("jail").setExecutor(new Jail(this));
+		if(checkJail) getCommand("jail").setExecutor(new Jail(this));
 		getCommand("permaban").setExecutor(new Perma(this));
 	}
 	public void setObject(){

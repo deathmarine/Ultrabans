@@ -11,8 +11,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import com.modcrafting.ultrabans.util.RepData;
-
 public class UltraBanPlayerListener extends PlayerListener {
 	UltraBan plugin;
 	public UltraBanPlayerListener(UltraBan ultraBans) {

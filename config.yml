@@ -1,5 +1,6 @@
-#Other Databases are not available... yet#
-mysql: true
+#Database ValuesMysql or SQLite#
+Database: SQLite
+#If sqlite disregard mysql information#
 mysql-database: 'jdbc:mysql://localhost:3306/minecraft'
 mysql-user: 'root'
 mysql-password: 'root'
@@ -12,6 +13,7 @@ auto-complete: true
 #Disable this if you don't not want to use fines#
 #Or would rather not use the Vault Library#
 useFine: true
+useJail: true
 #Bukkit depreciated the standard config#
 #Custom commands and messages are soon to come#
 messages:
