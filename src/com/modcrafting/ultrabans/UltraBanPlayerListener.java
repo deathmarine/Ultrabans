@@ -16,7 +16,8 @@ public class UltraBanPlayerListener extends PlayerListener {
 	public UltraBanPlayerListener(UltraBan ultraBans) {
 		this.plugin = ultraBans;
 	}
-	public void onPlayerLogin(PlayerLoginEvent event){
+	//TODO Permaban checks.........
+	public void onPlayerLogin(PlayerLoginEvent event){ 
 		Player player = event.getPlayer();
 		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
 			System.out.println("banned player joined");

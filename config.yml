@@ -1,6 +1,4 @@
-#Database ValuesMysql or SQLite#
-Database: SQLite
-#If sqlite disregard mysql information#
+Database: MySQL
 mysql-database: 'jdbc:mysql://localhost:3306/minecraft'
 mysql-user: 'root'
 mysql-password: 'root'

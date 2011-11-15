@@ -29,7 +29,6 @@ import com.modcrafting.ultrabans.commands.Help;
 import com.modcrafting.ultrabans.commands.Ipban;
 import com.modcrafting.ultrabans.commands.Jail;
 import com.modcrafting.ultrabans.commands.Kick;
-import com.modcrafting.ultrabans.commands.Perma;
 import com.modcrafting.ultrabans.commands.Reload;
 import com.modcrafting.ultrabans.commands.Spawn;
 import com.modcrafting.ultrabans.commands.Starve;
@@ -71,7 +70,7 @@ public class UltraBan extends JavaPlugin {
 		if (!actual.exists()) {
 
 			InputStream input =
-				this.getClass().getResourceAsStream(name);
+				this.getClass().getResourceAsStream("/" + name);
 			if (input != null) {
 				FileOutputStream output = null;
 
@@ -104,7 +103,6 @@ public class UltraBan extends JavaPlugin {
 	public void onEnable() {
 		PluginDescriptionFile pdfFile = this.getDescription();
 		new File(maindir).mkdir();
-
 		createDefaultConfiguration("config.yml"); //Swap for new setup
 		this.autoComplete = properties.getBoolean("auto-complete", true);
 		this.checkEconomy = properties.getBoolean("useFines", true);
@@ -155,7 +153,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("uversion").setExecutor(new Version(this));
 		getCommand("warn").setExecutor(new Warn(this));
 		if(checkJail) getCommand("jail").setExecutor(new Jail(this));
-		getCommand("permaban").setExecutor(new Perma(this));
+		//getCommand("permaban").setExecutor(new Perma(this));
 	}
 	public void setObject(){
 		
