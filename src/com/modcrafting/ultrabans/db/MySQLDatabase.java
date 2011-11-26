@@ -310,40 +310,6 @@ public class MySQLDatabase{
 		}
 		return null;
 	}
-	public String duplicateaddress(String player, String ip){
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		String logip = plugin.getConfiguration().getString("mysql-table-ip");
-		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + logip + " ORDER BY name");
-			ps.setString(1, player);
-			ps.setString(2, ip);
-			rs = ps.executeQuery();
-			int size = rs.getFetchSize();
-			while(rs.next()){
-				if(size > 1){
-					return player;
-				}
-				return null;
-			}
-			}catch (SQLException ex) {
-				UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-			} finally {
-				try {
-					if (ps != null)
-						ps.close();
-					if (conn != null)
-						conn.close();
-					if (rs != null)
-						rs.close();
-				} catch (SQLException ex) {
-					UltraBan.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-				}
-			}
-			return null;
-		}
 
 	public boolean matchAddress(String player, String ip) {
 		Connection conn = null;
