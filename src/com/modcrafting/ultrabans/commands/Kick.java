@@ -112,11 +112,13 @@ public class Kick implements CommandExecutor{
 		if(broadcast){
 			String kickMsgBroadcast = config.getString("messages.kickMsgBroadcast", "%victim% has been kicked by %admin%. Reason: %reason%");
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%admin%", admin);
+			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%victim%", p);
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%reason%", reason);
 			plugin.getServer().broadcastMessage(formatMessage(kickMsgBroadcast));
 		}else{
 			String kickMsgBroadcast = config.getString("messages.kickMsgBroadcast", "%victim% has been kicked by %admin%. Reason: %reason%");
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%admin%", admin);
+			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%victim%", p);
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%reason%", reason);
 			sender.sendMessage(formatMessage(":S:" + kickMsgBroadcast));
 		}
