@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
@@ -46,6 +47,7 @@ public class Tempban implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
@@ -86,25 +88,33 @@ public class Tempban implements CommandExecutor{
 			return true;
 		}
 
-		long tempTime = parseTimeSpec(args[1],args[2]); //parse the time and do other crap below
+		long tempTime = parseTimeSpec(args[1],args[2]);
 		if(tempTime == 0)
 			return false;
-		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to RAM
-		tempTime = System.currentTimeMillis()/1000+tempTime;
+		plugin.bannedPlayers.add(p.toLowerCase());
+		tempTime = System.currentTimeMillis()/1000+tempTime; //epoch time
 		plugin.tempBans.put(p.toLowerCase(), tempTime);
-
-		// Add to database
 		plugin.db.addPlayer(p, reason, admin, tempTime, 0);
-
-		//Log in console
 		log.log(Level.INFO, "[UltraBan] " + admin + " tempbanned player " + p + ".");
 
-		if(victim != null){ // If he is online, boot'em
-			victim.kickPlayer(admin + " has temporarily banned you for: " + reason + " time: " + args[1] + args[2]);
+		if(victim != null){
+			String tempbanMsgVictim = config.getString("messages.tempbanMsgVictim", "You have been temp. banned by %admin%. Reason: %reason%!");
+			tempbanMsgVictim = tempbanMsgVictim.replaceAll("%player%", admin);
+			tempbanMsgVictim = tempbanMsgVictim.replaceAll("%reason%", reason);
+			victim.kickPlayer(formatMessage(tempbanMsgVictim));
 		}
 		if(broadcast){
-			plugin.getServer().broadcastMessage(ChatColor.BLUE + p + ChatColor.GRAY + " was temporarily banned by " + 
-					ChatColor.DARK_GRAY + admin + ChatColor.GRAY + ": " + reason + " time: " + args[1] + args[2]);
+			String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
+			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%player%", admin);
+			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%reason%", reason);
+			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", p);
+			plugin.getServer().broadcastMessage(formatMessage(tempbanMsgBroadcast));
+		}else{
+			String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
+			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%player%", admin);
+			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%reason%", reason);
+			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", p);
+			sender.sendMessage(formatMessage(":S:" + tempbanMsgBroadcast));
 		}
 		return true;
 	}
@@ -139,5 +149,10 @@ public class Tempban implements CommandExecutor{
 		else if (unit.startsWith("sec"))
 			sec /= 60;
 		return sec;
+	}
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
 	}
 }

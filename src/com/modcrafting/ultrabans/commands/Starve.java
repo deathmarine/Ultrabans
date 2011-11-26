@@ -2,10 +2,10 @@ package com.modcrafting.ultrabans.commands;
 
 import java.util.logging.Logger;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
@@ -47,8 +47,10 @@ public class Starve implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
+		String admin = "server";
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if (Permissions.Security.permission(player, "ultraban.starve")){
@@ -56,8 +58,9 @@ public class Starve implements CommandExecutor{
 			}else{
 			 if (player.isOp()) auth = true; //defaulting to Op if no permissions or node
 			}
+			admin = player.getName();
 		}else{
-			auth = true; //if sender is not a player - Console
+			auth = true;
 		}
 		if(auth){
 			if (args.length < 1) return false;
@@ -65,14 +68,24 @@ public class Starve implements CommandExecutor{
 			if(autoComplete)
 				p = expandName(p); 
 			Player victim = plugin.getServer().getPlayer(p);
-			sender.sendMessage(ChatColor.GRAY + p + " is now starving!");
-			victim.sendMessage(ChatColor.GRAY + "You are now starving!");
-			//player.setFoodLevel(victim.getFoodLevel());
+			String idoit = victim.getName();
+			String starveMsgVictim = config.getString("messages.starveMsgVictim", "You are now starving!");
+			starveMsgVictim = starveMsgVictim.replaceAll("%admin%", admin);
+			starveMsgVictim = starveMsgVictim.replaceAll("%victim%", idoit);
+			sender.sendMessage(formatMessage(starveMsgVictim));
+			String starveMsgBroadcast = config.getString("messages.starveMsgBroadcast", "%victim% is now starving!");
+			starveMsgBroadcast = starveMsgBroadcast.replaceAll("%admin%", admin);
+			starveMsgBroadcast = starveMsgBroadcast.replaceAll("%victim%", idoit);
+			victim.sendMessage(formatMessage(starveMsgBroadcast));
 			int st = 0;
 			victim.setFoodLevel(st);
 		}
 		
 		return true;
 	}
-
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
+	}
 }

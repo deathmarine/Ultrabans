@@ -10,14 +10,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.config.Configuration;
-
 import com.modcrafting.ultrabans.commands.Ban;
 import com.modcrafting.ultrabans.commands.Check;
 import com.modcrafting.ultrabans.commands.EditBan;
@@ -29,6 +28,7 @@ import com.modcrafting.ultrabans.commands.Help;
 import com.modcrafting.ultrabans.commands.Ipban;
 import com.modcrafting.ultrabans.commands.Jail;
 import com.modcrafting.ultrabans.commands.Kick;
+import com.modcrafting.ultrabans.commands.Perma;
 import com.modcrafting.ultrabans.commands.Reload;
 import com.modcrafting.ultrabans.commands.Spawn;
 import com.modcrafting.ultrabans.commands.Starve;
@@ -39,10 +39,9 @@ import com.modcrafting.ultrabans.commands.Warn;
 import com.modcrafting.ultrabans.db.MySQLDatabase;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
-@SuppressWarnings("deprecation")
 public class UltraBan extends JavaPlugin {
 
-	public static final Logger log = Logger.getLogger("Minecraft");
+	public final static Logger log = Logger.getLogger("Minecraft");
 	Permissions CurrentPermissions = null;
 	public MySQLDatabase db = new MySQLDatabase();
 	public String maindir = "plugins/UltraBan/";
@@ -53,7 +52,6 @@ public class UltraBan extends JavaPlugin {
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
 	private final UltraBanBlockListener blockListener = new UltraBanBlockListener(this);
-	public Configuration properties = new Configuration(new File("plugins/UltraBan/config.yml"));
 	public boolean autoComplete;
 	public boolean checkEconomy;
 	public boolean checkJail;
@@ -101,12 +99,13 @@ public class UltraBan extends JavaPlugin {
 		}
 	}
 	public void onEnable() {
+		YamlConfiguration Config = (YamlConfiguration) getConfig();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		new File(maindir).mkdir();
 		createDefaultConfiguration("config.yml"); //Swap for new setup
-		this.autoComplete = properties.getBoolean("auto-complete", true);
-		this.checkEconomy = properties.getBoolean("useFines", true);
-		this.checkJail = properties.getBoolean("useJail", true);
+		this.autoComplete = Config.getBoolean("auto-complete", true);
+		this.checkEconomy = Config.getBoolean("useFines", true);
+		this.checkJail = Config.getBoolean("useJail", true);
 		loadCommands();
 		loadPerms();
 		db.initialize(this);	
@@ -153,7 +152,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("uversion").setExecutor(new Version(this));
 		getCommand("warn").setExecutor(new Warn(this));
 		if(checkJail) getCommand("jail").setExecutor(new Jail(this));
-		//getCommand("permaban").setExecutor(new Perma(this));
+		getCommand("permaban").setExecutor(new Perma(this));
 	}
 	public void setObject(){
 		

@@ -2,6 +2,7 @@
 package com.modcrafting.ultrabans;
 
 import java.util.Date;
+import java.util.logging.Level;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -48,6 +49,12 @@ public class UltraBanPlayerListener extends PlayerListener {
 		String ip = player.getAddress().getAddress().getHostAddress();
 		plugin.db.setAddress(player.getName().toLowerCase(), ip);
 		System.out.println(player.getName() + " connected from ip:" + ip);
+		String dupname = plugin.db.duplicateaddress(player.getName(), ip);
+				if(!(dupname!= null)){
+				plugin.getServer().broadcastMessage(player + " logged in from a duplicate ip.");
+				UltraBan.log.log(Level.INFO, player + " logged from duplicate ip of " + dupname + ip);
+				}
+		
 		//Personalized copy
 		//player.sendMessage(ChatColor.GRAY + "Server is secured by" + ChatColor.GOLD + " Death's UltraBans");
 		if(plugin.bannedIPs.contains(ip)){

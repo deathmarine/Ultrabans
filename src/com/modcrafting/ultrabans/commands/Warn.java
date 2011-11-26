@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
@@ -46,6 +47,7 @@ public class Warn implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
@@ -83,28 +85,28 @@ public class Warn implements CommandExecutor{
 				reason = combineSplit(1, args, " ");
 			
 		}
-		// Add player to database
 		plugin.db.addPlayer(p, reason, admin, 0, 2);
-
-		//Log in console
 		log.log(Level.INFO, "[UltraBan] " + admin + " warned player " + p + ".");
-
-
-		//Send message to all players
-		if(broadcast){ // Doesn't get kicked, just embarrassed. Needs Custom Messaging.
-			plugin.getServer().broadcastMessage(ChatColor.RED + "Player " + p + " recieved a warning from " + admin + ":");
-			plugin.getServer().broadcastMessage(ChatColor.GRAY + "  " + reason);
+		if(broadcast){ 
+			String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
+			warnMsgBroadcast = warnMsgBroadcast.replaceAll("%admin%", admin);
+			warnMsgBroadcast = warnMsgBroadcast.replaceAll("%reason%", reason);
+			warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", p);
+			plugin.getServer().broadcastMessage(formatMessage(warnMsgBroadcast));
 			return true;
 		}else{
 			if(victim != null){
-			victim.sendMessage(ChatColor.RED + "You have recieved a warning from " + admin + ":");
-			victim.sendMessage(ChatColor.GRAY + "  " + reason);
-			//broadcast = false SILENT DOUBLE WHAMMY
+				String warnMsgVictim = config.getString("messages.warnMsgVictim", "You have been warned by %admin%. Reason: %reason%");
+				warnMsgVictim = warnMsgVictim.replaceAll("%admin%", admin);
+				warnMsgVictim = warnMsgVictim.replaceAll("%reason%", reason);
+				String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
+				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%admin%", admin);
+				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%reason%", reason);
+				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", p);
+				sender.sendMessage(formatMessage(":S:" + warnMsgBroadcast));
 			return true;
 			}
 		}
-		
-
 		return true;
 	}
 	public String combineSplit(int startIndex, String[] string, String seperator) {
@@ -117,5 +119,10 @@ public class Warn implements CommandExecutor{
 
 		builder.deleteCharAt(builder.length() - seperator.length()); // remove
 		return builder.toString();
+	}
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
 	}
 }

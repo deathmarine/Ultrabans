@@ -12,26 +12,38 @@ auto-complete: true
 #Or would rather not use the Vault Library#
 useFine: true
 useJail: true
-#Bukkit depreciated the standard config#
-#Custom commands and messages are soon to come#
+
 messages:
-  banMsgFailed: '&8Player &1%victim% &8is already banned!'
-  unbanMsg: '&8Successfully unbanned player &1%victim%&8!'
-  unbanMsgGlobal: '&1%victim% &8was unbanned by &7%player%&8!'
-  unbanMsgFailed: '&8Failed to unban &1%victim%&8!'
-  kickAllMsg: '%player% kicked everyone. Reason: %reason%'
-  kickMsgVictim: 'You have been kicked by %player%. Reason: %reason%'
-  kickMsgBroadcast: '&1%victim% &8was kicked by &7%player%&8. Reason: &7%reason%'
+  banMsgFailed: '&c%victim% &8is already banned!'
+  unbanMsg: '&8Successfully unbanned &c%victim%&8!'
+  unbanMsgBroadcast: '&c%victim% &8was unbanned by &9%admin%&8!'
+  unbanMsgFailed: '&c%victim% &8is already unbanned!'
+  kickAllMsg: '%admin% kicked everyone. Reason: %reason%!'
+  kickMsgVictim: 'You have been kicked by %admin%. Reason: %reason%!'
+  kickMsgBroadcast: '&c%victim% &8was kicked by &9%admin%&8. Reason: &c%reason%!'
   kickMsgFailed: '&8Kick failed: &8%victim% &8isn''t online.'
-  banMsgVictim: 'You have been banned by %player%. Reason: %reason%'
-  banMsgBroadcast: '&1%victim% &8was banned by &7%player%&8. Reason: &7%reason%'
-  tempbanMsgVictim: 'You have been temp. banned by %player%. Reason: %reason%'
-  tempbanMsgBroadcast: '&1%victim% &8was temp. banned by &7%player%&8. Reason: &7%reason%'
-  LoginTempban: '&8You are banned until &4%time%&8! Reason: &7%reason%'
-  LoginBan: '&8You are banned from this server! Reason: &7%reason%'
+  banMsgVictim: 'You have been banned by %admin%. Reason: %reason%!'
+  banMsgBroadcast: '&c%victim% &8was banned by &9%admin%&8. Reason: &c%reason%!'
+  permbanMsgVictim: 'You have been permabanned by %admin%. Reason: %reason%!'
+  permbanMsgBroadcast: '&c%victim% &8has been permabanned by &9%admin%&8. Reason: &c%reason%!'
+  tempbanMsgVictim: 'You have been temp. banned by %admin%. Reason: %reason%!'
+  tempbanMsgBroadcast: '&c%victim% &8was temp. banned by &9%admin%&8. Reason: &c%reason%!'
+  LoginTempban: '&8You are banned until &c%time%&8! Reason: &c%reason%!'
+  LoginBan: '&8You are banned from this server! Reason: &c%reason%!'
   LoginIPBan: '&8This IP is banned!'
-  fineMsgVictim: You have been fined by %player% in the amount of %amt%
-  fineMsgBroadcast: '&1%victim% &8was fined by &7%player%&8 in the amount of &7%amt%'
+  fineMsgVictim: 'You have been fined by %admin% in the amount of %amt%!'
+  fineMsgBroadcast: '&c%victim% &8was fined by &9%admin%&8 in the amount of &c%amt%!'
+  emptyMsgVictim: '&9%admin% has cleared your inventory!'
+  emptyMsgBroadcast: '&9%admin% has cleared the inventory of &c%victim%!'
+  starveMsgVictim: '&8You are now starving!'
+  starveMsgBroadcast: '&c%victim% is now starving!'
+  fspawnMsgVictim: '&8You have been sent to spawn!'
+  fspawnMsgBroadcast: '&c%victim% &8is now at spawn!'
+  jailMsgVictim: '&8You have been jailed by &9%admin%&8. Reason: &c%reason%!'
+  jailMsgRelease: '&c%victim% &8was released from jail by &9%admin%&8!'
+  jailMsgBroadcast: '&c%victim% &8was jailed by &9%admin%&8. Reason: &c%reason%!'
+  warnMsgVictim: '&8You have been warned by &9%admin%&8. Reason: &c%reason%!'
+  warnMsgBroadcast: '&c%victim% &8was warned by &9%admin%&8. Reason: &c%reason%!'
 #Do Not Change Values Below#
 jail:
   x: 0

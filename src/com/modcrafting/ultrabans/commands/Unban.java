@@ -3,10 +3,12 @@ package com.modcrafting.ultrabans.commands;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
@@ -45,6 +47,7 @@ public class Unban implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
@@ -78,20 +81,32 @@ public class Unban implements CommandExecutor{
 		if(plugin.bannedPlayers.remove(p.toLowerCase())){
 			plugin.db.removeFromBanlist(p);
 			plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
+			Bukkit.getOfflinePlayer(p).setBanned(false);
 			if(plugin.tempBans.containsKey(p.toLowerCase()))
 				plugin.tempBans.remove(p.toLowerCase());
 			String ip = plugin.db.getAddress(p);
 			if(plugin.bannedIPs.contains(ip)){
 				plugin.bannedIPs.remove(ip);
+				Bukkit.unbanIP(ip);
 				System.out.println("Also removed the IP ban!");
 			}
 			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + p + ".");
-			plugin.getServer().broadcastMessage(ChatColor.BLUE + p + ChatColor.GRAY + " was unbanned by " + 
-					ChatColor.DARK_GRAY + admin + "!");
+			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", p);
+			sender.sendMessage(formatMessage(unbanMsgBroadcast));
 			return true;
 		}else{
-			sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already unbanned!");
+			String unbanMsgFailed = config.getString("messages.unbanMsgFailed", "%victim% is already unbanned!");
+			unbanMsgFailed = unbanMsgFailed.replaceAll("%admin%", admin);
+			unbanMsgFailed = unbanMsgFailed.replaceAll("%victim%", p);
+			sender.sendMessage(formatMessage(unbanMsgFailed));
 			return true;
 		}
+	}
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
 	}
 }

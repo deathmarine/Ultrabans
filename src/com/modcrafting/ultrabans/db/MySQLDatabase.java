@@ -28,14 +28,11 @@ import com.modcrafting.ultrabans.commands.EditBan;
 
 
 
-@SuppressWarnings("deprecation")
 public class MySQLDatabase{
 	static Plugin plugin;
 	
 	public Connection getSQLConnection() {
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		//Configuration Config = new Configuration(new File("plugins/UltraBan/config.yml"));
-		//Config.load();
 		String mysqlDatabase = Config.getString("mysql-database","jdbc:mysql://localhost:3306/minecraft");
 		String mysqlUser = Config.getString("mysql-user","root");
 		String mysqlPassword = Config.getString("mysql-password","root");
@@ -68,8 +65,8 @@ public class MySQLDatabase{
 	public void initialize(UltraBan plugin){
 		MySQLDatabase.plugin = plugin;
 		Connection conn = getSQLConnection();
-		
-		String mysqlTable = plugin.getConfiguration().getString("mysql-table");
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		String mysqlTable = Config.getString("mysql-table");
 		
 		if (conn == null) {
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Could not establish SQL connection. Disabling UltraBan");
@@ -82,7 +79,7 @@ public class MySQLDatabase{
 			Statement st = null;
 			
 			try {
-				ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0 OR type = 1) AND (temptime > ? OR temptime = 0)");
+				ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0 OR type = 1 OR type = 9) AND (temptime > ? OR temptime = 0)");
 				ps.setLong(1, System.currentTimeMillis()/1000);
 				try{
 					
@@ -172,7 +169,6 @@ public class MySQLDatabase{
 			}
 		}
 	}
-	
 	public String getAddress(String pName) {
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -260,9 +256,6 @@ public class MySQLDatabase{
 		}
 		return false;
 	}
-		
-		
-	
 	public void addPlayer(String player, String reason, String admin, long tempTime , int type){
 		String mysqlTable = plugin.getConfiguration().getString("mysql-table");
 		Connection conn = null;
@@ -317,6 +310,41 @@ public class MySQLDatabase{
 		}
 		return null;
 	}
+	public String duplicateaddress(String player, String ip){
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String logip = plugin.getConfiguration().getString("mysql-table-ip");
+		try {
+			conn = getSQLConnection();
+			ps = conn.prepareStatement("SELECT * FROM " + logip + " ORDER BY name");
+			ps.setString(1, player);
+			ps.setString(2, ip);
+			rs = ps.executeQuery();
+			int size = rs.getFetchSize();
+			while(rs.next()){
+				if(size > 1){
+					return player;
+				}
+				return null;
+			}
+			}catch (SQLException ex) {
+				UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			} finally {
+				try {
+					if (ps != null)
+						ps.close();
+					if (conn != null)
+						conn.close();
+					if (rs != null)
+						rs.close();
+				} catch (SQLException ex) {
+					UltraBan.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				}
+			}
+			return null;
+		}
+
 	public boolean matchAddress(String player, String ip) {
 		Connection conn = null;
 		PreparedStatement ps = null;

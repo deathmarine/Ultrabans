@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
@@ -46,6 +47,7 @@ public class Kick implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
@@ -86,7 +88,10 @@ public class Kick implements CommandExecutor{
 				if (!Permissions.Security.permission(player, "ultraban.kick.all")) return true;
 			log.log(Level.INFO, "[UltraBan] " + admin + " kicked Everyone Reason: " + reason);
 			for (Player pl : plugin.getServer().getOnlinePlayers()) {
-				pl.kickPlayer(admin + " has kicked Everyone for: " + reason);
+				String adminMsg = config.getString("messages.kickAllMsg", "Everyone has been kicked by %admin%. Reason: %reason%");
+				adminMsg = adminMsg.replaceAll("%admin%", admin);
+				adminMsg = adminMsg.replaceAll("%reason%", reason);
+				pl.kickPlayer(formatMessage(adminMsg));
 				return true;
 			}
 		}
@@ -99,11 +104,21 @@ public class Kick implements CommandExecutor{
 		}
 		plugin.db.addPlayer(p, reason, admin, 0, 3);
 		log.log(Level.INFO, "[UltraBan] " + admin + " kicked player " + p + ". Reason: " + reason);
-		victim.kickPlayer(admin + " has kicked you for: " + reason);
+		String adminMsg = config.getString("messages.kickMsgVictim", "You have been kicked by %admin%. Reason: %reason%");
+		adminMsg = adminMsg.replaceAll("%admin%", admin);
+		adminMsg = adminMsg.replaceAll("%reason%", reason);
+		victim.kickPlayer(formatMessage(adminMsg));
 	
 		if(broadcast){
-			plugin.getServer().broadcastMessage(ChatColor.BLUE + p + ChatColor.GRAY + " was kicked by " + 
-					ChatColor.DARK_GRAY + admin + ChatColor.GRAY + ": " + reason);
+			String kickMsgBroadcast = config.getString("messages.kickMsgBroadcast", "%victim% has been kicked by %admin%. Reason: %reason%");
+			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%admin%", admin);
+			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%reason%", reason);
+			plugin.getServer().broadcastMessage(formatMessage(kickMsgBroadcast));
+		}else{
+			String kickMsgBroadcast = config.getString("messages.kickMsgBroadcast", "%victim% has been kicked by %admin%. Reason: %reason%");
+			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%admin%", admin);
+			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%reason%", reason);
+			sender.sendMessage(formatMessage(":S:" + kickMsgBroadcast));
 		}
 		return true;
 	}
@@ -118,5 +133,9 @@ public class Kick implements CommandExecutor{
 		builder.deleteCharAt(builder.length() - seperator.length()); // remove
 		return builder.toString();
 	}
-	
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
+	}
 }

@@ -3,10 +3,12 @@ package com.modcrafting.ultrabans.commands;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -44,6 +46,7 @@ public class Ban implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
@@ -64,7 +67,7 @@ public class Ban implements CommandExecutor{
 		}
 		// Has enough arguments?
 		if (args.length < 1) return false;
-		boolean autoComplete = plugin.properties.getBoolean("auto-complete", true);
+		boolean autoComplete = config.getBoolean("auto-complete", true);
 		String p = args[0]; // Get the victim's name
 		if(autoComplete) p = expandName(p); //If the admin has chosen to do so, autocomplete the name!
 		Player victim = plugin.getServer().getPlayer(p); // What player is really the victim?
@@ -80,31 +83,36 @@ public class Ban implements CommandExecutor{
 		}
 
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
-			String adminMsg = plugin.properties.getString("messages.banMsgFailed", 
-			"&8Player &4%victim% &8is already banned!");
-			adminMsg = adminMsg.replaceAll("%victim%", p);
-			sender.sendMessage(formatMessage(adminMsg));
+			String banMsgVictim = config.getString("messages.banMsgFailed", 
+			"&8Player %victim% &8is already banned!");
+			banMsgVictim = banMsgVictim.replaceAll("%victim%", p);
+			sender.sendMessage(formatMessage(banMsgVictim));
 			return true;
 		}
 
 		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
 		plugin.db.addPlayer(p, reason, admin, 0, 0);
+		//add to original banlist
+		Bukkit.getOfflinePlayer(p).setBanned(true);
 		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 		if(victim != null){
-			String adminMsg = plugin.properties.getString("messages.banMsgVictim", 
-			"You have been banned by %player%. Reason: %reason%");
-			adminMsg = adminMsg.replaceAll("%player%", admin);
-			adminMsg = adminMsg.replaceAll("%reason%", reason);
-			victim.kickPlayer(formatMessage(adminMsg));
+			String banMsgVictim = config.getString("messages.banMsgVictim", "You have been banned by %admin%. Reason: %reason%");
+			banMsgVictim = banMsgVictim.replaceAll("%admin%", admin);
+			banMsgVictim = banMsgVictim.replaceAll("%reason%", reason);
+			victim.kickPlayer(formatMessage(banMsgVictim));
 		}
-		
 		if(broadcast){
-			String adminMsgAll = plugin.properties.getString("messages.adminMsgAll", 
-			"&1%victim% &8was banned by &7%player%&8. Reason: &4%reason%");
-			adminMsgAll = adminMsgAll.replaceAll("%player%", admin);
-			adminMsgAll = adminMsgAll.replaceAll("%reason%", reason);
-			adminMsgAll = adminMsgAll.replaceAll("%victim%", p);
-			plugin.getServer().broadcastMessage(formatMessage(adminMsgAll));
+			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			plugin.getServer().broadcastMessage(formatMessage(banMsgBroadcast));
+		}else{
+			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			sender.sendMessage(formatMessage(":S:" + banMsgBroadcast));
 		}
 		return true;
 	}

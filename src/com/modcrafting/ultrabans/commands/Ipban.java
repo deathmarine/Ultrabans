@@ -2,11 +2,16 @@ package com.modcrafting.ultrabans.commands;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
@@ -46,9 +51,11 @@ public class Ipban implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
+		String reason = "not sure";
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if (Permissions.Security.permission(player, "ultraban.ipban")){
@@ -67,16 +74,26 @@ public class Ipban implements CommandExecutor{
 		// Has enough arguments?
 		if (args.length < 1) return false;
 
-		String p = args[0]; // Get the victim's name
-		if(autoComplete)
-			p = expandName(p); //If the admin has chosen to do so, autocomplete the name!
-		Player victim = plugin.getServer().getPlayer(p); // What player is really the victim?
-		if(victim == null){
-			sender.sendMessage("Couldn't find player.");
+		String p = args[0];
+		if(validIP(p)){
+			plugin.bannedIPs.add(p);
+			plugin.db.addPlayer(p, reason, admin, 0, 1);
+			Bukkit.banIP(p);
+			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			plugin.getServer().broadcastMessage(formatMessage(banMsgBroadcast));
 			return true;
 		}
-		// Reason stuff
-		String reason = "not sure";
+		
+		
+		if(autoComplete)
+			p = expandName(p);
+		Player victim = plugin.getServer().getPlayer(p); 
+		if(victim == null){
+			victim = Bukkit.getOfflinePlayer(p).getPlayer();
+		}
 		boolean broadcast = true;
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){
@@ -90,16 +107,28 @@ public class Ipban implements CommandExecutor{
 			sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);
 			return true;
 		}
+		String victimip = plugin.db.getAddress(p);
 		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to RAM
-		plugin.bannedIPs.add(victim.getAddress().getAddress().getHostAddress()); // Add ip to RAM
+		plugin.bannedIPs.add(victimip);
+		Bukkit.banIP(victimip);
 		plugin.db.addPlayer(p, reason, admin, 0, 1);
 		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
-		victim.kickPlayer(admin + " has banned you for: " + reason);
-
+		String banMsgVictim = config.getString("messages.banMsgVictim", "You have been banned by %admin%. Reason: %reason%");
+		banMsgVictim = banMsgVictim.replaceAll("%admin%", admin);
+		banMsgVictim = banMsgVictim.replaceAll("%reason%", reason);
+		victim.kickPlayer(formatMessage(banMsgVictim));
 		if(broadcast){
-			//Send message to all players
-			plugin.getServer().broadcastMessage(ChatColor.BLUE + p + ChatColor.GRAY + " was banned by " + 
-					ChatColor.DARK_GRAY + admin + ChatColor.GRAY + ": " + reason);
+			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			plugin.getServer().broadcastMessage(formatMessage(banMsgBroadcast));
+		}else{
+			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			sender.sendMessage(formatMessage(":S:" + banMsgBroadcast));
 		}
 
 		return true;
@@ -115,5 +144,22 @@ public class Ipban implements CommandExecutor{
 		builder.deleteCharAt(builder.length() - seperator.length()); // remove
 		return builder.toString();
 	}
+	public static boolean validIP(String ip) {
+	    if (ip == null || ip.isEmpty()) return false;
+	    ip = ip.trim();
+	    if ((ip.length() < 6) & (ip.length() > 15)) return false;
 
+	    try {
+	        Pattern pattern = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+	        Matcher matcher = pattern.matcher(ip);
+	        return matcher.matches();
+	    } catch (PatternSyntaxException ex) {
+	        return false;
+	    }
+	}
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
+	}
 }

@@ -2,12 +2,12 @@ package com.modcrafting.ultrabans.commands;
 
 import java.util.logging.Logger;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
@@ -48,10 +48,11 @@ public class Spawn implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
-		autoComplete = plugin.properties.getBoolean("auto-complete", true);
+		autoComplete = config.getBoolean("auto-complete", true);
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if (Permissions.Security.permission(player, "ultraban.spawn")){
@@ -68,8 +69,15 @@ public class Spawn implements CommandExecutor{
 			String p = args[0]; //type name correct or 
 			if(autoComplete) p = expandName(p); 
 			Player victim = plugin.getServer().getPlayer(p);
-				sender.sendMessage(ChatColor.GRAY + admin + " has sent " + p + " to spawn!");
-				victim.sendMessage(ChatColor.GRAY + admin + " has sent you to spawn!");
+			String idoit = victim.getName();
+			String fspawnMsgVictim = config.getString("messages.fspawnMsgVictim", "You have been sent to spawn!");
+			fspawnMsgVictim = fspawnMsgVictim.replaceAll("%admin%", admin);
+			fspawnMsgVictim = fspawnMsgVictim.replaceAll("%victim%", idoit);
+			sender.sendMessage(formatMessage(fspawnMsgVictim));
+			String fspawnMsgBroadcast = config.getString("messages.fspawnMsgBroadcast", "%victim% is now at spawn!");
+			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll("%admin%", admin);
+			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll("%victim%", idoit);
+			victim.sendMessage(formatMessage(fspawnMsgBroadcast));
 				//Further Research	
 				World wtlp = victim.getWorld();
 				Location tlp = wtlp.getSpawnLocation();
@@ -78,5 +86,9 @@ public class Spawn implements CommandExecutor{
 		
 		return true;
 	}
-
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
+	}
 }

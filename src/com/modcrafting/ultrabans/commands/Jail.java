@@ -57,9 +57,12 @@ public class Jail implements CommandExecutor{
 			return p;
 		}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-			boolean auth = false;
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();	
+		boolean auth = false;
 			Player player = null;
 			String admin = "server";
+			String reason = "not sure";
+			boolean broadcast = true;
 			if (sender instanceof Player){
 				player = (Player)sender;
 				if (Permissions.Security.permission(player, "ultraban.jail")){
@@ -86,21 +89,44 @@ public class Jail implements CommandExecutor{
 						Player jailee = plugin.getServer().getPlayer(jaile);
 						Location tlp = jailee.getWorld().getSpawnLocation();
 						jailee.teleport(tlp);
-						jailee.sendMessage(ChatColor.GRAY + "You've been released from Jail!");
-						sender.sendMessage(ChatColor.GRAY + jaile + " released from Jail!");
+						String jailMsgRelease = config.getString("messages.jailMsgRelease", "%victim% was released from jail by %admin%!");
+						jailMsgRelease = jailMsgRelease.replaceAll("%admin%", admin);
+						jailMsgRelease = jailMsgRelease.replaceAll("%victim%", jaile);
+						jailee.sendMessage(formatMessage(jailMsgRelease));
+						sender.sendMessage(formatMessage(jailMsgRelease));
 						return true;
 				}
 				String p = args[0];
 				Player victim = plugin.getServer().getPlayer(p);
-				if(autoComplete) p = expandName(p);	
-				plugin.db.addPlayer(p, "Jailed", admin, 0, 6);
-				sender.sendMessage(ChatColor.GRAY + p + " is now in Jail!");
-				sender.sendMessage(ChatColor.GRAY + admin + " don't forget to let him out!");
-				victim.sendMessage(ChatColor.GRAY + "You've been Arrested.");
+				if(autoComplete) p = expandName(p);
+				if(args.length > 1){
+					if(args[1].equalsIgnoreCase("-s")){
+						broadcast = false;
+						reason = combineSplit(2, args, " ");
+					}else
+						reason = combineSplit(1, args, " ");
+				}
+				if(broadcast){
+					String adminMsgAll = config.getString("messages.jailMsgBroadcast", "%victim% was jailed by %admin%. Reason: %reason%");
+					adminMsgAll = adminMsgAll.replaceAll("%admin%", admin);
+					adminMsgAll = adminMsgAll.replaceAll("%reason%", reason);
+					adminMsgAll = adminMsgAll.replaceAll("%victim%", p);
+					plugin.getServer().broadcastMessage(formatMessage(adminMsgAll));
+				}else{
+					String jailMsgVictim = config.getString("messages.jailMsgVictim", "You have been jailed by %admin%. Reason: %reason%!");
+					jailMsgVictim = jailMsgVictim.replaceAll("%admin%", admin);
+					jailMsgVictim = jailMsgVictim.replaceAll("%victim%", p);
+					victim.sendMessage(formatMessage(jailMsgVictim));
+					String adminMsgAll = config.getString("messages.jailMsgBroadcast", "%victim% was jailed by %admin%. Reason: %reason%");
+					adminMsgAll = adminMsgAll.replaceAll("%admin%", admin);
+					adminMsgAll = adminMsgAll.replaceAll("%reason%", reason);
+					adminMsgAll = adminMsgAll.replaceAll("%victim%", p);
+					sender.sendMessage(formatMessage(":S:" + adminMsgAll));
+				}
+				plugin.db.addPlayer(p, reason, admin, 0, 6);
 				plugin.jailed.add(p.toLowerCase());
 				Location stlp = getJail();
 				victim.teleport(stlp);
-					
 				}
 			
 			return true;
@@ -112,6 +138,7 @@ public class Jail implements CommandExecutor{
         config.set("jail.y", (int) setlp.getY());
         config.set("jail.z", (int) setlp.getZ());
         config.set("jail.world", setlp.getWorld().getName());
+        plugin.saveConfig();
 
     }
     public Location getJail(){
@@ -122,8 +149,23 @@ public class Jail implements CommandExecutor{
                 config.getInt("jail.y", 0),
                 config.getInt("jail.z", 0));
         	return setlp;
-            
-        }
     }
+	public String combineSplit(int startIndex, String[] string, String seperator) {
+		StringBuilder builder = new StringBuilder();
+
+		for (int i = startIndex; i < string.length; i++) {
+			builder.append(string[i]);
+			builder.append(seperator);
+		}
+
+		builder.deleteCharAt(builder.length() - seperator.length()); // remove
+		return builder.toString();
+	}
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
+	}
+}
 
         

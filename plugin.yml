@@ -21,9 +21,9 @@ commands:
   checkban:
     description: Check if a player is banned
     usage: /<command>
-#  permaban:
-#    description: Unbannable Banning
-#    usage: /<command> player [reason] - Permaban
+  permaban:
+    description: Unbannable Banning
+    usage: /<command> player [reason] - Permaban
   ureload:
     description: Reload the banlist
     usage: /<command>

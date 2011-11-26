@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -47,6 +48,7 @@ public class Fine implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
@@ -85,7 +87,12 @@ public class Fine implements CommandExecutor{
 			
 		if(victim != null){
 			if(!broadcast){ //If silent wake his ass up
-				victim.sendMessage(admin + " has fined you for: " + amt);
+				String fineMsg = config.getString("messages.fineMsgVictim", "You have been fined by %admin% in the amount of %amt%!");
+				String idoit = victim.getName();
+				fineMsg = fineMsg.replaceAll("%admin%", admin);
+				fineMsg = fineMsg.replaceAll("%victim%", idoit);
+				sender.sendMessage(formatMessage(":S:" + fineMsg));
+				victim.sendMessage(formatMessage(fineMsg));
 			}
 			if(setupEconomy()){
 				double bal = economy.getBalance(p);
@@ -99,8 +106,11 @@ public class Fine implements CommandExecutor{
 			log.log(Level.INFO, "[UltraBan] " + admin + " fined player " + p + " amount of " + amt + ".");
 			plugin.db.addPlayer(p, amt, admin, 0, 4);
 			if(broadcast){
-				plugin.getServer().broadcastMessage(ChatColor.BLUE + p + ChatColor.GRAY + " was fined by " + 
-						ChatColor.DARK_GRAY + admin + ChatColor.GRAY + " for: " + amt);
+				String idoit = victim.getName();
+				String fineMsgAll = config.getString("messages.fineMsgBroadcast", "%victim% was fined by %admin% in the amount of %amt%!!");
+				fineMsgAll = fineMsgAll.replaceAll("%admin%", admin);
+				fineMsgAll = fineMsgAll.replaceAll("%victim%", idoit);
+				plugin.getServer().broadcastMessage(formatMessage(fineMsgAll));
 				return true;
 			}
 			return true;
@@ -127,4 +137,9 @@ public class Fine implements CommandExecutor{
 			}
 				return (economy != null);
 		}
+	public String formatMessage(String str){
+			String funnyChar = new Character((char) 167).toString();
+			str = str.replaceAll("&", funnyChar);
+			return str;
+	}
 }

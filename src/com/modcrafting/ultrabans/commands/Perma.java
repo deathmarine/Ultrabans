@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -44,6 +45,7 @@ public class Perma implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
@@ -64,7 +66,7 @@ public class Perma implements CommandExecutor{
 		}
 		// Has enough arguments?
 		if (args.length < 1) return false;
-		boolean autoComplete = plugin.properties.getBoolean("auto-complete", true);
+		boolean autoComplete = config.getBoolean("auto-complete", true);
 		String p = args[0]; // Get the victim's name
 		if(autoComplete) p = expandName(p); //If the admin has chosen to do so, autocomplete the name!
 		Player victim = plugin.getServer().getPlayer(p); // What player is really the victim?
@@ -80,7 +82,7 @@ public class Perma implements CommandExecutor{
 		}
 
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
-			String adminMsg = plugin.properties.getString("messages.banMsgFailed", 
+			String adminMsg = config.getString("messages.banMsgFailed", 
 			"&8Player &4%victim% &8is already banned!");
 			adminMsg = adminMsg.replaceAll("%victim%", p);
 			sender.sendMessage(formatMessage(adminMsg));
@@ -90,8 +92,25 @@ public class Perma implements CommandExecutor{
 		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
 		plugin.db.addPlayer(p, reason, admin, 0, 9);
 		log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + p + ".");
-		if(victim != null) victim.kickPlayer("You have been permabanned by " + admin + ". Reason: " + reason);
-		if(broadcast) plugin.getServer().broadcastMessage(p + " has been permabanned by " + admin + ". Reason: " + reason);
+		if(victim != null){ 
+			String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
+			adminMsg = adminMsg.replaceAll("%admin%", admin);
+			adminMsg = adminMsg.replaceAll("%reason%", reason);
+			victim.kickPlayer(formatMessage(adminMsg));
+		}
+		if(broadcast){
+			String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
+			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%admin%", admin);
+			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%reason%", reason);
+			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", p);
+			plugin.getServer().broadcastMessage(formatMessage(permbanMsgBroadcast));
+		}else{
+			String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
+			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%admin%", admin);
+			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%reason%", reason);
+			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", p);
+			sender.sendMessage(formatMessage(permbanMsgBroadcast));
+		}
 		return true;
 	}
 	public String combineSplit(int startIndex, String[] string, String seperator) {

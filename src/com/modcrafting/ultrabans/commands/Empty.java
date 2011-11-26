@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
@@ -45,7 +46,8 @@ public class Empty implements CommandExecutor{
 		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		boolean auth = false;
+    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+    	boolean auth = false;
 		Player player = null;
 		String admin = "server";
 		if (sender instanceof Player){
@@ -64,17 +66,28 @@ public class Empty implements CommandExecutor{
 			String p = args[0];
 			if(autoComplete) p = expandName(p); 
 			Player victim = plugin.getServer().getPlayer(p);
-				sender.sendMessage(ChatColor.GRAY + admin + " has cleared inventory of " + victim + "!");
-				victim.sendMessage(ChatColor.GRAY + admin + " has cleared your inventory!");
-				
-				victim.getInventory().clear();
-				return true;
+			String idoit = victim.getName();
+			String emptyMsg = config.getString("messages.emptyMsgVictim", "%admin% has cleared your inventory!'");
+			emptyMsg = emptyMsg.replaceAll("%admin%", admin);
+			emptyMsg = emptyMsg.replaceAll("%victim%", idoit);
+			sender.sendMessage(formatMessage(emptyMsg));
+			String empyMsgAll = config.getString("messages.emptyMsgBroadcast", "%admin% has cleared the inventory of %victim%!");
+			empyMsgAll = empyMsgAll.replaceAll("%admin%", admin);
+			empyMsgAll = empyMsgAll.replaceAll("%victim%", idoit);
+			victim.sendMessage(formatMessage(empyMsgAll));
+			victim.getInventory().clear();
+			return true;
+			
 		}else{
-			//all needs this message
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 			}
 		
+	}
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
 	}
 
 }
