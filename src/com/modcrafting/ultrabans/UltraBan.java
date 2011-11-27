@@ -54,9 +54,15 @@ public class UltraBan extends JavaPlugin {
 	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
 	private final UltraBanBlockListener blockListener = new UltraBanBlockListener(this);
 	public boolean autoComplete;
-	public boolean checkEconomy;
-	public boolean checkJail;
-	public boolean lockdown;
+	public boolean useFines;
+	public boolean useJail;
+	public boolean useLockdown;
+	public boolean useEmpty;
+	public boolean useSpawn;
+	public boolean useStarve;
+	public boolean useWarn;
+	public boolean usePermaban;
+	
 	public void onDisable() {
 		tempBans.clear();
 		bannedPlayers.clear();
@@ -106,9 +112,14 @@ public class UltraBan extends JavaPlugin {
 		new File(maindir).mkdir();
 		createDefaultConfiguration("config.yml"); //Swap for new setup
 		this.autoComplete = Config.getBoolean("auto-complete", true);
-		this.checkEconomy = Config.getBoolean("useFines", true);
-		this.checkJail = Config.getBoolean("useJail", true);
-		this.lockdown = Config.getBoolean("lockdown", true);
+		this.useFines = Config.getBoolean("useFines", true);
+		this.useJail = Config.getBoolean("useJail", true);
+		this.useLockdown = Config.getBoolean("useLockdown", true);
+		this.useEmpty = Config.getBoolean("useEmpty", true);
+		this.useSpawn = Config.getBoolean("useForceRespawn", true);
+		this.useStarve = Config.getBoolean("useStarve", true);
+		this.useWarn = Config.getBoolean("useWarn", true);
+		this.usePermaban = Config.getBoolean("usePermaban", true);
 		loadCommands();
 		loadPerms();
 		db.initialize(this);	
@@ -141,22 +152,22 @@ public class UltraBan extends JavaPlugin {
 		getCommand("ban").setExecutor(new Ban(this));
 		getCommand("checkban").setExecutor(new Check(this));
 		getCommand("editban").setExecutor(new EditCommand(this));
-		getCommand("empty").setExecutor(new Empty(this));
+		if(useEmpty) getCommand("empty").setExecutor(new Empty(this));
 		getCommand("exportbans").setExecutor(new Export(this));
-		if(checkEconomy) getCommand("fine").setExecutor(new Fine(this));
+		if(useFines) getCommand("fine").setExecutor(new Fine(this));
 		getCommand("uhelp").setExecutor(new Help(this));
 		getCommand("ipban").setExecutor(new Ipban(this));
 		getCommand("kick").setExecutor(new Kick(this));
 		getCommand("ureload").setExecutor(new Reload(this));
-		getCommand("forcespawn").setExecutor(new Spawn(this));
-		getCommand("starve").setExecutor(new Starve(this));
+		if(useSpawn) getCommand("forcespawn").setExecutor(new Spawn(this));
+		if(useStarve) getCommand("starve").setExecutor(new Starve(this));
 		getCommand("tempban").setExecutor(new Tempban(this));
 		getCommand("unban").setExecutor(new Unban(this));
 		getCommand("uversion").setExecutor(new Version(this));
-		getCommand("warn").setExecutor(new Warn(this));
-		if(checkJail) getCommand("jail").setExecutor(new Jail(this));
-		getCommand("permaban").setExecutor(new Perma(this));
-		getCommand("lockdown").setExecutor(new Lockdown(this));
+		if(useWarn) getCommand("warn").setExecutor(new Warn(this));
+		if(useJail) getCommand("jail").setExecutor(new Jail(this));
+		if(usePermaban) getCommand("permaban").setExecutor(new Perma(this));
+		if(useLockdown) getCommand("lockdown").setExecutor(new Lockdown(this));
 	}
 	public void setObject(){
 		
