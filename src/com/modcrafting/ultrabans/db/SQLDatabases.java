@@ -249,6 +249,37 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	public String getName(String ip) {
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String logip = Config.getString("mysql-table-ip");
+		try {
+			conn = getSQLConnection();
+			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE lastip = ?");
+			ps.setString(1, ip);
+			rs = ps.executeQuery();
+			while (rs.next()){
+				String name = rs.getString("name");
+				return name;
+			}
+		} catch (SQLException ex) {
+			UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't find player.");
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+				if (rs != null)
+					rs.close();
+			} catch (SQLException ex) {
+				UltraBan.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+			}
+		}
+		return null;
+	}
 	public boolean removeFromBanlist(String player) {
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 
