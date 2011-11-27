@@ -11,12 +11,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.modcrafting.ultrabans.db.MySQLDatabase;
+import com.modcrafting.ultrabans.db.SQLDatabases;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Spawn implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
-	MySQLDatabase db;
+	SQLDatabases db;
 	UltraBan plugin;
 	public boolean autoComplete;
 	public Spawn(UltraBan ultraBan) {

@@ -24,7 +24,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.modcrafting.ultrabans.UltraBan;
 import com.modcrafting.ultrabans.commands.EditBan;
 
-public class MySQLDatabase{
+public class SQLDatabases{
 	static UltraBan plugin;
 	
 	public Connection getSQLConnection() {
@@ -112,7 +112,7 @@ public class MySQLDatabase{
 	public void initialize(UltraBan plugin){
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		String mysqlTable = Config.getString("mysql-table");
-		MySQLDatabase.plugin = plugin;
+		SQLDatabases.plugin = plugin;
 		Connection conn = getSQLConnection();
 		
 		
