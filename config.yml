@@ -1,6 +1,6 @@
 #Change to MySQL for mysql support#
 #Change to SQLite for sqlite support#
-Database: MySQL
+Database: SQLite
 mysql-database: 'jdbc:mysql://localhost:3306/minecraft'
 mysql-user: 'root'
 mysql-password: 'root'
