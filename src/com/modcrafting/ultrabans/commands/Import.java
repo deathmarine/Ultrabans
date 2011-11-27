@@ -8,13 +8,15 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
-public class Import {
+public class Import implements CommandExecutor{
+
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 
