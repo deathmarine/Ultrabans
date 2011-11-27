@@ -23,6 +23,7 @@ useStarve: true
 useForceRespawn: true
 useEmpty: true
 usePermaban: true
+useWarn: true
 #change to true or false to enable lockdown#
 #also can be done ingame /lockdown#
 lockdown: false
