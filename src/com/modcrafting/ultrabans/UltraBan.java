@@ -28,6 +28,7 @@ import com.modcrafting.ultrabans.commands.Help;
 import com.modcrafting.ultrabans.commands.Ipban;
 import com.modcrafting.ultrabans.commands.Jail;
 import com.modcrafting.ultrabans.commands.Kick;
+import com.modcrafting.ultrabans.commands.Lockdown;
 import com.modcrafting.ultrabans.commands.Perma;
 import com.modcrafting.ultrabans.commands.Reload;
 import com.modcrafting.ultrabans.commands.Spawn;
@@ -55,6 +56,7 @@ public class UltraBan extends JavaPlugin {
 	public boolean autoComplete;
 	public boolean checkEconomy;
 	public boolean checkJail;
+	public boolean lockdown;
 	public void onDisable() {
 		tempBans.clear();
 		bannedPlayers.clear();
@@ -106,6 +108,7 @@ public class UltraBan extends JavaPlugin {
 		this.autoComplete = Config.getBoolean("auto-complete", true);
 		this.checkEconomy = Config.getBoolean("useFines", true);
 		this.checkJail = Config.getBoolean("useJail", true);
+		this.lockdown = Config.getBoolean("lockdown", true);
 		loadCommands();
 		loadPerms();
 		db.initialize(this);	
@@ -153,6 +156,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("warn").setExecutor(new Warn(this));
 		if(checkJail) getCommand("jail").setExecutor(new Jail(this));
 		getCommand("permaban").setExecutor(new Perma(this));
+		getCommand("lockdown").setExecutor(new Lockdown(this));
 	}
 	public void setObject(){
 		

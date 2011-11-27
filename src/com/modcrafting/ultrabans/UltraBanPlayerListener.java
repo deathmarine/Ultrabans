@@ -2,7 +2,10 @@
 package com.modcrafting.ultrabans;
 
 import java.util.Date;
+import java.util.logging.Level;
+
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -15,7 +18,8 @@ public class UltraBanPlayerListener extends PlayerListener {
 	public UltraBanPlayerListener(UltraBan ultraBans) {
 		this.plugin = ultraBans;
 	}
-	public void onPlayerLogin(PlayerLoginEvent event){ 
+	public void onPlayerLogin(PlayerLoginEvent event){
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
 		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
 			System.out.println("banned player joined");
@@ -39,6 +43,11 @@ public class UltraBanPlayerListener extends PlayerListener {
 			String reason = plugin.db.getBanReason(player.getName());
 			String adminMsg = "You've been banned you for: " + reason;
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, adminMsg);
+		}
+		boolean lock = config.getBoolean("lockdown", false);
+		if(lock){
+			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Server is in lockdown, Try again later.");
+			UltraBan.log.log(Level.INFO, player.getName() + " attempted to join during lockdown.");
 		}
 	}
 	public void onPlayerJoin(PlayerJoinEvent event){

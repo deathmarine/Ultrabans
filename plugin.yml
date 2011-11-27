@@ -1,6 +1,6 @@
 name: UltraBan
 main: com.modcrafting.ultrabans.UltraBan
-version: 0.0.7
+version: 0.0.9
 website: http://modcrafting.com
 author: Deathmarine
 description: >
@@ -47,7 +47,7 @@ commands:
     description: Shows Help
     usage: /<command>
   uversion:
-    description: Shows current Ultra Version
+    description: Shows current Ultrabans Version
     usage: /<command>
     aliases: [uv,uver]
   empty:
@@ -62,3 +62,6 @@ commands:
   jail:
     description: Jail player
     usage: /<command> <set/pardon/player> player - pardon player
+  lockdown:
+    description: Lockdown the Server
+    usage: /<command> <on/off/status>
