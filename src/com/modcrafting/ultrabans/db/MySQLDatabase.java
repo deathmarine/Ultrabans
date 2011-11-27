@@ -1,6 +1,7 @@
 package com.modcrafting.ultrabans.db;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,32 +21,78 @@ import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 import com.modcrafting.ultrabans.UltraBan;
 import com.modcrafting.ultrabans.commands.EditBan;
 
-
-
-
-
 public class MySQLDatabase{
-	static Plugin plugin;
+	static UltraBan plugin;
 	
 	public Connection getSQLConnection() {
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		String dataHandler = Config.getString("Database");
 		String mysqlDatabase = Config.getString("mysql-database","jdbc:mysql://localhost:3306/minecraft");
 		String mysqlUser = Config.getString("mysql-user","root");
 		String mysqlPassword = Config.getString("mysql-password","root");
+		if(dataHandler.equalsIgnoreCase("mysql")){
+			try {
 
-		try {
-
-			return DriverManager.getConnection(mysqlDatabase + "?autoReconnect=true&user=" + mysqlUser + "&password=" + mysqlPassword);
-		} catch (SQLException ex) {
+				return DriverManager.getConnection(mysqlDatabase + "?autoReconnect=true&user=" + mysqlUser + "&password=" + mysqlPassword);
+			} catch (SQLException ex) {
 			
-			UltraBan.log.log(Level.SEVERE, "Unable to retreive connection", ex);
+				UltraBan.log.log(Level.SEVERE, "Unable to retreive connection", ex);
+			}
+			return null;
 		}
+		if(dataHandler.equalsIgnoreCase("sqlite")){
+
+			String dbname = Config.getString("sqlite-dbname", "banlist");
+			String maindir = "plugins/UltraBan/";
+			File dataFolder = new File(maindir, dbname + ".db");
+			if (!dataFolder.exists()){
+				try {
+					dataFolder.createNewFile();
+					Class.forName("org.sqlite.JDBC");
+		            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
+		            Statement st = conn.createStatement();
+	        		st.execute(this.SQLiteCreateBansTable);
+	        		st.execute(this.SQLiteCreateBanipTable);
+	        		return conn;
+				} catch (IOException ex) {
+					UltraBan.log.log(Level.SEVERE, "File write error: " + dbname);
+				} catch (SQLException ex) {
+			            UltraBan.log.log(Level.SEVERE,"SQLite exception on initialize", ex);
+			    } catch (ClassNotFoundException ex) {
+			        	UltraBan.log.log(Level.SEVERE, "You need the SQLite library.", ex);
+			    }
+			}
+			try {
+	            Class.forName("org.sqlite.JDBC");
+	            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
+	            return conn;
+        		
+	        } catch (SQLException ex) {
+	            UltraBan.log.log(Level.SEVERE,"SQLite exception on initialize", ex);
+	        } catch (ClassNotFoundException ex) {
+	        	UltraBan.log.log(Level.SEVERE, "You need the SQLite library.", ex);
+	        }
+	    }
 		return null;
 	}
+
+	protected String SQLiteCreateBansTable = "CREATE TABLE IF NOT EXISTS `banlist` (" +
+			"`name` TEXT," +
+			"`reason` TEXT," + 
+			"`admin` TEXT," + 
+			"`time` INTEGER," + 
+			"`temptime` INTEGER ," + 
+			"`id` INTEGER PRIMARY KEY," + 
+			"`type` INTEGER DEFAULT '0'" + 
+			");";
+	protected String SQLiteCreateBanipTable = "CREATE TABLE IF NOT EXISTS `banlistip` (" +
+			"`name` TEXT," + 
+			"`lastip` TEXT," + 
+			"PRIMARY KEY (`name`)" + 
+			");";
 	protected String SQLCreateBansTable = "CREATE TABLE IF NOT EXISTS `banlist` (" +
 			"`name` varchar(32) NOT NULL," +
 			"`reason` text NOT NULL," + 
@@ -63,17 +110,18 @@ public class MySQLDatabase{
 			") ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
 	
 	public void initialize(UltraBan plugin){
-		MySQLDatabase.plugin = plugin;
-		Connection conn = getSQLConnection();
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		String mysqlTable = Config.getString("mysql-table");
+		MySQLDatabase.plugin = plugin;
+		Connection conn = getSQLConnection();
 		
-		if (conn == null) {
+		
+/*		if (conn == null) {
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Could not establish SQL connection. Disabling UltraBan");
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Adjust Settings in Config or set MySql: False");
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			return;
-		} else {
+		} else { */
 			PreparedStatement ps = null;
 			ResultSet rs = null;
 			Statement st = null;
@@ -142,12 +190,13 @@ public class MySQLDatabase{
 				e.printStackTrace();
 				plugin.getServer().getPluginManager().disablePlugin(plugin);
 			}
-		}
+	//	}
 		
 	}
 	
 	public void setAddress(String pName, String logIp){
-		String logip = plugin.getConfiguration().getString("mysql-table-ip");
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		String logip = Config.getString("mysql-table-ip");
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -170,10 +219,11 @@ public class MySQLDatabase{
 		}
 	}
 	public String getAddress(String pName) {
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String logip = plugin.getConfiguration().getString("mysql-table-ip");
+		String logip = Config.getString("mysql-table-ip");
 		try {
 			conn = getSQLConnection();
 			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE name = ?");
@@ -200,8 +250,9 @@ public class MySQLDatabase{
 		return null;
 	}
 	public boolean removeFromBanlist(String player) {
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 
-		String mysqlTable = plugin.getConfiguration().getString("mysql-table");
+		String mysqlTable = Config.getString("mysql-table");
 
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -257,7 +308,8 @@ public class MySQLDatabase{
 		return false;
 	}
 	public void addPlayer(String player, String reason, String admin, long tempTime , int type){
-		String mysqlTable = plugin.getConfiguration().getString("mysql-table");
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		String mysqlTable = Config.getString("mysql-table");
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -284,10 +336,11 @@ public class MySQLDatabase{
 		}
 	}
 	public String getBanReason(String player) {
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = getSQLConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String mysqlTable = plugin.getConfiguration().getString("mysql-table");
+		String mysqlTable = Config.getString("mysql-table");
 		try {
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
 			ps.setString(1, player);
@@ -312,10 +365,11 @@ public class MySQLDatabase{
 	}
 
 	public boolean matchAddress(String player, String ip) {
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String logip = plugin.getConfiguration().getString("mysql-table-ip");
+		String logip = Config.getString("mysql-table-ip");
 		try {
 			conn = getSQLConnection();
 			ps = conn.prepareStatement("SELECT lastip FROM " + logip + " WHERE name = ? AND lastip = ?");
@@ -342,9 +396,10 @@ public class MySQLDatabase{
 		return false;
 	}
 	public void updateAddress(String p, String ip) {
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String logip = plugin.getConfiguration().getString("mysql-table-ip");
+		String logip = Config.getString("mysql-table-ip");
 		try {
 			System.out.println("trying to update address.");
 			conn = getSQLConnection();
@@ -452,8 +507,8 @@ public class MySQLDatabase{
 		return null;
 	}
 	public void saveFullRecord(EditBan ban){
-
-		String mysqlTable = plugin.getConfiguration().getString("mysql-table");
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		String mysqlTable = Config.getString("mysql-table");
 
 		Connection conn = null;
 		PreparedStatement ps = null;

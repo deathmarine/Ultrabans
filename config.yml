@@ -1,17 +1,31 @@
+#Change to MySQL for mysql support#
+#Change to SQLite for sqlite support#
 Database: MySQL
 mysql-database: 'jdbc:mysql://localhost:3306/minecraft'
 mysql-user: 'root'
 mysql-password: 'root'
-#Change these if you want to load a different database#
+#Change these if you want to load or create different databases#
 #First load will create these databases#
 mysql-table: banlist
 mysql-table-ip: banlistip
+#SQLite Information#
+sqlite-dbname: banlist
+#parameters#
 auto-complete: true
 #Ultraban requires Vault for the Command /fine#
 #Disable this if you don't not want to use fines#
 #Or would rather not use the Vault Library#
+#Command Checks#
 useFine: true
 useJail: true
+useLockdown: true
+useStarve: true
+useForceRespawn: true
+useEmpty: true
+usePermaban: true
+#change to true or false to enable lockdown#
+#also can be done ingame /lockdown#
+lockdown: false
 
 messages:
   banMsgFailed: '&c%victim% &8is already banned!'
