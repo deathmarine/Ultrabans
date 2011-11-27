@@ -156,7 +156,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("ban").setExecutor(new Ban(this));
 		getCommand("checkban").setExecutor(new Check(this));
 		getCommand("editban").setExecutor(new EditCommand(this));
-		if(useEmpty) getCommand("empty").setExecutor(new Empty(this));
+		getCommand("empty").setExecutor(new Empty(this));
 		getCommand("importbans").setExecutor(new Import(this));
 		getCommand("exportbans").setExecutor(new Export(this));
 		if(useFines) getCommand("fine").setExecutor(new Fine(this));
@@ -164,14 +164,14 @@ public class UltraBan extends JavaPlugin {
 		getCommand("ipban").setExecutor(new Ipban(this));
 		getCommand("kick").setExecutor(new Kick(this));
 		getCommand("ureload").setExecutor(new Reload(this));
-		if(useSpawn) getCommand("forcespawn").setExecutor(new Spawn(this));
-		if(useStarve) getCommand("starve").setExecutor(new Starve(this));
+		getCommand("forcespawn").setExecutor(new Spawn(this));
+		getCommand("starve").setExecutor(new Starve(this));
 		getCommand("tempban").setExecutor(new Tempban(this));
 		getCommand("unban").setExecutor(new Unban(this));
 		getCommand("uversion").setExecutor(new Version(this));
-		if(useWarn) getCommand("warn").setExecutor(new Warn(this));
-		if(useJail) getCommand("jail").setExecutor(new Jail(this));
-		if(usePermaban) getCommand("permaban").setExecutor(new Perma(this));
+		getCommand("warn").setExecutor(new Warn(this));
+		getCommand("jail").setExecutor(new Jail(this));
+		getCommand("permaban").setExecutor(new Perma(this));
 		getCommand("lockdown").setExecutor(new Lockdown(this));
 	}
 	public void setObject(){
