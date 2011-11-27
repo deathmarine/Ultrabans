@@ -112,6 +112,7 @@ public class SQLDatabases{
 	public void initialize(UltraBan plugin){
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		String mysqlTable = Config.getString("mysql-table");
+		String logip = Config.getString("mysql-table-ip");
 		SQLDatabases.plugin = plugin;
 		Connection conn = getSQLConnection();
 		
@@ -140,6 +141,7 @@ public class SQLDatabases{
 		            		st.execute(this.SQLCreateBanipTable);
 		            		conn.commit();
 		            		UltraBan.log.log(Level.INFO, "[UltraBan]: Table " + mysqlTable + " created.");
+		            		UltraBan.log.log(Level.INFO, "[UltraBan]: Table " + logip + " created.");
 		            	}
 		            	rs = ps.executeQuery();
 							            
@@ -152,21 +154,27 @@ public class SQLDatabases{
 					String pName = rs.getString("name").toLowerCase();
 					long pTime = rs.getLong("temptime");
 					plugin.bannedPlayers.add(pName);
-					if(pTime != 0){
-						plugin.tempBans.put(pName,pTime);
-					}
+						if(pTime != 0){
+							plugin.tempBans.put(pName,pTime);
+						}
 						if(rs.getInt("type") == 1){
-							System.out.println("Found IP ban!");
 							String ip = getAddress(pName);
 							plugin.bannedIPs.add(ip);
+				
 						}
 					}
+					UltraBan.log.log(Level.INFO, "[UltraBan] Loaded Bans, IPbans, and Tempbans.");
+					UltraBan.log.log(Level.INFO, "[UltraBan] Server is secured.");
 				}catch (NullPointerException ex){
-					UltraBan.log.log(Level.SEVERE, "[UltraBan] Run CreateTable.sql in /plugins/UltraBan");
+					UltraBan.log.log(Level.SEVERE, "[UltraBan] Detected Major issues with database.");
 					plugin.getServer().getPluginManager().disablePlugin(plugin);
+					UltraBan.log.log(Level.SEVERE, "[UltraBan] Attempting Restart.");
+					plugin.getServer().getPluginManager().enablePlugin(plugin);
+					return;
 				}
 			} catch (SQLException ex) {
 				UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+				return;
 			} finally {
 				try {
 					if (ps != null)

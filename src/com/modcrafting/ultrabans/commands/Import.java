@@ -66,7 +66,7 @@ public class Import implements CommandExecutor{
 						plugin.db.setAddress("import", ip);
 						plugin.db.addPlayer("import", "imported", admin, 0, 1);
 					}
-					Bukkit.banIP(p);
+					Bukkit.banIP(ip);
 				  }
 			
 			sender.sendMessage(ChatColor.GREEN + "Banlist imported.");

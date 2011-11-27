@@ -79,7 +79,7 @@ public class Ipban implements CommandExecutor{
 			plugin.bannedIPs.add(p);
 			String pname = plugin.db.getName(p);
 			if (pname != null){
-				plugin.db.addPlayer(plugin.db.getName(p), reason, admin, 0, 1);
+				plugin.db.addPlayer(pname, reason, admin, 0, 1);
 			}else{
 				plugin.db.setAddress("failedname", p);
 				plugin.db.addPlayer("failedname", reason, admin, 0, 1);
@@ -116,9 +116,17 @@ public class Ipban implements CommandExecutor{
 		}
 		String victimip = plugin.db.getAddress(p);
 		plugin.bannedPlayers.add(p.toLowerCase());
-		Bukkit.getOfflinePlayer(p).setBanned(true);		
+		Bukkit.getOfflinePlayer(p).setBanned(true);
+		if(victimip != null){
 		plugin.bannedIPs.add(victimip);
 		Bukkit.banIP(victimip);
+		}else{
+			sender.sendMessage(ChatColor.GRAY + "IP address not found by Ultrabans for " + p);
+			sender.sendMessage(ChatColor.GRAY + "Processed as a normal ban for " + p);
+			plugin.db.addPlayer(p, reason, admin, 0, 0);
+			log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
+			return true;
+		}
 		plugin.db.addPlayer(p, reason, admin, 0, 1);
 		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 		String banMsgVictim = config.getString("messages.banMsgVictim", "You have been banned by %admin%. Reason: %reason%");
