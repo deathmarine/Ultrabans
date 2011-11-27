@@ -33,6 +33,9 @@ commands:
   exportbans:
     description: Export bans to banned-players.txt
     usage: /<command>
+  importbans:
+    description: import bans from banned-players.txt and banned-ips.txt
+    usage: /<command>
   warn:
     description: Warn a player
     usage: /<command> player [reason] - Warn a player
