@@ -1,5 +1,8 @@
 package com.modcrafting.ultrabans;
-
+/**
+ * Wickity Wickity Wooh
+ * Got to love the magic!
+ */
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
