@@ -77,7 +77,14 @@ public class Ipban implements CommandExecutor{
 		String p = args[0];
 		if(validIP(p)){
 			plugin.bannedIPs.add(p);
-			plugin.db.addPlayer(p, reason, admin, 0, 1);
+			String pname = plugin.db.getName(p);
+			if (pname != null){
+				plugin.db.addPlayer(plugin.db.getName(p), reason, admin, 0, 1);
+			}else{
+				plugin.db.setAddress("failedname", p);
+				plugin.db.addPlayer("failedname", reason, admin, 0, 1);
+			}
+			plugin.db.addPlayer(pname, reason, admin, 0, 1);
 			Bukkit.banIP(p);
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
@@ -108,7 +115,8 @@ public class Ipban implements CommandExecutor{
 			return true;
 		}
 		String victimip = plugin.db.getAddress(p);
-		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to RAM
+		plugin.bannedPlayers.add(p.toLowerCase());
+		Bukkit.getOfflinePlayer(p).setBanned(true);		
 		plugin.bannedIPs.add(victimip);
 		Bukkit.banIP(victimip);
 		plugin.db.addPlayer(p, reason, admin, 0, 1);

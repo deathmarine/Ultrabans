@@ -116,12 +116,12 @@ public class SQLDatabases{
 		Connection conn = getSQLConnection();
 		
 		
-/*		if (conn == null) {
+		if (conn == null) {
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Could not establish SQL connection. Disabling UltraBan");
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Adjust Settings in Config or set MySql: False");
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			return;
-		} else { */
+		} else {
 			PreparedStatement ps = null;
 			ResultSet rs = null;
 			Statement st = null;
@@ -190,7 +190,7 @@ public class SQLDatabases{
 				e.printStackTrace();
 				plugin.getServer().getPluginManager().disablePlugin(plugin);
 			}
-	//	}
+		}
 		
 	}
 	
