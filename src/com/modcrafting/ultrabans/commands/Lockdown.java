@@ -21,6 +21,7 @@ public class Lockdown implements CommandExecutor {
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+		if(plugin.useLockdown) return true;
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
@@ -41,7 +42,6 @@ public class Lockdown implements CommandExecutor {
 		}
 		// Using the config considering the server may restart.
 		boolean lock = config.getBoolean("lockdown", false);
-		if (args.length < 1) return false;
 		String toggle = args[0];
 		if (toggle.equalsIgnoreCase("on")){ 
 			if(!lock){ 
@@ -64,7 +64,7 @@ public class Lockdown implements CommandExecutor {
 		if (toggle.equalsIgnoreCase("status")){
 			if(lock) sender.sendMessage(ChatColor.GRAY + "Lockdown in progress.PlayerLogin disabled.");
 			if(!lock) sender. sendMessage(ChatColor.GRAY + "Lockdown is not in progress.");
-			
+			return true;
 		}
 		
 		return false;

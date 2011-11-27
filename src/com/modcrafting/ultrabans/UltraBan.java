@@ -172,7 +172,7 @@ public class UltraBan extends JavaPlugin {
 		if(useWarn) getCommand("warn").setExecutor(new Warn(this));
 		if(useJail) getCommand("jail").setExecutor(new Jail(this));
 		if(usePermaban) getCommand("permaban").setExecutor(new Perma(this));
-		if(useLockdown) getCommand("lockdown").setExecutor(new Lockdown(this));
+		getCommand("lockdown").setExecutor(new Lockdown(this));
 	}
 	public void setObject(){
 		
