@@ -74,11 +74,11 @@ public class Spawn implements CommandExecutor{
 			String fspawnMsgVictim = config.getString("messages.fspawnMsgVictim", "You have been sent to spawn!");
 			fspawnMsgVictim = fspawnMsgVictim.replaceAll("%admin%", admin);
 			fspawnMsgVictim = fspawnMsgVictim.replaceAll("%victim%", idoit);
-			sender.sendMessage(formatMessage(fspawnMsgVictim));
+			victim.sendMessage(formatMessage(fspawnMsgVictim));
 			String fspawnMsgBroadcast = config.getString("messages.fspawnMsgBroadcast", "%victim% is now at spawn!");
 			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll("%admin%", admin);
 			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll("%victim%", idoit);
-			victim.sendMessage(formatMessage(fspawnMsgBroadcast));
+			sender.sendMessage(formatMessage(fspawnMsgBroadcast));
 				//Further Research	
 				World wtlp = victim.getWorld();
 				Location tlp = wtlp.getSpawnLocation();
