@@ -42,6 +42,24 @@ commands:
   fine:
     description: Fine a player
     usage: /<command> player [amt] - Fine a player
+  empty:
+    description: Empty player inventory.
+    usage: /<command> player - Empty a players inventory
+  forcespawn:
+    description: Sends player to spawn/home
+    usage: /<command> player - Sends player to spawn/home
+  starve:
+    description: Removes food from player
+    usage: /<command> player - Removes food from player
+  ujail:
+    description: Jail player
+    usage: /<command> <set/pardon/player> player - pardon player
+  lockdown:
+    description: Lockdown the Server
+    usage: /<command> <on/off/status>
+  rules:
+    description: Displays and sets rules
+    usage: /<command> <set> rule
   editban:
     description: Edit a ban
     usage: /<command> <list/load/id/save/view/reason/time/cancel/help>
@@ -53,18 +71,3 @@ commands:
     description: Shows current Ultrabans Version
     usage: /<command>
     aliases: [uv,uver]
-  empty:
-    description: Empty player inventory.
-    usage: /<command> player - Empty a players inventory
-  forcespawn:
-    description: Sends player to spawn/home
-    usage: /<command> player - Sends player to spawn/home
-  starve:
-    description: Removes food from player
-    usage: /<command> player - Removes food from player
-  jail:
-    description: Jail player
-    usage: /<command> <set/pardon/player> player - pardon player
-  lockdown:
-    description: Lockdown the Server
-    usage: /<command> <on/off/status>

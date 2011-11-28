@@ -46,22 +46,24 @@ public class UltraBanPlayerListener extends PlayerListener {
 		}
 		boolean lock = config.getBoolean("lockdown", false);
 		if(lock){
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Server is in lockdown, Try again later.");
-			UltraBan.log.log(Level.INFO, player.getName() + " attempted to join during lockdown.");
+			String lockMsgLogin = config.getString("messages.lockMsgLogin", "Server is under a lockdown, Try again later!");
+			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
+			UltraBan.log.log(Level.INFO,"[UltraBan] " + player.getName() + " attempted to join during lockdown.");
 		}
 	}
 	public void onPlayerJoin(PlayerJoinEvent event){
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
 		String ip = player.getAddress().getAddress().getHostAddress();
 		plugin.db.setAddress(player.getName().toLowerCase(), ip);
-		System.out.println(player.getName() + " connected from ip:" + ip);
+		System.out.println("[UltraBan] Logged " + player.getName() + " connecting from ip:" + ip);
 		
 		//Personalized copy
 		//player.sendMessage(ChatColor.GRAY + "Server is secured by" + ChatColor.GOLD + " Death's UltraBans");
 		if(plugin.bannedIPs.contains(ip)){
-			System.out.println("ip is banned");
+			System.out.println("[UltraBan] Banned player attempted Login!");
 			event.setJoinMessage(null);
-			String adminMsg = "You're ip address is banned and has been logged!";
+			String adminMsg = config.getString("messages.LoginIPBan", "Your IP is banned!");
 			player.kickPlayer(adminMsg);
 		}
 		if(!plugin.db.matchAddress(player.getName(), ip)){

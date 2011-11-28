@@ -36,14 +36,16 @@ public class Reload implements CommandExecutor{
 		}
 		
 		if (auth) {
+			log.log(Level.INFO, "[UltraBan] Unloading Ram.");
 			plugin.bannedPlayers.clear(); // Clear the HASHSET (RAM)
 			plugin.tempBans.clear();
 			plugin.bannedIPs.clear();
-			log.log(Level.INFO, "[UltraBan] Unloading Ram, Reinitializing.");
-			plugin.db.initialize(plugin);
-			
-			log.log(Level.INFO, "[UltraBan] " + admin + " reloaded the banlist.");
-			sender.sendMessage("§2Reloaded banlist.");
+			log.log(Level.INFO, "[UltraBan] Disabling Plugin.");
+			plugin.getServer().getPluginManager().disablePlugin(plugin);
+			UltraBan.log.log(Level.SEVERE, "[UltraBan] Attempting Restart.");
+			plugin.getServer().getPluginManager().enablePlugin(plugin);
+			log.log(Level.INFO, "[UltraBan] " + admin + " reloaded the plugin.");
+			sender.sendMessage("§2Reloaded plugin.");
 			return true;
 		}else{
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");

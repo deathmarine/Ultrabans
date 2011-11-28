@@ -35,6 +35,7 @@ import com.modcrafting.ultrabans.commands.Kick;
 import com.modcrafting.ultrabans.commands.Lockdown;
 import com.modcrafting.ultrabans.commands.Perma;
 import com.modcrafting.ultrabans.commands.Reload;
+import com.modcrafting.ultrabans.commands.Rules;
 import com.modcrafting.ultrabans.commands.Spawn;
 import com.modcrafting.ultrabans.commands.Starve;
 import com.modcrafting.ultrabans.commands.Tempban;
@@ -66,6 +67,7 @@ public class UltraBan extends JavaPlugin {
 	public boolean useStarve;
 	public boolean useWarn;
 	public boolean usePermaban;
+	public boolean useRules;
 	
 	public void onDisable() {
 		tempBans.clear();
@@ -124,6 +126,7 @@ public class UltraBan extends JavaPlugin {
 		this.useStarve = Config.getBoolean("useStarve", true);
 		this.useWarn = Config.getBoolean("useWarn", true);
 		this.usePermaban = Config.getBoolean("usePermaban", true);
+		this.useRules = Config.getBoolean("useRules", true);
 		loadCommands();
 		loadPerms();
 		db.initialize(this);	
@@ -167,10 +170,11 @@ public class UltraBan extends JavaPlugin {
 		getCommand("forcespawn").setExecutor(new Spawn(this));
 		getCommand("starve").setExecutor(new Starve(this));
 		getCommand("tempban").setExecutor(new Tempban(this));
+		getCommand("rules").setExecutor(new Rules(this));
 		getCommand("unban").setExecutor(new Unban(this));
 		getCommand("uversion").setExecutor(new Version(this));
 		getCommand("warn").setExecutor(new Warn(this));
-		getCommand("jail").setExecutor(new Jail(this));
+		getCommand("ujail").setExecutor(new Jail(this));
 		getCommand("permaban").setExecutor(new Perma(this));
 		getCommand("lockdown").setExecutor(new Lockdown(this));
 	}

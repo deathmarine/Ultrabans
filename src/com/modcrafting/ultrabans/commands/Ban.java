@@ -84,7 +84,7 @@ public class Ban implements CommandExecutor{
 
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			String banMsgVictim = config.getString("messages.banMsgFailed", 
-			"&8Player %victim% &8is already banned!");
+			"Player %victim% is already banned!");
 			banMsgVictim = banMsgVictim.replaceAll("%victim%", p);
 			sender.sendMessage(formatMessage(banMsgVictim));
 			return true;
@@ -92,7 +92,6 @@ public class Ban implements CommandExecutor{
 
 		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
 		plugin.db.addPlayer(p, reason, admin, 0, 0);
-		//add to original banlist
 		Bukkit.getOfflinePlayer(p).setBanned(true);
 		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 		if(victim != null){
