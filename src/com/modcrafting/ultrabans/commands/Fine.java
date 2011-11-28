@@ -90,6 +90,7 @@ public class Fine implements CommandExecutor{
 				String fineMsg = config.getString("messages.fineMsgVictim", "You have been fined by %admin% in the amount of %amt%!");
 				String idoit = victim.getName();
 				fineMsg = fineMsg.replaceAll("%admin%", admin);
+				fineMsg = fineMsg.replaceAll("%amt%", amt);
 				fineMsg = fineMsg.replaceAll("%victim%", idoit);
 				sender.sendMessage(formatMessage(":S:" + fineMsg));
 				victim.sendMessage(formatMessage(fineMsg));
@@ -109,6 +110,7 @@ public class Fine implements CommandExecutor{
 				String idoit = victim.getName();
 				String fineMsgAll = config.getString("messages.fineMsgBroadcast", "%victim% was fined by %admin% in the amount of %amt%!!");
 				fineMsgAll = fineMsgAll.replaceAll("%admin%", admin);
+				fineMsgAll = fineMsgAll.replaceAll("%amt%", amt);
 				fineMsgAll = fineMsgAll.replaceAll("%victim%", idoit);
 				plugin.getServer().broadcastMessage(formatMessage(fineMsgAll));
 				return true;
