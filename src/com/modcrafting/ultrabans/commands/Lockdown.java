@@ -21,7 +21,7 @@ public class Lockdown implements CommandExecutor {
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		if(plugin.useLockdown) return true;
+		if(!plugin.useLockdown) return true;
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
