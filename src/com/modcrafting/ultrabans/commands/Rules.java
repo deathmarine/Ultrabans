@@ -65,9 +65,13 @@ public class Rules implements CommandExecutor{
 				}
 			}
 			if(set){
+				if(args[0].equalsIgnoreCase("help")){
+					this.helpString(sender);
+					return true;
+				}
 				if(args[0].equalsIgnoreCase("set")){
 					if(args.length < 2){
-						sender.sendMessage("Use /rules set {one - ten} (message}");
+						this.helpString(sender);
 						return true;
 					}
 					if(args[1].equalsIgnoreCase("one")){
@@ -127,5 +131,16 @@ public class Rules implements CommandExecutor{
 
 		builder.deleteCharAt(builder.length() - seperator.length()); // remove
 		return builder.toString();
+	}
+	public void helpString(CommandSender sender){
+		sender.sendMessage(ChatColor.GRAY + "Rules and Setting Rules Help");
+		sender.sendMessage(ChatColor.BLUE + "Required Info {}");
+		sender.sendMessage(ChatColor.GRAY + "/rules - Displays rules.");
+		sender.sendMessage(ChatColor.GRAY + "/rules set {one,two,three,four,... ten} {Message}");
+		sender.sendMessage(ChatColor.GRAY + "ex: /rules set one No Grief.");
+		sender.sendMessage(ChatColor.GRAY + "ex: /rules set seven No Swearing.");
+		sender.sendMessage(ChatColor.GRAY + "displays: 1. No Grief.");
+		sender.sendMessage(ChatColor.GRAY + "displays: 7. No Swearing.");
+		sender.sendMessage(ChatColor.GRAY + "/rules help - Displays this help.");
 	}
 }
