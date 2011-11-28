@@ -39,6 +39,8 @@ public class Rules implements CommandExecutor{
 		}
 			if(args.length < 1){
 				if(auth){
+					String ruleMsg = config.getString("messages.ruleMsg", "The Servers Rules Are As Follows!");
+					sender.sendMessage(ruleMsg);
 					String rule1 = config.getString("rules.one");
 					if (rule1 != null) sender.sendMessage("1. " + rule1);
 					String rule2 = config.getString("rules.two");

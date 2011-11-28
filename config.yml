@@ -61,6 +61,7 @@ messages:
   warnMsgVictim: '&8You have been warned by &9%admin%&8. Reason: &c%reason%!'
   warnMsgBroadcast: '&c%victim% &8was warned by &9%admin%&8. Reason: &c%reason%!'
   lockMsgLogin: 'Server is under a lockdown, Try again later! Sorry.'
+  ruleMsg: '&9The Servers Rules Are As Follows!'
 #Adjust as you see fit or set ingame.#
 rules:
   one:
