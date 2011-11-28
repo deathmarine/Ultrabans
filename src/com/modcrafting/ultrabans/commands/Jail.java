@@ -58,7 +58,7 @@ public class Jail implements CommandExecutor{
 		}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		if(plugin.useJail) return true;
+		if(!plugin.useJail) return true;
 		boolean auth = false;
 			Player player = null;
 			String admin = "server";
