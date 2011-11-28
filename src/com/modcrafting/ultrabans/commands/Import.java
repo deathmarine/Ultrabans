@@ -25,6 +25,7 @@ public class Import implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
     	boolean auth = false;
+    	boolean server = false;
 		Player player = null;
 		String admin = "server";
 		if (sender instanceof Player){
@@ -37,12 +38,19 @@ public class Import implements CommandExecutor{
 			admin = player.getName();
 		}else{
 			auth = true;
+			server = true;
 		}
 		if (!auth){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
 		if(auth){
+			if(!server){
+			sender.sendMessage(ChatColor.GRAY + "[UltraBan] Be patient. Loading");
+			sender.sendMessage(ChatColor.GRAY + "[UltraBan] Depending on size of list may lag the server for a moment.");
+			}
+			UltraBan.log.log(Level.INFO, "[UltraBan] Be patient. Loading.");
+			UltraBan.log.log(Level.INFO, "[UltraBan] Depending on size of list may lag the server for a moment.");
 		try {
 			BufferedReader banlist = new BufferedReader(new FileReader("banned-players.txt"));
 			String p;
@@ -70,7 +78,7 @@ public class Import implements CommandExecutor{
 				  }
 			
 			sender.sendMessage(ChatColor.GREEN + "Banlist imported.");
-			UltraBan.log.log(Level.INFO, admin + " imported the banlist to the database.");
+			UltraBan.log.log(Level.INFO,"[UltraBan] " + admin + " imported the banlist to the database.");
 			return true;
 			
 		} catch (IOException e) {
