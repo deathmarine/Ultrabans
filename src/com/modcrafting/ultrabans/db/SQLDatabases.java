@@ -386,7 +386,7 @@ public class SQLDatabases{
 		ResultSet rs = null;
 		String mysqlTable = Config.getString("mysql-table");
 		try {
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1)");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
 			while (rs.next()){
