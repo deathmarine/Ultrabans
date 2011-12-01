@@ -46,6 +46,7 @@ public class Warn implements CommandExecutor{
 		}
 		return p;
 	}
+	@SuppressWarnings("unused")
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		if(!plugin.useWarn) return true;
@@ -108,8 +109,9 @@ public class Warn implements CommandExecutor{
 			return true;
 			}
 		}
-		return true;
+		return false; //unused or not, it belongs here
 	}
+	
 	public String combineSplit(int startIndex, String[] string, String seperator) {
 		StringBuilder builder = new StringBuilder();
 
