@@ -110,11 +110,11 @@ public class Ipban implements CommandExecutor{
 				reason = combineSplit(1, args, " ");
 		}
 
-		if(plugin.bannedPlayers.contains(p.toLowerCase())){
+		if(plugin.bannedPlayers.contains(victim.getName().toLowerCase())){
 			sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);
 			return true;
 		}
-		String victimip = plugin.db.getAddress(p);
+		String victimip = plugin.db.getAddress(victim.getName().toLowerCase());
 		plugin.bannedPlayers.add(victim.getName().toLowerCase());
 		Bukkit.getOfflinePlayer(victim.getName()).setBanned(true);
 		if(victimip != null){
@@ -125,6 +125,10 @@ public class Ipban implements CommandExecutor{
 			sender.sendMessage(ChatColor.GRAY + "Processed as a normal ban for " + victim.getName());
 			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
 			log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + victim.getName() + ".");
+			String banMsgVictim = config.getString("messages.banMsgVictim", "You have been banned by %admin%. Reason: %reason%");
+			banMsgVictim = banMsgVictim.replaceAll("%admin%", admin);
+			banMsgVictim = banMsgVictim.replaceAll("%reason%", reason);
+			victim.kickPlayer(formatMessage(banMsgVictim));
 			return true;
 		}
 		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 1);
