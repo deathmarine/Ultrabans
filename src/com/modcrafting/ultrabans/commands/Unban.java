@@ -77,19 +77,18 @@ public class Unban implements CommandExecutor{
 			log.log(Level.INFO, "[UltraBan] " + p + " is PermaBanned.");
 			return true;
 		}
-			
+
 		if(plugin.bannedPlayers.remove(p.toLowerCase())){
 			plugin.db.removeFromBanlist(p);
 			plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
 			Bukkit.getOfflinePlayer(p).setBanned(false);
-			if(plugin.tempBans.containsKey(p.toLowerCase()))
-				plugin.tempBans.remove(p.toLowerCase());
 			String ip = plugin.db.getAddress(p);
 			if(plugin.bannedIPs.contains(ip)){
 				plugin.bannedIPs.remove(ip);
 				Bukkit.unbanIP(ip);
 				System.out.println("Also removed the IP ban!");
 			}
+			
 			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + p + ".");
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
@@ -97,12 +96,23 @@ public class Unban implements CommandExecutor{
 			sender.sendMessage(formatMessage(unbanMsgBroadcast));
 			return true;
 		}else{
+			if(plugin.tempBans.containsKey(p.toLowerCase())){
+			plugin.tempBans.remove(p.toLowerCase());
+			plugin.db.removeFromBanlist(p);
+			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + p + ".");
+			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", p);
+			sender.sendMessage(formatMessage(unbanMsgBroadcast));
+			}else{
 			String unbanMsgFailed = config.getString("messages.unbanMsgFailed", "%victim% is already unbanned!");
 			unbanMsgFailed = unbanMsgFailed.replaceAll("%admin%", admin);
 			unbanMsgFailed = unbanMsgFailed.replaceAll("%victim%", p);
 			sender.sendMessage(formatMessage(unbanMsgFailed));
 			return true;
+			}
 		}
+		return false;
 	}
 	public String formatMessage(String str){
 		String funnyChar = new Character((char) 167).toString();

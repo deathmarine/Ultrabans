@@ -91,10 +91,9 @@ public class Tempban implements CommandExecutor{
 		long tempTime = parseTimeSpec(args[1],args[2]);
 		if(tempTime == 0)
 			return false;
-		plugin.bannedPlayers.add(p.toLowerCase());
-		tempTime = System.currentTimeMillis()/1000+tempTime; //epoch time
-		plugin.tempBans.put(victim.getName().toLowerCase(), tempTime);
-		plugin.db.addPlayer(victim.getName(), reason, admin, tempTime, 0);
+		long temp = System.currentTimeMillis()/1000+tempTime; //epoch time
+		plugin.tempBans.put(victim.getName().toLowerCase(), temp);
+		plugin.db.addPlayer(victim.getName(), reason, admin, temp, 0);
 		log.log(Level.INFO, "[UltraBan] " + admin + " tempbanned player " + victim.getName() + ".");
 
 		if(victim != null){

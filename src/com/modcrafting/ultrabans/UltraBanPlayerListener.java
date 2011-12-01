@@ -23,26 +23,27 @@ public class UltraBanPlayerListener extends PlayerListener {
 		Player player = event.getPlayer();
 		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
 			System.out.println("banned player joined");
-			if(plugin.tempBans.get(player.getName().toLowerCase()) != null){
-				long tempTime = plugin.tempBans.get(player.getName().toLowerCase());
-				long now = System.currentTimeMillis()/1000;
-				long diff = tempTime - now;
-				if(diff <= 0){
-					plugin.bannedPlayers.remove(player.getName().toLowerCase());
-					plugin.tempBans.remove(player.getName().toLowerCase());
-					return;
-				}
-				Date date = new Date();
-				date.setTime(tempTime*1000);
-				String dateStr = date.toString();
-				String reason = plugin.db.getBanReason(player.getName());
-				String adminMsg = "You've been tempbanned for " + reason + " Remaining:" + dateStr;
-				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, adminMsg);
-				return;
-			}
-			String reason = plugin.db.getBanReason(player.getName());
+			String reason = plugin.db.getBanReason(player.getName().toLowerCase());
 			String adminMsg = "You've been banned you for: " + reason;
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, adminMsg);
+		}
+		if(plugin.tempBans.get(player.getName().toLowerCase()) != null){
+			long tempTime = plugin.tempBans.get(player.getName().toLowerCase());
+			long now = System.currentTimeMillis()/1000;
+			long diff = tempTime - now;
+			if(diff <= 0){
+				plugin.tempBans.remove(player.getName().toLowerCase());
+				plugin.bannedPlayers.remove(player.getName().toLowerCase());
+				plugin.db.removeFromBanlist(player.getName().toLowerCase());
+				return;
+			}
+			Date date = new Date();
+			date.setTime(tempTime*1000);
+			String dateStr = date.toString();
+			String reason = plugin.db.getBanReason(player.getName());
+			String adminMsg = "You've been tempbanned for " + reason + " Remaining:" + dateStr;
+			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, adminMsg);
+			return;
 		}
 		boolean lock = config.getBoolean("lockdown", false);
 		if(lock){
