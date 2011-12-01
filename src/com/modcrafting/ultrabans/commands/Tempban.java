@@ -93,27 +93,27 @@ public class Tempban implements CommandExecutor{
 			return false;
 		plugin.bannedPlayers.add(p.toLowerCase());
 		tempTime = System.currentTimeMillis()/1000+tempTime; //epoch time
-		plugin.tempBans.put(p.toLowerCase(), tempTime);
-		plugin.db.addPlayer(p, reason, admin, tempTime, 0);
-		log.log(Level.INFO, "[UltraBan] " + admin + " tempbanned player " + p + ".");
+		plugin.tempBans.put(victim.getName().toLowerCase(), tempTime);
+		plugin.db.addPlayer(victim.getName(), reason, admin, tempTime, 0);
+		log.log(Level.INFO, "[UltraBan] " + admin + " tempbanned player " + victim.getName() + ".");
 
 		if(victim != null){
 			String tempbanMsgVictim = config.getString("messages.tempbanMsgVictim", "You have been temp. banned by %admin%. Reason: %reason%!");
-			tempbanMsgVictim = tempbanMsgVictim.replaceAll("%player%", admin);
+			tempbanMsgVictim = tempbanMsgVictim.replaceAll("%admin%", admin);
 			tempbanMsgVictim = tempbanMsgVictim.replaceAll("%reason%", reason);
 			victim.kickPlayer(formatMessage(tempbanMsgVictim));
 		}
 		if(broadcast){
 			String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
-			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%player%", admin);
+			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%admin%", admin);
 			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%reason%", reason);
-			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", p);
+			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", victim.getName());
 			plugin.getServer().broadcastMessage(formatMessage(tempbanMsgBroadcast));
 		}else{
 			String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
-			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%player%", admin);
+			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%admin%", admin);
 			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%reason%", reason);
-			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", p);
+			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", victim.getName());
 			sender.sendMessage(formatMessage(":S:" + tempbanMsgBroadcast));
 		}
 		return true;

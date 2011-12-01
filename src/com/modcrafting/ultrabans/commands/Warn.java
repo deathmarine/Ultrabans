@@ -86,13 +86,13 @@ public class Warn implements CommandExecutor{
 				reason = combineSplit(1, args, " ");
 			
 		}
-		plugin.db.addPlayer(p, reason, admin, 0, 2);
-		log.log(Level.INFO, "[UltraBan] " + admin + " warned player " + p + ".");
+		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 2);
+		log.log(Level.INFO, "[UltraBan] " + admin + " warned player " + victim.getName() + ".");
 		if(broadcast){ 
 			String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
 			warnMsgBroadcast = warnMsgBroadcast.replaceAll("%admin%", admin);
 			warnMsgBroadcast = warnMsgBroadcast.replaceAll("%reason%", reason);
-			warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", p);
+			warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", victim.getName());
 			plugin.getServer().broadcastMessage(formatMessage(warnMsgBroadcast));
 			return true;
 		}else{
@@ -103,7 +103,7 @@ public class Warn implements CommandExecutor{
 				String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
 				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%admin%", admin);
 				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%reason%", reason);
-				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", p);
+				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", victim.getName());
 				sender.sendMessage(formatMessage(":S:" + warnMsgBroadcast));
 			return true;
 			}

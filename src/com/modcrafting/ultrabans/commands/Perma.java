@@ -85,14 +85,14 @@ public class Perma implements CommandExecutor{
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			String adminMsg = config.getString("messages.banMsgFailed", 
 			"&8Player &4%victim% &8is already banned!");
-			adminMsg = adminMsg.replaceAll("%victim%", p);
+			adminMsg = adminMsg.replaceAll("%victim%", victim.getName());
 			sender.sendMessage(formatMessage(adminMsg));
 			return true;
 		}
 
 		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
-		plugin.db.addPlayer(p, reason, admin, 0, 9);
-		log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + p + ".");
+		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 9);
+		log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + victim.getName() + ".");
 		if(victim != null){ 
 			String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
 			adminMsg = adminMsg.replaceAll("%admin%", admin);
@@ -103,13 +103,13 @@ public class Perma implements CommandExecutor{
 			String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%admin%", admin);
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%reason%", reason);
-			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", p);
+			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", victim.getName());
 			plugin.getServer().broadcastMessage(formatMessage(permbanMsgBroadcast));
 		}else{
 			String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%admin%", admin);
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%reason%", reason);
-			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", p);
+			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", victim.getName());
 			sender.sendMessage(formatMessage(permbanMsgBroadcast));
 		}
 		return true;

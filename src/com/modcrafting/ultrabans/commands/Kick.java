@@ -102,8 +102,8 @@ public class Kick implements CommandExecutor{
 			sender.sendMessage(ChatColor.GRAY + "Player must be online!");
 			return true;
 		}
-		plugin.db.addPlayer(p, reason, admin, 0, 3);
-		log.log(Level.INFO, "[UltraBan] " + admin + " kicked player " + p + ". Reason: " + reason);
+		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 3);
+		log.log(Level.INFO, "[UltraBan] " + admin + " kicked player " + victim.getName() + ". Reason: " + reason);
 		String adminMsg = config.getString("messages.kickMsgVictim", "You have been kicked by %admin%. Reason: %reason%");
 		adminMsg = adminMsg.replaceAll("%admin%", admin);
 		adminMsg = adminMsg.replaceAll("%reason%", reason);
@@ -112,13 +112,13 @@ public class Kick implements CommandExecutor{
 		if(broadcast){
 			String kickMsgBroadcast = config.getString("messages.kickMsgBroadcast", "%victim% has been kicked by %admin%. Reason: %reason%");
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%admin%", admin);
-			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%victim%", p);
+			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%victim%", victim.getName());
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%reason%", reason);
 			plugin.getServer().broadcastMessage(formatMessage(kickMsgBroadcast));
 		}else{
 			String kickMsgBroadcast = config.getString("messages.kickMsgBroadcast", "%victim% has been kicked by %admin%. Reason: %reason%");
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%admin%", admin);
-			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%victim%", p);
+			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%victim%", victim.getName());
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%reason%", reason);
 			sender.sendMessage(formatMessage(":S:" + kickMsgBroadcast));
 		}

@@ -115,20 +115,20 @@ public class Ipban implements CommandExecutor{
 			return true;
 		}
 		String victimip = plugin.db.getAddress(p);
-		plugin.bannedPlayers.add(p.toLowerCase());
-		Bukkit.getOfflinePlayer(p).setBanned(true);
+		plugin.bannedPlayers.add(victim.getName().toLowerCase());
+		Bukkit.getOfflinePlayer(victim.getName()).setBanned(true);
 		if(victimip != null){
 		plugin.bannedIPs.add(victimip);
 		Bukkit.banIP(victimip);
 		}else{
-			sender.sendMessage(ChatColor.GRAY + "IP address not found by Ultrabans for " + p);
-			sender.sendMessage(ChatColor.GRAY + "Processed as a normal ban for " + p);
-			plugin.db.addPlayer(p, reason, admin, 0, 0);
-			log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
+			sender.sendMessage(ChatColor.GRAY + "IP address not found by Ultrabans for " + victim.getName());
+			sender.sendMessage(ChatColor.GRAY + "Processed as a normal ban for " + victim.getName());
+			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
+			log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + victim.getName() + ".");
 			return true;
 		}
-		plugin.db.addPlayer(p, reason, admin, 0, 1);
-		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
+		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 1);
+		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + victim.getName() + ".");
 		String banMsgVictim = config.getString("messages.banMsgVictim", "You have been banned by %admin%. Reason: %reason%");
 		banMsgVictim = banMsgVictim.replaceAll("%admin%", admin);
 		banMsgVictim = banMsgVictim.replaceAll("%reason%", reason);
@@ -137,13 +137,13 @@ public class Ipban implements CommandExecutor{
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
-			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", victim.getName());
 			plugin.getServer().broadcastMessage(formatMessage(banMsgBroadcast));
 		}else{
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
-			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", victim.getName());
 			sender.sendMessage(formatMessage(":S:" + banMsgBroadcast));
 		}
 

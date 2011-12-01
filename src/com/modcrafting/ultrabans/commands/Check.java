@@ -34,7 +34,7 @@ public class Check implements CommandExecutor{
 		if(args.length < 1) return false;
 		List<EditBan> bans = plugin.db.listRecords(p, sender);
 		if(bans.isEmpty()){
-			sender.sendMessage(ChatColor.RED + "No records");
+			sender.sendMessage(ChatColor.GREEN + "No records");
 			return true;
 		}
 		sender.sendMessage(ChatColor.BLUE + "Found " + bans.size() + " records for user " + bans.get(0).name + ":");

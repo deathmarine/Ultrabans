@@ -81,19 +81,19 @@ public class Ban implements CommandExecutor{
 			}else
 				reason = combineSplit(1, args, " ");
 		}
-
+	
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			String banMsgVictim = config.getString("messages.banMsgFailed", 
 			"Player %victim% is already banned!");
-			banMsgVictim = banMsgVictim.replaceAll("%victim%", p);
+			banMsgVictim = banMsgVictim.replaceAll("%victim%", victim.getName());
 			sender.sendMessage(formatMessage(banMsgVictim));
 			return true;
 		}
 
-		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
-		plugin.db.addPlayer(p, reason, admin, 0, 0);
-		Bukkit.getOfflinePlayer(p).setBanned(true);
-		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
+		plugin.bannedPlayers.add(victim.getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
+		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
+		Bukkit.getOfflinePlayer(victim.getName()).setBanned(true);
+		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + victim.getName() + ".");
 		if(victim != null){
 			String banMsgVictim = config.getString("messages.banMsgVictim", "You have been banned by %admin%. Reason: %reason%");
 			banMsgVictim = banMsgVictim.replaceAll("%admin%", admin);
@@ -104,13 +104,13 @@ public class Ban implements CommandExecutor{
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
-			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", victim.getName());
 			plugin.getServer().broadcastMessage(formatMessage(banMsgBroadcast));
 		}else{
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
-			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", victim.getName());
 			sender.sendMessage(formatMessage(":S:" + banMsgBroadcast));
 		}
 		return true;
