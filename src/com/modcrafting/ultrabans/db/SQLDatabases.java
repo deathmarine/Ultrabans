@@ -290,6 +290,7 @@ public class SQLDatabases{
 	}
 	public boolean removeFromBanlist(String player) {
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		String dataHandler = Config.getString("Database");
 
 		String mysqlTable = Config.getString("mysql-table");
 
@@ -297,7 +298,11 @@ public class SQLDatabases{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? ORDER BY time DESC LIMIT 1");
+			if(dataHandler.equalsIgnoreCase("sqlite")){
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ?");
+			}else{
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? ORDER BY time DESC LIMIT 1");
+			}
 			ps.setString(1, player);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
@@ -322,7 +327,7 @@ public class SQLDatabases{
 		ResultSet rs = null;
 		try{
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? ORDER BY time DESC LIMIT 1");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ?");
 			ps.setString(1, bname);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -465,7 +470,7 @@ public class SQLDatabases{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? ORDER BY time DESC LIMIT 10");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ?");
 			ps.setString(1, name);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
@@ -495,7 +500,7 @@ public class SQLDatabases{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? ORDER BY time DESC LIMIT 1");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
 			while (rs.next()){
