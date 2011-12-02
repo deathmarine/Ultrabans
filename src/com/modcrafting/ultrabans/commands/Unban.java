@@ -77,7 +77,8 @@ public class Unban implements CommandExecutor{
 			return true;
 		}
 
-		if(plugin.bannedPlayers.remove(p.toLowerCase())){
+		if(plugin.bannedPlayers.contains(p.toLowerCase())){
+			plugin.bannedPlayers.remove(p.toLowerCase());
 			plugin.db.removeFromBanlist(p);
 			plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
 			Bukkit.getOfflinePlayer(p).setBanned(false);
@@ -98,11 +99,13 @@ public class Unban implements CommandExecutor{
 			if(plugin.tempBans.containsKey(p.toLowerCase())){
 			plugin.tempBans.remove(p.toLowerCase());
 			plugin.db.removeFromBanlist(p);
+			plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
 			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + p + ".");
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", p);
 			sender.sendMessage(formatMessage(unbanMsgBroadcast));
+			return true;
 			}else{
 			String unbanMsgFailed = config.getString("messages.unbanMsgFailed", "%victim% is already unbanned!");
 			unbanMsgFailed = unbanMsgFailed.replaceAll("%admin%", admin);
@@ -111,7 +114,6 @@ public class Unban implements CommandExecutor{
 			return true;
 			}
 		}
-		return false;
 	}
 	public String formatMessage(String str){
 		String funnyChar = new Character((char) 167).toString();
