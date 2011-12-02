@@ -154,15 +154,12 @@ public class SQLDatabases{
 					String pName = rs.getString("name").toLowerCase();
 					long pTime = rs.getLong("temptime");
 					plugin.bannedPlayers.add(pName);
-					UltraBan.log.log(Level.INFO, "[UltraBan] Loaded Bans/Permabans.");
 						if(pTime != 0){
 							plugin.tempBans.put(pName,pTime);
-							UltraBan.log.log(Level.INFO, "[UltraBan] Loaded Tempbans.");
 						}
 						if(rs.getInt("type") == 1){
 							String ip = getAddress(pName);
 							plugin.bannedIPs.add(ip);
-							UltraBan.log.log(Level.INFO, "[UltraBan] Loaded IPbans.");
 				
 						}
 					}
