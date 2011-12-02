@@ -41,6 +41,7 @@ public class Lockdown implements CommandExecutor {
 		}
 		// Using the config considering the server may restart.
 		boolean lock = config.getBoolean("lockdown", false);
+		if (args.length < 1) return false;
 		String toggle = args[0];
 		if (toggle.equalsIgnoreCase("on")){ 
 			if(!lock){ 

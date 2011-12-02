@@ -47,8 +47,15 @@ public class UltraBanPlayerListener extends PlayerListener {
 		}
 		boolean lock = config.getBoolean("lockdown", false);
 		if(lock){
+			boolean auth = false;
 			String lockMsgLogin = config.getString("messages.lockMsgLogin", "Server is under a lockdown, Try again later!");
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.lockdown.override")) auth = true;
+			}else{
+			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
+			}
+			
+			if (!auth) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
 			UltraBan.log.log(Level.INFO,"[UltraBan] " + player.getName() + " attempted to join during lockdown.");
 		}
 	}
