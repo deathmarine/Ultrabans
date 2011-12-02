@@ -129,8 +129,6 @@ public class UltraBan extends JavaPlugin {
 		this.useRules = Config.getBoolean("useRules", true);
 		loadCommands();
 		if (Config != null) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Configuration: config.yml Loaded!");
-		if (setupPermissions()) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Permissions: hooked into Vault!");
-		if (setupEconomy()) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Economy: hooked into Vault!");
 		db.initialize(this);	
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Highest, this);

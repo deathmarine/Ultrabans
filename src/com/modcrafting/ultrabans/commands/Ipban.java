@@ -131,7 +131,7 @@ public class Ipban implements CommandExecutor{
 					log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 					return true;
 				}
-				plugin.db.addPlayer(victim.getName(), reason, admin, 0, 1);
+				plugin.db.addPlayer(p, reason, admin, 0, 1);
 				log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 				if(broadcast){
 					String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
