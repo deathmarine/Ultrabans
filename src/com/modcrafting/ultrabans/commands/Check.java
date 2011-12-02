@@ -48,10 +48,9 @@ public class Check implements CommandExecutor{
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}else{
-		
+		if (args.length < 1) return false;
 		String p = args[0];
 		
-		if(args.length < 1) return false;
 		
 		List<EditBan> bans = plugin.db.listRecords(p, sender);
 		if(bans.isEmpty()){
