@@ -3,6 +3,7 @@ package com.modcrafting.ultrabans.commands;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -85,31 +86,53 @@ public class Perma implements CommandExecutor{
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			String adminMsg = config.getString("messages.banMsgFailed", 
 			"&8Player &4%victim% &8is already banned!");
-			adminMsg = adminMsg.replaceAll("%victim%", victim.getName());
+				if(victim == null){
+					adminMsg = adminMsg.replaceAll("%victim%", p);
+				}else{
+					adminMsg = adminMsg.replaceAll("%victim%", victim.getName());
+				}
 			sender.sendMessage(formatMessage(adminMsg));
 			return true;
 		}
 
-		plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
-		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 9);
-		log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + victim.getName() + ".");
+		if(victim == null){
+			String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
+			adminMsg = adminMsg.replaceAll("%admin%", admin);
+			adminMsg = adminMsg.replaceAll("%reason%", reason);
+			plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
+			plugin.db.addPlayer(p, reason, admin, 0, 0);
+			Bukkit.getOfflinePlayer(p).setBanned(true);
+			log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + p + ".");
+		}
 		if(victim != null){ 
 			String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
 			adminMsg = adminMsg.replaceAll("%admin%", admin);
 			adminMsg = adminMsg.replaceAll("%reason%", reason);
 			victim.kickPlayer(formatMessage(adminMsg));
+			plugin.bannedPlayers.add(victim.getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
+			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 9);
+			Bukkit.getOfflinePlayer(victim.getName()).setBanned(true);
+			log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + victim.getName() + ".");
 		}
 		if(broadcast){
 			String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%admin%", admin);
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%reason%", reason);
+			if(victim == null){
+			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", p);
+			}else{
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", victim.getName());
+			}
 			plugin.getServer().broadcastMessage(formatMessage(permbanMsgBroadcast));
 		}else{
 			String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%admin%", admin);
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%reason%", reason);
-			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", victim.getName());
+			if(victim == null){
+				permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", p);
+				}else{
+				permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", victim.getName());
+				}
 			sender.sendMessage(formatMessage(permbanMsgBroadcast));
 		}
 		return true;

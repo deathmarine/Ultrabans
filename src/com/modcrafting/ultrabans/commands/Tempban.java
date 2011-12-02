@@ -68,11 +68,18 @@ public class Tempban implements CommandExecutor{
 		}
 		if (args.length < 3) return false;
 
-		String p = args[0]; // Get the victim's name
+		String p = args[0]; // Get the victim's potential name
+		
 		if(autoComplete)
-			p = expandName(p); //If the admin has chosen to do so, autocomplete the name!
-		Player victim = plugin.getServer().getPlayer(p); // What player is really the victim?
-		// Reason stuff
+			p = expandName(p);
+		Player victim = plugin.getServer().getPlayer(p);
+		
+		//Figured this out after the fact...... Ugh
+		//Neglect to study bukkit. 
+		//Screw it if it works... go with it.
+		//victim = Bukkit.getOfflinePlayer(p).getPlayer();
+
+		
 		String reason = "not sure";
 		boolean broadcast = true;
 		if(args.length > 3){
@@ -83,37 +90,58 @@ public class Tempban implements CommandExecutor{
 				reason = combineSplit(3, args, " ");
 		}
 
-		if(plugin.bannedPlayers.contains(p.toLowerCase())){
-			sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);
-			return true;
-		}
 
 		long tempTime = parseTimeSpec(args[1],args[2]);
 		if(tempTime == 0)
 			return false;
 		long temp = System.currentTimeMillis()/1000+tempTime; //epoch time
-		plugin.tempBans.put(victim.getName().toLowerCase(), temp);
-		plugin.db.addPlayer(victim.getName(), reason, admin, temp, 0);
-		log.log(Level.INFO, "[UltraBan] " + admin + " tempbanned player " + victim.getName() + ".");
-
+		//Separate for Online-Offline
 		if(victim != null){
+			if(plugin.bannedPlayers.contains(victim.getName().toLowerCase())){
+				sender.sendMessage(ChatColor.BLUE + victim.getName() +  ChatColor.GRAY + " is already banned for " + reason);
+				return true;
+			}
+			plugin.tempBans.put(victim.getName().toLowerCase(), temp);
+			plugin.db.addPlayer(victim.getName(), reason, admin, temp, 0);
+			log.log(Level.INFO, "[UltraBan] " + admin + " tempbanned player " + victim.getName() + ".");
 			String tempbanMsgVictim = config.getString("messages.tempbanMsgVictim", "You have been temp. banned by %admin%. Reason: %reason%!");
 			tempbanMsgVictim = tempbanMsgVictim.replaceAll("%admin%", admin);
 			tempbanMsgVictim = tempbanMsgVictim.replaceAll("%reason%", reason);
 			victim.kickPlayer(formatMessage(tempbanMsgVictim));
-		}
-		if(broadcast){
-			String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
-			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%admin%", admin);
-			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%reason%", reason);
-			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", victim.getName());
-			plugin.getServer().broadcastMessage(formatMessage(tempbanMsgBroadcast));
+			if(broadcast){
+				String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%admin%", admin);
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%reason%", reason);
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", victim.getName());
+				plugin.getServer().broadcastMessage(formatMessage(tempbanMsgBroadcast));
+			}else{
+				String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%admin%", admin);
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%reason%", reason);
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", victim.getName());
+				sender.sendMessage(formatMessage(":S:" + tempbanMsgBroadcast));
+			}
 		}else{
-			String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
-			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%admin%", admin);
-			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%reason%", reason);
-			tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", victim.getName());
-			sender.sendMessage(formatMessage(":S:" + tempbanMsgBroadcast));
+			if(plugin.bannedPlayers.contains(p.toLowerCase())){
+				sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);
+				return true;
+			}
+			plugin.tempBans.put(p.toLowerCase(), temp);
+			plugin.db.addPlayer(p, reason, admin, temp, 0);
+			log.log(Level.INFO, "[UltraBan] " + admin + " tempbanned player " + p + ".");
+			if(broadcast){
+				String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%admin%", admin);
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%reason%", reason);
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", p);
+				plugin.getServer().broadcastMessage(formatMessage(tempbanMsgBroadcast));
+			}else{
+				String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%admin%", admin);
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%reason%", reason);
+				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll("%victim%", p);
+				sender.sendMessage(formatMessage(":S:" + tempbanMsgBroadcast));
+			}
 		}
 		return true;
 	}

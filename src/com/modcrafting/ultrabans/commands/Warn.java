@@ -46,7 +46,7 @@ public class Warn implements CommandExecutor{
 		}
 		return p;
 	}
-	@SuppressWarnings("unused")
+	
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		if(!plugin.useWarn) return true;
@@ -87,29 +87,50 @@ public class Warn implements CommandExecutor{
 				reason = combineSplit(1, args, " ");
 			
 		}
-		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 2);
-		log.log(Level.INFO, "[UltraBan] " + admin + " warned player " + victim.getName() + ".");
-		if(broadcast){ 
-			String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
-			warnMsgBroadcast = warnMsgBroadcast.replaceAll("%admin%", admin);
-			warnMsgBroadcast = warnMsgBroadcast.replaceAll("%reason%", reason);
-			warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", victim.getName());
-			plugin.getServer().broadcastMessage(formatMessage(warnMsgBroadcast));
-			return true;
-		}else{
-			if(victim != null){
-				String warnMsgVictim = config.getString("messages.warnMsgVictim", "You have been warned by %admin%. Reason: %reason%");
-				warnMsgVictim = warnMsgVictim.replaceAll("%admin%", admin);
-				warnMsgVictim = warnMsgVictim.replaceAll("%reason%", reason);
+		if(victim != null){
+			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 2);
+			log.log(Level.INFO, "[UltraBan] " + admin + " warned player " + victim.getName() + ".");
+			if(broadcast){ 
 				String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
 				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%admin%", admin);
 				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%reason%", reason);
 				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", victim.getName());
-				sender.sendMessage(formatMessage(":S:" + warnMsgBroadcast));
-			return true;
+				plugin.getServer().broadcastMessage(formatMessage(warnMsgBroadcast));
+				return true;
+			}else{
+					String warnMsgVictim = config.getString("messages.warnMsgVictim", "You have been warned by %admin%. Reason: %reason%");
+					warnMsgVictim = warnMsgVictim.replaceAll("%admin%", admin);
+					warnMsgVictim = warnMsgVictim.replaceAll("%reason%", reason);
+					String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
+					warnMsgBroadcast = warnMsgBroadcast.replaceAll("%admin%", admin);
+					warnMsgBroadcast = warnMsgBroadcast.replaceAll("%reason%", reason);
+					warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", victim.getName());
+					sender.sendMessage(formatMessage(":S:" + warnMsgBroadcast));
+				return true;
+				
+			}	
+		}else{
+			plugin.db.addPlayer(p, reason, admin, 0, 2);
+			log.log(Level.INFO, "[UltraBan] " + admin + " warned player " + p + ".");
+			if(broadcast){ 
+				String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
+				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%admin%", admin);
+				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%reason%", reason);
+				warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", p);
+				plugin.getServer().broadcastMessage(formatMessage(warnMsgBroadcast));
+				return true;
+			}else{
+					String warnMsgVictim = config.getString("messages.warnMsgVictim", "You have been warned by %admin%. Reason: %reason%");
+					warnMsgVictim = warnMsgVictim.replaceAll("%admin%", admin);
+					warnMsgVictim = warnMsgVictim.replaceAll("%reason%", reason);
+					String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
+					warnMsgBroadcast = warnMsgBroadcast.replaceAll("%admin%", admin);
+					warnMsgBroadcast = warnMsgBroadcast.replaceAll("%reason%", reason);
+					warnMsgBroadcast = warnMsgBroadcast.replaceAll("%victim%", p);
+					sender.sendMessage(formatMessage(":S:" + warnMsgBroadcast));
+				return true;
 			}
 		}
-		return false; //unused or not, it belongs here
 	}
 	
 	public String combineSplit(int startIndex, String[] string, String seperator) {

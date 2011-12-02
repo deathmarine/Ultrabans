@@ -85,32 +85,54 @@ public class Ban implements CommandExecutor{
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			String banMsgVictim = config.getString("messages.banMsgFailed", 
 			"Player %victim% is already banned!");
+			if(victim == null){
+			banMsgVictim = banMsgVictim.replaceAll("%victim%", p);
+			}else{
 			banMsgVictim = banMsgVictim.replaceAll("%victim%", victim.getName());
+			}
 			sender.sendMessage(formatMessage(banMsgVictim));
 			return true;
 		}
-
-		plugin.bannedPlayers.add(victim.getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
-		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
-		Bukkit.getOfflinePlayer(victim.getName()).setBanned(true);
-		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + victim.getName() + ".");
+		if(victim == null){
+			String banMsgVictim = config.getString("messages.banMsgVictim", "You have been banned by %admin%. Reason: %reason%");
+			banMsgVictim = banMsgVictim.replaceAll("%admin%", admin);
+			banMsgVictim = banMsgVictim.replaceAll("%reason%", reason);
+			plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
+			plugin.db.addPlayer(p, reason, admin, 0, 0);
+			Bukkit.getOfflinePlayer(p).setBanned(true);
+			log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
+		}
 		if(victim != null){
 			String banMsgVictim = config.getString("messages.banMsgVictim", "You have been banned by %admin%. Reason: %reason%");
 			banMsgVictim = banMsgVictim.replaceAll("%admin%", admin);
 			banMsgVictim = banMsgVictim.replaceAll("%reason%", reason);
 			victim.kickPlayer(formatMessage(banMsgVictim));
+			plugin.bannedPlayers.add(victim.getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
+			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
+			Bukkit.getOfflinePlayer(victim.getName()).setBanned(true);
+			log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + victim.getName() + ".");
 		}
+			
+		
 		if(broadcast){
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
-			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", victim.getName());
+			if(victim == null){
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			}else{
+				banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", victim.getName());
+			}
 			plugin.getServer().broadcastMessage(formatMessage(banMsgBroadcast));
 		}else{
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
+			if(victim == null){
+			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
+			}else{
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", victim.getName());
+			}
 			sender.sendMessage(formatMessage(":S:" + banMsgBroadcast));
 		}
 		return true;
