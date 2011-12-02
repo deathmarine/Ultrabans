@@ -55,7 +55,9 @@ public class Fine implements CommandExecutor{
 			if (plugin.setupPermissions()){
 				if (plugin.permission.has(player, "ultraban.fine")) auth = true;
 			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
+				sender.sendMessage(ChatColor.RED + "You do not have the required dependancy: Vault.");
+				return true;
+			// if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
 			}
 			
 			admin = player.getName();
