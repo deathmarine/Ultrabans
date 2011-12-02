@@ -65,8 +65,14 @@ public class Empty implements CommandExecutor{
 			if (args.length < 1) return false;
 			String p = args[0];
 			if(autoComplete) p = expandName(p); 
+			String idoit = null;
 			Player victim = plugin.getServer().getPlayer(p);
-			String idoit = victim.getName();
+			if (victim != null){
+				idoit = victim.getName();
+			}else{
+				sender.sendMessage(ChatColor.GRAY + "Player must be online!");
+				return true;
+			}
 			String emptyMsg = config.getString("messages.emptyMsgVictim", "%admin% has cleared your inventory!'");
 			emptyMsg = emptyMsg.replaceAll("%admin%", admin);
 			emptyMsg = emptyMsg.replaceAll("%victim%", idoit);
