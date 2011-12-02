@@ -106,30 +106,47 @@ public class Jail implements CommandExecutor{
 					}else
 						reason = combineSplit(1, args, " ");
 				}
-				if(broadcast){
-					String adminMsgAll = config.getString("messages.jailMsgBroadcast", "%victim% was jailed by %admin%. Reason: %reason%");
-					adminMsgAll = adminMsgAll.replaceAll("%admin%", admin);
-					adminMsgAll = adminMsgAll.replaceAll("%reason%", reason);
-					adminMsgAll = adminMsgAll.replaceAll("%victim%", p);
-					plugin.getServer().broadcastMessage(formatMessage(adminMsgAll));
+				if(victim == null){
+					if(plugin.jailed.contains(p)){
+						sender.sendMessage(ChatColor.GRAY + p + " is already in jail.");
+						return true;
+					}else{
+						sender.sendMessage(ChatColor.GRAY + p + " was not found to be jailed.");
+					}
+					sender.sendMessage(ChatColor.GRAY + "Player Must be online to be jailed.");
+					return true;
 				}else{
-					String jailMsgVictim = config.getString("messages.jailMsgVictim", "You have been jailed by %admin%. Reason: %reason%!");
-					jailMsgVictim = jailMsgVictim.replaceAll("%admin%", admin);
-					jailMsgVictim = jailMsgVictim.replaceAll("%victim%", p);
-					victim.sendMessage(formatMessage(jailMsgVictim));
-					String adminMsgAll = config.getString("messages.jailMsgBroadcast", "%victim% was jailed by %admin%. Reason: %reason%");
-					adminMsgAll = adminMsgAll.replaceAll("%admin%", admin);
-					adminMsgAll = adminMsgAll.replaceAll("%reason%", reason);
-					adminMsgAll = adminMsgAll.replaceAll("%victim%", p);
-					sender.sendMessage(formatMessage(":S:" + adminMsgAll));
+					if(plugin.jailed.contains(victim.getName().toLowerCase())){
+						sender.sendMessage(ChatColor.GRAY + victim.getName() + " is already in jail.");
+						return true;
+					}else{
+						sender.sendMessage(ChatColor.GRAY + victim.getName() + " was not found to be jailed.");
+					}
+
+					if(broadcast){
+						String adminMsgAll = config.getString("messages.jailMsgBroadcast", "%victim% was jailed by %admin%. Reason: %reason%");
+						adminMsgAll = adminMsgAll.replaceAll("%admin%", admin);
+						adminMsgAll = adminMsgAll.replaceAll("%reason%", reason);
+						adminMsgAll = adminMsgAll.replaceAll("%victim%", p);
+						plugin.getServer().broadcastMessage(formatMessage(adminMsgAll));
+					}else{
+						String jailMsgVictim = config.getString("messages.jailMsgVictim", "You have been jailed by %admin%. Reason: %reason%!");
+						jailMsgVictim = jailMsgVictim.replaceAll("%admin%", admin);
+						jailMsgVictim = jailMsgVictim.replaceAll("%victim%", p);
+						victim.sendMessage(formatMessage(jailMsgVictim));
+						String adminMsgAll = config.getString("messages.jailMsgBroadcast", "%victim% was jailed by %admin%. Reason: %reason%");
+						adminMsgAll = adminMsgAll.replaceAll("%admin%", admin);
+						adminMsgAll = adminMsgAll.replaceAll("%reason%", reason);
+						adminMsgAll = adminMsgAll.replaceAll("%victim%", p);
+						sender.sendMessage(formatMessage(":S:" + adminMsgAll));
+					}
+					plugin.db.addPlayer(p, reason, admin, 0, 6);
+					plugin.jailed.add(p.toLowerCase());
+					Location stlp = getJail();
+					victim.teleport(stlp);
 				}
-				plugin.db.addPlayer(p, reason, admin, 0, 6);
-				plugin.jailed.add(p.toLowerCase());
-				Location stlp = getJail();
-				victim.teleport(stlp);
-				}
-			
-			return true;
+			}
+			return false;
 	}
 
 	public void setJail(Location location) {
