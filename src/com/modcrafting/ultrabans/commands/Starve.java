@@ -2,6 +2,7 @@ package com.modcrafting.ultrabans.commands;
 
 import java.util.logging.Logger;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -68,7 +69,13 @@ public class Starve implements CommandExecutor{
 			if(autoComplete)
 				p = expandName(p); 
 			Player victim = plugin.getServer().getPlayer(p);
-			String idoit = victim.getName();
+			String idoit = null;
+			if (victim != null){
+				idoit = victim.getName();
+			}else{
+				sender.sendMessage(ChatColor.GRAY + "Player must be online!");
+				return true;
+			}
 			String starveMsgVictim = config.getString("messages.starveMsgVictim", "You are now starving!");
 			starveMsgVictim = starveMsgVictim.replaceAll("%admin%", admin);
 			starveMsgVictim = starveMsgVictim.replaceAll("%victim%", idoit);
