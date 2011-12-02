@@ -62,7 +62,7 @@ public class SQLDatabases{
 				} catch (SQLException ex) {
 			            UltraBan.log.log(Level.SEVERE,"SQLite exception on initialize", ex);
 			    } catch (ClassNotFoundException ex) {
-			        	UltraBan.log.log(Level.SEVERE, "You need the SQLite library.", ex);
+			        	UltraBan.log.log(Level.SEVERE, "You need the SQLite JBDC library. Google it. Put it in /lib folder.");
 			    }
 			}
 			try {
@@ -154,17 +154,18 @@ public class SQLDatabases{
 					String pName = rs.getString("name").toLowerCase();
 					long pTime = rs.getLong("temptime");
 					plugin.bannedPlayers.add(pName);
+					UltraBan.log.log(Level.INFO, "[UltraBan] Loaded Bans/Permabans.");
 						if(pTime != 0){
 							plugin.tempBans.put(pName,pTime);
+							UltraBan.log.log(Level.INFO, "[UltraBan] Loaded Tempbans.");
 						}
 						if(rs.getInt("type") == 1){
 							String ip = getAddress(pName);
 							plugin.bannedIPs.add(ip);
+							UltraBan.log.log(Level.INFO, "[UltraBan] Loaded IPbans.");
 				
 						}
 					}
-					UltraBan.log.log(Level.INFO, "[UltraBan] Loaded Bans, IPbans, and Tempbans.");
-					UltraBan.log.log(Level.INFO, "[UltraBan] Server is secured.");
 				}catch (NullPointerException ex){
 					UltraBan.log.log(Level.SEVERE, "[UltraBan] Detected Major issues with database.");
 					plugin.getServer().getPluginManager().disablePlugin(plugin);

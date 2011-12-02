@@ -128,7 +128,9 @@ public class UltraBan extends JavaPlugin {
 		this.usePermaban = Config.getBoolean("usePermaban", true);
 		this.useRules = Config.getBoolean("useRules", true);
 		loadCommands();
-		//loadPerms();
+		if (Config != null) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Configuration: config.yml Loaded!");
+		if (setupPermissions()) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Permissions: hooked into Vault!");
+		if (setupEconomy()) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Economy: hooked into Vault!");
 		db.initialize(this);	
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Highest, this);
@@ -137,7 +139,8 @@ public class UltraBan extends JavaPlugin {
 		pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
-		log.log(Level.INFO,"[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " is enabled!" );
+		log.log(Level.INFO, "[" + pdfFile.getName() + "] Listeners enabled, Server is secured.");
+		log.log(Level.INFO,"[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " has been initialized!" );
 		
 	}
 	public Boolean setupPermissions()
