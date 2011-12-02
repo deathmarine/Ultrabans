@@ -99,7 +99,7 @@ public class Perma implements CommandExecutor{
 			adminMsg = adminMsg.replaceAll("%admin%", admin);
 			adminMsg = adminMsg.replaceAll("%reason%", reason);
 			plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
-			plugin.db.addPlayer(p, reason, admin, 0, 0);
+			plugin.db.addPlayer(p, reason, admin, 0, 9);
 			Bukkit.getOfflinePlayer(p).setBanned(true);
 			log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + p + ".");
 		}
