@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Export implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
@@ -27,10 +26,11 @@ public class Export implements CommandExecutor{
 		Player player = null;
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (Permissions.Security.permission(player, "ultraban.export"))  auth = true;
-		}else{
-			auth = true;
-		}
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.export")) auth = true;
+			}else{
+			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
+			}
 		
 		if (auth) {
 			try
@@ -59,6 +59,8 @@ public class Export implements CommandExecutor{
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
+	}
+		return false;
 	}
 
 }

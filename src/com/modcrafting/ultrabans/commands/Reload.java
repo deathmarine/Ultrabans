@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Reload implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
@@ -25,10 +24,10 @@ public class Reload implements CommandExecutor{
 		String admin = "server";
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (Permissions.Security.permission(player, "ultraban.reload")){
-				auth = true;
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.reload")) auth = true;
 			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no permissions or node
+			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
 			}
 			admin = player.getName();
 		}else{

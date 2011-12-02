@@ -9,13 +9,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
-
 import com.modcrafting.ultrabans.UltraBan;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Fine implements CommandExecutor{
-	public net.milkbowl.vault.economy.Economy economy = null;
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	public Fine(UltraBan ultraBan) {
@@ -49,16 +45,18 @@ public class Fine implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+		if(plugin.useFines) return true;
 		boolean auth = false;
 		Player player = null;
 		String admin = "server";
-		String perms = "ultraban.fine";
 		if (sender instanceof Player){
 			player = (Player)sender;
 			 			//new permissions test before reconstruct
-				if (Permissions.Security.permission(player, perms)){
-					auth = true;
-				}
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.fine")) auth = true;
+			}else{
+			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
+			}
 			
 			admin = player.getName();
 		}else{
@@ -95,13 +93,13 @@ public class Fine implements CommandExecutor{
 				sender.sendMessage(formatMessage(":S:" + fineMsg));
 				victim.sendMessage(formatMessage(fineMsg));
 			}
-			if(setupEconomy()){
-				double bal = economy.getBalance(p);
+			if(plugin.setupEconomy()){
+				double bal = plugin.economy.getBalance(p);
 				double amtd = Double.valueOf(amt.trim());
 				if(amtd > bal){
-					economy.withdrawPlayer(victim.getName(), bal);	
+					plugin.economy.withdrawPlayer(victim.getName(), bal);	
 				}else{
-					economy.withdrawPlayer(victim.getName(), amtd);
+					plugin.economy.withdrawPlayer(victim.getName(), amtd);
 				}
 			}
 			log.log(Level.INFO, "[UltraBan] " + admin + " fined player " + p + " amount of " + amt + ".");
@@ -132,13 +130,7 @@ public class Fine implements CommandExecutor{
 		builder.deleteCharAt(builder.length() - seperator.length()); // remove
 		return builder.toString();
 	}
-	public boolean setupEconomy(){
-		RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> economyProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-			if (economyProvider != null) {
-				economy = economyProvider.getProvider();
-			}
-				return (economy != null);
-		}
+	
 	public String formatMessage(String str){
 			String funnyChar = new Character((char) 167).toString();
 			str = str.replaceAll("&", funnyChar);

@@ -11,7 +11,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Kick implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
@@ -53,10 +52,10 @@ public class Kick implements CommandExecutor{
 		String admin = "server";
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (Permissions.Security.permission(player, "ultraban.kick")){
-				auth = true;
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.kick")) auth = true;
 			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no permissions or node
+			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
 			}
 			admin = player.getName();
 		}else{
@@ -85,7 +84,11 @@ public class Kick implements CommandExecutor{
 
 		if(p.equals("*")){
 			if (sender instanceof Player)
-				if (!Permissions.Security.permission(player, "ultraban.kick.all")) return true;
+				if (plugin.setupPermissions()){
+					if (!plugin.permission.has(player, "ultraban.kick.all")) return true;
+				}else{
+					if (!player.isOp()) return true; //defaulting to Op if no vault doesn't take or node
+				}
 			log.log(Level.INFO, "[UltraBan] " + admin + " kicked Everyone Reason: " + reason);
 			for (Player pl : plugin.getServer().getOnlinePlayers()) {
 				String adminMsg = config.getString("messages.kickAllMsg", "Everyone has been kicked by %admin%. Reason: %reason%");

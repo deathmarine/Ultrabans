@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class EditCommand implements CommandExecutor{
 	UltraBan plugin;
@@ -34,18 +33,13 @@ public class EditCommand implements CommandExecutor{
 		default: return "?";
 		}
 	}
-//	public boolean useMysql = plugin.properties.getBoolean("mysql", false);
-	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
 		if(sender instanceof Player)
-			if(!Permissions.Security.permission((Player)sender, "ultraban.editban"))
+			if(plugin.setupPermissions()){
+				if (!plugin.permission.has((Player)sender, "ultraban.editban"))
 				return true;
-/*		if(useMysql){
-			sender.sendMessage(ChatColor.BLUE + "Use Mysql for editing, Locally stored only.");
-				return true;
-		}
-		*/
+			}
 		if(args.length < 1)
 			return false;
 

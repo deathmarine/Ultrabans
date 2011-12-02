@@ -10,7 +10,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Rules implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
@@ -27,11 +26,15 @@ public class Rules implements CommandExecutor{
 		Player player = null;
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (Permissions.Security.permission(player, "ultraban.rules")){
-				if(Permissions.Security.permission(player, "ultraban.setrules")) set = true;
-				auth = true;
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.rules")) auth = true;
+				if (plugin.permission.has(player, "ultraban.rules.set")) set = true;
+			
 			}else{
-			 if (player.isOp()) auth = true;
+			 if (player.isOp()){
+				 auth = true;
+				 set = true;
+			 }
 			}
 		}else{
 			auth = true;

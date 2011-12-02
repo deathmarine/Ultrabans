@@ -15,7 +15,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Ipban implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
@@ -59,10 +58,10 @@ public class Ipban implements CommandExecutor{
 		String reason = "not sure";
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (Permissions.Security.permission(player, "ultraban.ipban")){
-				auth = true;
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.ipban")) auth = true;
 			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no permissions or node
+			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
 			}
 			admin = player.getName();
 		}else{

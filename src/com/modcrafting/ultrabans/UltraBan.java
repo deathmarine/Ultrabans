@@ -16,9 +16,9 @@ import java.util.logging.Logger;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.modcrafting.ultrabans.commands.Ban;
 import com.modcrafting.ultrabans.commands.Check;
@@ -43,12 +43,10 @@ import com.modcrafting.ultrabans.commands.Unban;
 import com.modcrafting.ultrabans.commands.Version;
 import com.modcrafting.ultrabans.commands.Warn;
 import com.modcrafting.ultrabans.db.SQLDatabases;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class UltraBan extends JavaPlugin {
 
 	public final static Logger log = Logger.getLogger("Minecraft");
-	Permissions CurrentPermissions = null;
 	public SQLDatabases db = new SQLDatabases();
 	public String maindir = "plugins/UltraBan/";
 	public HashSet<String> bannedPlayers = new HashSet<String>();
@@ -58,6 +56,8 @@ public class UltraBan extends JavaPlugin {
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
 	private final UltraBanBlockListener blockListener = new UltraBanBlockListener(this);
+	public net.milkbowl.vault.permission.Permission permission = null;
+	public net.milkbowl.vault.economy.Economy economy = null;
 	public boolean autoComplete;
 	public boolean useFines;
 	public boolean useJail;
@@ -128,7 +128,7 @@ public class UltraBan extends JavaPlugin {
 		this.usePermaban = Config.getBoolean("usePermaban", true);
 		this.useRules = Config.getBoolean("useRules", true);
 		loadCommands();
-		loadPerms();
+		//loadPerms();
 		db.initialize(this);	
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Highest, this);
@@ -140,20 +140,21 @@ public class UltraBan extends JavaPlugin {
 		log.log(Level.INFO,"[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " is enabled!" );
 		
 	}
-	private void loadPerms(){
-		 Plugin plugin = this.getServer().getPluginManager().getPlugin("Permissions");
-
-		 if (CurrentPermissions == null) {
-		 // Permission plugin already registered
-		 return;
-		 }
-
-		 if (plugin != null) {
-		 CurrentPermissions = (Permissions) plugin;
-		 } else {
-		 this.getServer().getPluginManager().disablePlugin(this);
-		 }
-	}
+	public Boolean setupPermissions()
+    {
+        RegisteredServiceProvider<net.milkbowl.vault.permission.Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null) {
+            permission = permissionProvider.getProvider();
+        }
+        return (permission != null);
+    }
+	public boolean setupEconomy(){
+		RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+			if (economyProvider != null) {
+				economy = economyProvider.getProvider();
+			}
+				return (economy != null);
+		}
 	public void loadCommands(){
 
 		getCommand("ban").setExecutor(new Ban(this));
@@ -162,7 +163,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("empty").setExecutor(new Empty(this));
 		getCommand("importbans").setExecutor(new Import(this));
 		getCommand("exportbans").setExecutor(new Export(this));
-		if(useFines) getCommand("fine").setExecutor(new Fine(this));
+		getCommand("fine").setExecutor(new Fine(this));
 		getCommand("uhelp").setExecutor(new Help(this));
 		getCommand("ipban").setExecutor(new Ipban(this));
 		getCommand("kick").setExecutor(new Kick(this));

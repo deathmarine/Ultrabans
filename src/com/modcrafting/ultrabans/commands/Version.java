@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Version implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
@@ -25,10 +24,10 @@ public class Version implements CommandExecutor{
 		String admin = "server";
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (Permissions.Security.permission(player, "ultraban.version")){
-				auth = true;
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.version")) auth = true;
 			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no permissions or node
+			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
 			}
 			admin = player.getName();
 		}else{

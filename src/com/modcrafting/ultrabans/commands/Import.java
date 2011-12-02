@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Import implements CommandExecutor{
 
@@ -30,10 +29,10 @@ public class Import implements CommandExecutor{
 		String admin = "server";
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (Permissions.Security.permission(player, "ultraban.import")){
-				auth = true;
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.import")) auth = true;
 			}else{
-			 if (player.isOp()) auth = true;
+			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
 			}
 			admin = player.getName();
 		}else{

@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
 import com.modcrafting.ultrabans.db.SQLDatabases;
-import com.nijikokun.bukkit.Permissions.Permissions;
 
 public class Spawn implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
@@ -56,10 +55,10 @@ public class Spawn implements CommandExecutor{
 		autoComplete = config.getBoolean("auto-complete", true);
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (Permissions.Security.permission(player, "ultraban.spawn")){
-				auth = true;
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.spawn")) auth = true;
 			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no permissions or node
+			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
 			}
 			admin = player.getName();
 		}else{
