@@ -31,7 +31,8 @@ public class Export implements CommandExecutor{
 			}else{
 			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
 			}
-		
+			auth = true;
+		}
 		if (auth) {
 			try
 			{
@@ -59,8 +60,6 @@ public class Export implements CommandExecutor{
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
-	}
-		return false;
 	}
 
 }
