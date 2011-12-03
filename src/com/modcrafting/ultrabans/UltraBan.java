@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
@@ -150,7 +152,7 @@ public class UltraBan extends JavaPlugin {
         return (permission != null);
     }
 	public boolean setupEconomy(){
-		RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
 			if (economyProvider != null) {
 				economy = economyProvider.getProvider();
 			}
@@ -179,9 +181,6 @@ public class UltraBan extends JavaPlugin {
 		getCommand("ujail").setExecutor(new Jail(this));
 		getCommand("permaban").setExecutor(new Perma(this));
 		getCommand("lockdown").setExecutor(new Lockdown(this));
-	}
-	public void setObject(){
-		
 	}
 }
 
