@@ -44,12 +44,14 @@ import com.modcrafting.ultrabans.commands.Tempban;
 import com.modcrafting.ultrabans.commands.Unban;
 import com.modcrafting.ultrabans.commands.Version;
 import com.modcrafting.ultrabans.commands.Warn;
+import com.modcrafting.ultrabans.db.IPScope;
 import com.modcrafting.ultrabans.db.SQLDatabases;
 
 public class UltraBan extends JavaPlugin {
 
 	public final static Logger log = Logger.getLogger("Minecraft");
 	public SQLDatabases db = new SQLDatabases();
+	public IPScope ipscope = new IPScope(this);
 	public String maindir = "plugins/UltraBan/";
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
