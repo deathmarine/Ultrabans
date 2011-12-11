@@ -35,6 +35,7 @@ import com.modcrafting.ultrabans.commands.Ipban;
 import com.modcrafting.ultrabans.commands.Jail;
 import com.modcrafting.ultrabans.commands.Kick;
 import com.modcrafting.ultrabans.commands.Lockdown;
+import com.modcrafting.ultrabans.commands.Mute;
 import com.modcrafting.ultrabans.commands.Perma;
 import com.modcrafting.ultrabans.commands.Reload;
 import com.modcrafting.ultrabans.commands.Rules;
@@ -56,6 +57,7 @@ public class UltraBan extends JavaPlugin {
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
 	public HashSet<String> jailed = new HashSet<String>();
+	public HashSet<String> muted = new HashSet<String>();
 	public Map<String,Long> tempBans = new HashMap<String,Long>();
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
@@ -78,6 +80,7 @@ public class UltraBan extends JavaPlugin {
 		bannedPlayers.clear();
 		bannedIPs.clear();
 		jailed.clear();
+		muted.clear();
 		banEditors.clear();
 		System.out.println("UltraBan disabled.");
 	}
@@ -183,6 +186,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("ujail").setExecutor(new Jail(this));
 		getCommand("permaban").setExecutor(new Perma(this));
 		getCommand("lockdown").setExecutor(new Lockdown(this));
+		getCommand("umute").setExecutor(new Mute(this));
 	}
 }
 

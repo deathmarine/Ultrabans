@@ -29,6 +29,7 @@ public class EditCommand implements CommandExecutor{
 		case 4: return "F";
 		case 5: return "UN";
 		case 6: return "J";
+		case 7: return "M";
 		case 9: return "PB";
 		default: return "?";
 		}

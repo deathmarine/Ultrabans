@@ -3,6 +3,7 @@ package com.modcrafting.ultrabans;
 
 import java.util.Date;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,6 +15,7 @@ import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 public class UltraBanPlayerListener extends PlayerListener {
+	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	public UltraBanPlayerListener(UltraBan ultraBans) {
 		this.plugin = ultraBans;
@@ -63,8 +65,20 @@ public class UltraBanPlayerListener extends PlayerListener {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
 		String ip = player.getAddress().getAddress().getHostAddress();
+		String dubName = plugin.db.getName(ip);
+		if (dubName != player.getName()){
+			if (plugin.setupPermissions()){
+				Player[] parg = plugin.getServer().getOnlinePlayers();
+				for (int i=0; i<parg.length; i++){
+					if (plugin.permission.has(parg[i], "ultraban.info")){
+						parg[i].sendMessage(ChatColor.RED + "ATTN: " + dubName + " and " + player.getName() + " share IP: " + ip);
+					}
+				}
+			}
+		}
 		plugin.db.setAddress(player.getName().toLowerCase(), ip);
 		System.out.println("[UltraBan] Logged " + player.getName() + " connecting from ip:" + ip);
+		
 		
 		//Personalized copy
 		//player.sendMessage(ChatColor.GRAY + "Server is secured by" + ChatColor.GOLD + " Death's UltraBans");
@@ -79,16 +93,25 @@ public class UltraBanPlayerListener extends PlayerListener {
 		}
 	}
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
 			if(plugin.jailed.contains(player.getName().toLowerCase())){
-				player.sendMessage(ChatColor.GRAY + "You cannot use commands while Jailed!");
+				String adminMsg = config.getString("messages.jailCmdMsg", "You cannot use commands while Jailed!");
+				player.sendMessage(ChatColor.GRAY + adminMsg);
 				event.setCancelled(true);
 			 }
 	}
 	public void onPlayerChat(PlayerChatEvent event){
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		 Player player = event.getPlayer();
+		 	if(plugin.muted.contains(player.getName().toLowerCase())){
+				String adminMsg = config.getString("messages.muteChatMsg", "Your cry falls on deaf ears.");
+		 		player.sendMessage(ChatColor.GRAY + adminMsg);
+		 		event.setCancelled(true);
+		 	}
 		 	if(plugin.jailed.contains(player.getName().toLowerCase())){
-		 		player.sendMessage(ChatColor.GRAY + "Your cry falls on deaf ears.");
+				String adminMsg = config.getString("messages.jailChatMsg", "Your cry falls on deaf ears.");
+		 		player.sendMessage(ChatColor.GRAY + adminMsg);
 		 		event.setCancelled(true);
 		 	}
 	}

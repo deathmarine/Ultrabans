@@ -1,6 +1,6 @@
 name: UltraBan
 main: com.modcrafting.ultrabans.UltraBan
-version: 0.1.3
+version: 0.1.4
 website: http://modcrafting.com
 author: Deathmarine
 description: >
@@ -54,6 +54,9 @@ commands:
   ujail:
     description: Jail player
     usage: /<command> <set/pardon/player> player - pardon player
+  umute:
+    description: Mute player
+    usage: /<command> <enable/player> player - mutes player
   lockdown:
     description: Lockdown the Server
     usage: /<command> <on/off/status>
