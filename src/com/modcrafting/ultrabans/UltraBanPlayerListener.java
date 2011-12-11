@@ -65,20 +65,9 @@ public class UltraBanPlayerListener extends PlayerListener {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
 		String ip = player.getAddress().getAddress().getHostAddress();
-		String dubName = plugin.db.getName(ip);
-		if (dubName != player.getName()){
-			if (plugin.setupPermissions()){
-				Player[] parg = plugin.getServer().getOnlinePlayers();
-				for (int i=0; i<parg.length; i++){
-					if (plugin.permission.has(parg[i], "ultraban.info")){
-						parg[i].sendMessage(ChatColor.RED + "ATTN: " + dubName + " and " + player.getName() + " share IP: " + ip);
-					}
-				}
-			}
-		}
 		plugin.db.setAddress(player.getName().toLowerCase(), ip);
 		System.out.println("[UltraBan] Logged " + player.getName() + " connecting from ip:" + ip);
-		
+	
 		
 		//Personalized copy
 		//player.sendMessage(ChatColor.GRAY + "Server is secured by" + ChatColor.GOLD + " Death's UltraBans");
