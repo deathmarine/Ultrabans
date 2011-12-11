@@ -96,6 +96,12 @@ public class Ipban implements CommandExecutor{
 			plugin.getServer().broadcastMessage(formatMessage(banMsgBroadcast));
 			return true;
 		}
+		/*
+		if(p.contains("*")){
+			plugin.ipscope.combine(p);
+			//really bad idea. 255 to 65025 entries!!!
+		}
+		*/
 		boolean broadcast = true;
 		
 		// Silent for Reason Combining
