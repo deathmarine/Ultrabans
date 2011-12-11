@@ -56,7 +56,7 @@ commands:
     usage: /<command> <set/pardon/player> player - pardon player
   umute:
     description: Mute player
-    usage: /<command> <enable/player> player - mutes player
+    usage: /<command> <unmute/player> player - mutes player
   lockdown:
     description: Lockdown the Server
     usage: /<command> <on/off/status>
