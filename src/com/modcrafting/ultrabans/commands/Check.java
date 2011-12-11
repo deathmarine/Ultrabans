@@ -27,6 +27,7 @@ public class Check implements CommandExecutor{
 		case 4: return "F";
 		case 5: return "UN";
 		case 6: return "J";
+		case 7: return "M";
 		case 9: return "PB";
 		default: return "?";
 		}
@@ -57,7 +58,8 @@ public class Check implements CommandExecutor{
 			sender.sendMessage(ChatColor.GREEN + "No records");
 			return true;
 		}
-		sender.sendMessage(ChatColor.BLUE + "Found " + bans.size() + " records for user " + bans.get(0).name + ":");
+		String ip = plugin.db.getAddress(p);
+		sender.sendMessage(ChatColor.BLUE + "Found " + bans.size() + " records for user " + bans.get(0).name + " on IP " + ip + " :");
 		for(EditBan ban : bans){
 			sender.sendMessage(ChatColor.RED + banType(ban.type) + ChatColor.GRAY + ban.id + ": " + ChatColor.GREEN + ban.reason + ChatColor.AQUA +" by " + ban.admin);
 		}
