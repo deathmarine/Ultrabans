@@ -5,6 +5,6 @@
 	<classpathentry kind="lib" path="C:/Users/jmccurry/Minecraft/Vault.jar"/>
 	<classpathentry kind="lib" path="D:/Documents/Downloads/Reconstruct/PermissionsEx-1.14-package/Permissions.jar"/>
 	<classpathentry kind="lib" path="D:/Documents/Downloads/Reconstruct/PermissionsEx-1.14-package/PermissionsEx.jar"/>
-	<classpathentry kind="lib" path="D:/Documents/Downloads/craftbukkit-1.0.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/Downloads/Java Jar/craftbukkit-1.0.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
