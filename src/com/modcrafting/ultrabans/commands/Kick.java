@@ -90,13 +90,16 @@ public class Kick implements CommandExecutor{
 					if (!player.isOp()) return true; //defaulting to Op if no vault doesn't take or node
 				}
 			log.log(Level.INFO, "[UltraBan] " + admin + " kicked Everyone Reason: " + reason);
-			for (Player pl : plugin.getServer().getOnlinePlayers()) {
+			Player[] pl = plugin.getServer().getOnlinePlayers();
+			for (int i=0; i<pl.length; i++){
+				if (!plugin.permission.has(pl[i], "ultraban.kick.all")){
 				String adminMsg = config.getString("messages.kickAllMsg", "Everyone has been kicked by %admin%. Reason: %reason%");
 				adminMsg = adminMsg.replaceAll("%admin%", admin);
 				adminMsg = adminMsg.replaceAll("%reason%", reason);
-				pl.kickPlayer(formatMessage(adminMsg));
-				return true;
+				pl[i].kickPlayer(formatMessage(adminMsg));
+				}
 			}
+			return true;
 		}
 		if(plugin.autoComplete)
 			p = expandName(p);
