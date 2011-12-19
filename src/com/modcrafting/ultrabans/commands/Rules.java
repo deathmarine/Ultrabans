@@ -43,27 +43,27 @@ public class Rules implements CommandExecutor{
 			if(args.length < 1){
 				if(auth){
 					String ruleMsg = config.getString("messages.ruleMsg", "The Servers Rules Are As Follows!");
-					sender.sendMessage(ruleMsg);
+					sender.sendMessage(formatMessage(ruleMsg));
 					String rule1 = config.getString("rules.one");
-					if (rule1 != null) sender.sendMessage("1. " + rule1);
+					if (rule1 != null) sender.sendMessage(formatMessage("1. " + rule1));
 					String rule2 = config.getString("rules.two");
-					if (rule2 != null) sender.sendMessage("2. " + rule2);
+					if (rule2 != null) sender.sendMessage(formatMessage("2. " + rule2));
 					String rule3 = config.getString("rules.three");
-					if (rule3 != null) sender.sendMessage("3. " + rule3);
+					if (rule3 != null) sender.sendMessage(formatMessage("3. " + rule3));
 					String rule4 = config.getString("rules.four");
-					if (rule4 != null) sender.sendMessage("4. " + rule4);
+					if (rule4 != null) sender.sendMessage(formatMessage("4. " + rule4));
 					String rule5 = config.getString("rules.five");
-					if (rule5 != null) sender.sendMessage("5. " + rule5);
+					if (rule5 != null) sender.sendMessage(formatMessage("5. " + rule5));
 					String rule6 = config.getString("rules.six");
-					if (rule6 != null) sender.sendMessage("6. " + rule6);
+					if (rule6 != null) sender.sendMessage(formatMessage("6. " + rule6));
 					String rule7 = config.getString("rules.seven");
-					if (rule7 != null) sender.sendMessage("7. " + rule7);
+					if (rule7 != null) sender.sendMessage(formatMessage("7. " + rule7));
 					String rule8 = config.getString("rules.eight");
-					if (rule8 != null) sender.sendMessage("8. " + rule8);
+					if (rule8 != null) sender.sendMessage(formatMessage("8. " + rule8));
 					String rule9 = config.getString("rules.nine");
-					if (rule9 != null) sender.sendMessage("9. " + rule9);
+					if (rule9 != null) sender.sendMessage(formatMessage("9. " + rule9));
 					String rule10 = config.getString("rules.ten");
-					if (rule10 != null) sender.sendMessage("10. " + rule10);
+					if (rule10 != null) sender.sendMessage(formatMessage("10. " + rule10));
 					return true;
 				}
 			}
@@ -145,5 +145,11 @@ public class Rules implements CommandExecutor{
 		sender.sendMessage(ChatColor.GRAY + "displays: 1. No Grief.");
 		sender.sendMessage(ChatColor.GRAY + "displays: 7. No Swearing.");
 		sender.sendMessage(ChatColor.GRAY + "/rules help - Displays this help.");
+	}
+
+	public String formatMessage(String str){
+		String funnyChar = new Character((char) 167).toString();
+		str = str.replaceAll("&", funnyChar);
+		return str;
 	}
 }
