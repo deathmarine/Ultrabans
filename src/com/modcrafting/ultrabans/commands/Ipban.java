@@ -88,7 +88,6 @@ public class Ipban implements CommandExecutor{
 				plugin.db.addPlayer("failedname", reason, admin, 0, 1);
 			}
 			plugin.db.addPlayer(pname, reason, admin, 0, 1);
-			Bukkit.banIP(p);
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
@@ -126,7 +125,6 @@ public class Ipban implements CommandExecutor{
 			}
 			String offlineip = plugin.db.getAddress(p.toLowerCase());
 			plugin.bannedPlayers.add(p.toLowerCase());
-			Bukkit.getOfflinePlayer(p).setBanned(true);
 			if(offlineip != null){
 				plugin.bannedIPs.add(offlineip);
 				Bukkit.banIP(offlineip);
@@ -164,7 +162,6 @@ public class Ipban implements CommandExecutor{
 		}
 		String victimip = plugin.db.getAddress(victim.getName().toLowerCase());
 		plugin.bannedPlayers.add(victim.getName().toLowerCase());
-		Bukkit.getOfflinePlayer(victim.getName()).setBanned(true);
 		if(victimip != null){
 		plugin.bannedIPs.add(victimip);
 		Bukkit.banIP(victimip);

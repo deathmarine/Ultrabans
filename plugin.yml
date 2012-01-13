@@ -20,7 +20,13 @@ commands:
     usage: /<command> player - Unban a player
   checkban:
     description: Check if a player is banned
-    usage: /<command>
+    usage: /<command> player
+  checkip:
+    description: Check a players ip
+    usage: /<command> player
+  dupeip:
+    description: Check a players ip against all players
+    usage: /<command> player
   permaban:
     description: Unbannable Banning
     usage: /<command> player [reason] - Permaban

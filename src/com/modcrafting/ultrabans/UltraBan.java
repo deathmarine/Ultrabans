@@ -24,6 +24,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.modcrafting.ultrabans.commands.Ban;
 import com.modcrafting.ultrabans.commands.Check;
+import com.modcrafting.ultrabans.commands.CheckIP;
+import com.modcrafting.ultrabans.commands.DupeIP;
 import com.modcrafting.ultrabans.commands.EditBan;
 import com.modcrafting.ultrabans.commands.EditCommand;
 import com.modcrafting.ultrabans.commands.Empty;
@@ -167,6 +169,8 @@ public class UltraBan extends JavaPlugin {
 
 		getCommand("ban").setExecutor(new Ban(this));
 		getCommand("checkban").setExecutor(new Check(this));
+		getCommand("checkip").setExecutor(new CheckIP(this));
+		getCommand("dupeip").setExecutor(new DupeIP(this));
 		getCommand("editban").setExecutor(new EditCommand(this));
 		getCommand("empty").setExecutor(new Empty(this));
 		getCommand("importbans").setExecutor(new Import(this));

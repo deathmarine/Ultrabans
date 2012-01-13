@@ -3,7 +3,6 @@ package com.modcrafting.ultrabans.commands;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -98,7 +97,6 @@ public class Ban implements CommandExecutor{
 			banMsgVictim = banMsgVictim.replaceAll("%reason%", reason);
 			plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
 			plugin.db.addPlayer(p, reason, admin, 0, 0);
-			Bukkit.getOfflinePlayer(p).setBanned(true);
 			log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 		}
 		if(victim != null){
@@ -108,7 +106,6 @@ public class Ban implements CommandExecutor{
 			victim.kickPlayer(formatMessage(banMsgVictim));
 			plugin.bannedPlayers.add(victim.getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
 			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
-			Bukkit.getOfflinePlayer(victim.getName()).setBanned(true);
 			log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + victim.getName() + ".");
 		}
 			
