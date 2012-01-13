@@ -79,7 +79,17 @@ public class Ban implements CommandExecutor{
 			}else
 				reason = combineSplit(1, args, " ");
 		}
-	
+		if (plugin.setupPermissions()){
+			if (plugin.permission.has(victim, "ultraban.admin.override")){
+				String banMsg = config.getString("messages.banOverrideAdmin", "%victim% can not be banned!");
+				banMsg = banMsg.replaceAll("%victim%", p);
+				sender.sendMessage(banMsg);
+				String victimMsg = config.getString("messages.banOverrideVictim", "%admin% attempted to ban you!");
+				banMsg = banMsg.replaceAll("%admin%", admin);
+				victim.sendMessage(victimMsg);
+				return true;
+			}
+		}
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			String banMsgVictim = config.getString("messages.banMsgFailed", 
 			"Player %victim% is already banned!");

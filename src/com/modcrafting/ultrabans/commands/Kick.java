@@ -81,7 +81,7 @@ public class Kick implements CommandExecutor{
 			}else
 				reason = combineSplit(1, args, " ");
 		}
-
+		
 		if(p.equals("*")){
 			if (sender instanceof Player)
 				if (plugin.setupPermissions()){
@@ -107,6 +107,17 @@ public class Kick implements CommandExecutor{
 		if(victim == null){
 			sender.sendMessage(ChatColor.GRAY + "Player must be online!");
 			return true;
+		}
+		if (plugin.setupPermissions()){
+			if (plugin.permission.has(victim, "ultraban.admin.override")){
+				String banMsg = config.getString("messages.kickOverrideAdmin", "%victim% can not be kicked!");
+				banMsg = banMsg.replaceAll("%victim%", p);
+				sender.sendMessage(banMsg);
+				String victimMsg = config.getString("messages.kickOverrideVictim", "%admin% attempted to kick you!");
+				banMsg = banMsg.replaceAll("%admin%", admin);
+				victim.sendMessage(victimMsg);
+				return true;
+			}
 		}
 		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 3);
 		log.log(Level.INFO, "[UltraBan] " + admin + " kicked player " + victim.getName() + ". Reason: " + reason);

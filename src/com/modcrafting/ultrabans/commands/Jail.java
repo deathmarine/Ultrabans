@@ -97,14 +97,27 @@ public class Jail implements CommandExecutor{
 						return true;
 				}
 				String p = args[0];
-				Player victim = plugin.getServer().getPlayer(p);
 				if(autoComplete) p = expandName(p);
+				Player victim = plugin.getServer().getPlayer(p);
+				
 				if(args.length > 1){
 					if(args[1].equalsIgnoreCase("-s")){
 						broadcast = false;
 						reason = combineSplit(2, args, " ");
 					}else
 						reason = combineSplit(1, args, " ");
+				}
+
+				if (plugin.setupPermissions()){
+					if (plugin.permission.has(victim, "ultraban.admin.override")){
+						String banMsg = config.getString("messages.jailOverrideAdmin", "%victim% can not be jailed!");
+						banMsg = banMsg.replaceAll("%victim%", p);
+						sender.sendMessage(banMsg);
+						String victimMsg = config.getString("messages.jailOverrideVictim", "%admin% attempted to jail you!");
+						banMsg = banMsg.replaceAll("%admin%", admin);
+						victim.sendMessage(victimMsg);
+						return true;
+					}
 				}
 				if(victim == null){
 					if(plugin.jailed.contains(p)){

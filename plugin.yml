@@ -1,6 +1,6 @@
 name: UltraBan
 main: com.modcrafting.ultrabans.UltraBan
-version: 0.1.5
+version: 0.1.6
 website: http://modcrafting.com
 author: Deathmarine
 description: >
@@ -30,24 +30,29 @@ commands:
   permaban:
     description: Unbannable Banning
     usage: /<command> player [reason] - Permaban
+    aliases: [perma]
   ureload:
     description: Reload the banlist
     usage: /<command>
   ipban:
     description: IP-ban a player
     usage: /<command> player [reason]
+    aliases: [iban]
   exportbans:
     description: Export bans to banned-players.txt
     usage: /<command>
+    aliases: [exportban,uexport]
   importbans:
     description: import bans from banned-players.txt and banned-ips.txt
     usage: /<command>
+    aliases: [uimport,importban]
   warn:
     description: Warn a player
     usage: /<command> player [reason] - Warn a player
   fine:
     description: Fine a player
     usage: /<command> player [amt] - Fine a player
+    aliases: [ufine,fne,fin]
   empty:
     description: Empty player inventory.
     usage: /<command> player - Empty a players inventory
@@ -62,7 +67,7 @@ commands:
     usage: /<command> <set/pardon/player> player - pardon player
   umute:
     description: Mute player
-    usage: /<command> <player> player - mutes / unmutes player
+    usage: /<command> <player> - mutes / unmutes player
     aliases: [mute,unmute,uumute,ununmute,uunmute]
   lockdown:
     description: Lockdown the Server
@@ -70,6 +75,7 @@ commands:
   rules:
     description: Displays and sets rules
     usage: /<command> <set> rule
+    aliases: [rule,ruless,rle,rles,rul,ruls]
   editban:
     description: Edit a ban
     usage: /<command> <list/load/id/save/view/reason/time/cancel/help>

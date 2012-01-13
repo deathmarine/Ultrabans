@@ -2,7 +2,6 @@
 package com.modcrafting.ultrabans;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,6 +24,9 @@ public class UltraBanPlayerListener extends PlayerListener {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
 		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
+			if (plugin.setupPermissions()){
+				if (plugin.permission.has(player, "ultraban.admin.override")) return;
+			}
 			System.out.println("banned player joined");
 			String reason = plugin.db.getBanReason(player.getName().toLowerCase());
 			String adminMsg = "You've been banned for: " + reason;
@@ -82,10 +84,12 @@ public class UltraBanPlayerListener extends PlayerListener {
 	        if (name == ip){
 	    		Player[] pll = plugin.getServer().getOnlinePlayers();
 	    		for (int ii=0; ii<pll.length; ii++){
-					if (plugin.permission.has(pll[ii], "ultraban.checkip")){
-						pll[ii].sendMessage(ChatColor.YELLOW + "Duplicate IP Login detected: " + ChatColor.GOLD + pl[i] + ChatColor.YELLOW + " and " + ChatColor.GOLD + player.getName());
-						pll[ii].sendMessage(ChatColor.YELLOW + "IP Address: " + name);
-					}
+	    			if (plugin.setupPermissions()){
+	    				if (plugin.permission.has(pll[ii], "ultraban.checkip")){
+							pll[ii].sendMessage(ChatColor.YELLOW + "Duplicate IP Login detected: " + ChatColor.GOLD + pl[i] + ChatColor.YELLOW + " and " + ChatColor.GOLD + player.getName());
+							pll[ii].sendMessage(ChatColor.YELLOW + "IP Address: " + name);
+						}
+	    			}	
 	    		}
 	    		boolean dupePolicy = config.getBoolean("dupePolicy", false);
 	    		if(dupePolicy){

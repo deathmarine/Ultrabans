@@ -81,7 +81,17 @@ public class Perma implements CommandExecutor{
 			}else
 				reason = combineSplit(1, args, " ");
 		}
-
+		if (plugin.setupPermissions()){
+			if (plugin.permission.has(victim, "ultraban.admin.override")){
+				String banMsg = config.getString("messages.permabanOverrideAdmin", "%victim% can not be permabanned!");
+				banMsg = banMsg.replaceAll("%victim%", p);
+				sender.sendMessage(banMsg);
+				String victimMsg = config.getString("messages.permabanOverrideVictim", "%admin% attempted to permaban you!");
+				banMsg = banMsg.replaceAll("%admin%", admin);
+				victim.sendMessage(victimMsg);
+				return true;
+			}
+		}
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			String adminMsg = config.getString("messages.banMsgFailed", 
 			"&8Player &4%victim% &8is already banned!");

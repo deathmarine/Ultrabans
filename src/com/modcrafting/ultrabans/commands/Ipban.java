@@ -115,7 +115,18 @@ public class Ipban implements CommandExecutor{
 		if(autoComplete)
 			p = expandName(p);
 		Player victim = plugin.getServer().getPlayer(p); 
-		
+
+		if (plugin.setupPermissions()){
+			if (plugin.permission.has(victim, "ultraban.admin.override")){
+				String banMsg = config.getString("messages.ipbanOverrideAdmin", "%victim% can not be ipbanned!");
+				banMsg = banMsg.replaceAll("%victim%", p);
+				sender.sendMessage(banMsg);
+				String victimMsg = config.getString("messages.ipbanOverrideVictim", "%admin% attempted to ipban you!");
+				banMsg = banMsg.replaceAll("%admin%", admin);
+				victim.sendMessage(victimMsg);
+				return true;
+			}
+		}
 		// Strict Offline IP bans - Independent after Online Check
 		if(victim == null){
 			victim = Bukkit.getOfflinePlayer(p).getPlayer();
@@ -164,7 +175,6 @@ public class Ipban implements CommandExecutor{
 		plugin.bannedPlayers.add(victim.getName().toLowerCase());
 		if(victimip != null){
 		plugin.bannedIPs.add(victimip);
-		Bukkit.banIP(victimip);
 		}else{
 			sender.sendMessage(ChatColor.GRAY + "IP address not found by Ultrabans for " + victim.getName());
 			sender.sendMessage(ChatColor.GRAY + "Processed as a normal ban for " + victim.getName());
