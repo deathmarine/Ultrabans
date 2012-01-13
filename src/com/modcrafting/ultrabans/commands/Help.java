@@ -36,6 +36,8 @@ public class Help implements CommandExecutor{
 			sender.sendMessage("/ipban      {player} (-s) {reason}");
 			sender.sendMessage("/unban      {player}");
 			sender.sendMessage("/checkban   {player}");
+			sender.sendMessage("/checkip    {player}");
+			sender.sendMessage("/dupeip     {player}");
 			sender.sendMessage("/kick       {player} (-s) {reason}");
 			sender.sendMessage("/warn       {player} (-s) {reason}");
 			sender.sendMessage("/fine       {player} (-s) {amt}");
@@ -58,7 +60,7 @@ public class Help implements CommandExecutor{
 		if (plugin.permission.has(player, "ultraban.tempban"))sender.sendMessage(ChatColor.GRAY + "/tempban {player} (-s) {amt} {sec/min/hour/day} {Reason}");
 		if (plugin.permission.has(player, "ultraban.ipban"))sender.sendMessage(ChatColor.GRAY + "/ipban {player} (-s) {reason}");
 		if (plugin.permission.has(player, "ultraban.unban"))sender.sendMessage(ChatColor.GRAY + "/unban {player}");
-		if (plugin.permission.has(player, "ultraban.check"))sender.sendMessage(ChatColor.GRAY + "/checkban {player}");
+		if (plugin.permission.has(player, "ultraban.check"))sender.sendMessage(ChatColor.GRAY + "/checkban /checkip /dupeip {player}");
 		if (plugin.permission.has(player, "ultraban.kick"))sender.sendMessage(ChatColor.GRAY + "/kick {player} (-s) {reason}");
 		if (plugin.permission.has(player, "ultraban.warn"))sender.sendMessage(ChatColor.GRAY + "/warn {player} (-s) {reason}");
 		if (plugin.permission.has(player, "ultraban.fine"))sender.sendMessage(ChatColor.GRAY + "/fine {player} (-s) {amt}");
