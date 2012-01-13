@@ -69,11 +69,10 @@ public class Mute implements CommandExecutor {
 		
 		if (args.length < 1) return false;
 		
-		if(args[0].equalsIgnoreCase("enable")){
-			String p = expandName(args[1]); 
-			p = expandName(p);
-			Player victim = plugin.getServer().getPlayer(p);
-			if(victim != null){
+		String p = expandName(args[0]); 
+		Player victim = plugin.getServer().getPlayer(p);
+		if(victim != null){
+			if (plugin.muted.contains(p.toLowerCase())){
 				plugin.muted.remove(p);
 				String adminMsg = config.getString("messages.unmuteMsgVictim", "You have been unmuted.");
 		 		victim.sendMessage(ChatColor.GRAY + adminMsg);
@@ -81,15 +80,7 @@ public class Mute implements CommandExecutor {
 				adminMsgs = adminMsgs.replaceAll("%victim%", p);
 		 		sender.sendMessage(ChatColor.GRAY + adminMsgs);
 				return true;
-			}else{
-				sender.sendMessage(ChatColor.GRAY + "Player must be online!");
-				return true;
 			}
-	}
-		 
-		String p = expandName(args[0]); 
-		Player victim = plugin.getServer().getPlayer(p);
-		if(victim != null){
 			plugin.muted.add(p);
 			String adminMsg = config.getString("messages.muteChatMsg", "You have been muted.");
 	 		victim.sendMessage(ChatColor.GRAY + adminMsg);
