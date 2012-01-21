@@ -28,8 +28,6 @@ useRules: true
 #change to true or false to enable lockdown#
 #also can be done ingame /lockdown#
 lockdown: false
-#If Dupe policy is true duplicate players logging in after the#
-#first IP will be kicked until the ip has been cleared#
 dupePolicy: false
 messages:
   banMsgFailed: '&c%victim% &8is already banned!'
@@ -40,22 +38,12 @@ messages:
   kickMsgVictim: 'You have been kicked by %admin%. Reason: %reason%!'
   kickMsgBroadcast: '&c%victim% &8was kicked by &9%admin%&8. Reason: &c%reason%!'
   kickMsgFailed: '&8Kick failed: &8%victim% &8isn''t online.'
-  kickOverrideAdmin: '%victim% can not be kicked!'
-  kickOverrideVictim: '%admin% attempted to kick you!'
   banMsgVictim: 'You have been banned by %admin%. Reason: %reason%!'
   banMsgBroadcast: '&c%victim% &8was banned by &9%admin%&8. Reason: &c%reason%!'
-  banOverrideAdmin: '%victim% can not be banned!'
-  banOverrideVictim: '%admin% attempted to ban you!'
-  ipbanOverrideAdmin: '%victim% can not be ipbanned!'
-  ipbanOverrideVictim: '%admin% attempted to ipban you!'
   permbanMsgVictim: 'You have been permabanned by %admin%. Reason: %reason%!'
   permbanMsgBroadcast: '&c%victim% &8has been permabanned by &9%admin%&8. Reason: &c%reason%!'
-  permabanOverrideAdmin: '%victim% can not be permabanned!'
-  permabanOverrideVictim: '%admin% attempted to permaban you!'
   tempbanMsgVictim: 'You have been temp. banned by %admin%. Reason: %reason%!'
   tempbanMsgBroadcast: '&c%victim% &8was temp. banned by &9%admin%&8. Reason: &c%reason%!'
-  tempbanOverrideAdmin: '%victim% can not be temp banned!'
-  tempbanOverrideVictim: '%admin% attempted to temp ban you!'
   LoginTempban: '&8You are banned until &c%time%&8! Reason: &c%reason%!'
   LoginBan: '&8You are banned from this server! Reason: &c%reason%!'
   LoginIPBan: 'Your IP is banned!'
@@ -78,13 +66,9 @@ messages:
   jailChatMsg: 'Your cry falls on deaf ears.'
   jailPlaceMsg: 'You cannot place blocks while you are jailed!'
   jailBreakMsg: 'You cannot break blocks while you are jailed!'
-  jailOverrideAdmin: '%victim% can not be jailed!'
-  jailOverrideVictim: '%admin% attempted to jail you!'
   muteChatMsg: 'You have been muted!'
   unmuteMsgVictim: 'You have been unmuted.'
   unmuteMsg: 'You have unmuted %victim%.'
-  muteOverrideAdmin: '%victim% can not be muted!'
-  muteOverrideVictim: '%admin% attempted to mute you!'
   
   ruleMsg: '&9The Servers Rules Are As Follows!'
 #Adjust as you see fit or set ingame.#

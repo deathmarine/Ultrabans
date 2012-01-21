@@ -73,18 +73,6 @@ public class Tempban implements CommandExecutor{
 			p = expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
 		
-
-		if (plugin.setupPermissions()){
-			if (plugin.permission.has(victim, "ultraban.admin.override")){
-				String banMsg = config.getString("messages.tempbanOverrideAdmin", "%victim% can not be temp banned!");
-				banMsg = banMsg.replaceAll("%victim%", p);
-				sender.sendMessage(banMsg);
-				String victimMsg = config.getString("messages.tempbanOverrideVictim", "%admin% attempted to temp ban you!");
-				banMsg = banMsg.replaceAll("%admin%", admin);
-				victim.sendMessage(victimMsg);
-				return true;
-			}
-		}
 		//Figured this out after the fact...... Ugh
 		//Neglect to study bukkit. 
 		//Screw it if it works... go with it.

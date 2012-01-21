@@ -71,17 +71,6 @@ public class Mute implements CommandExecutor {
 		
 		String p = expandName(args[0]); 
 		Player victim = plugin.getServer().getPlayer(p);
-		if (plugin.setupPermissions()){
-			if (plugin.permission.has(victim, "ultraban.admin.override")){
-				String banMsg = config.getString("messages.muteOverrideAdmin", "%victim% can not be muted!");
-				banMsg = banMsg.replaceAll("%victim%", p);
-				sender.sendMessage(banMsg);
-				String victimMsg = config.getString("messages.muteOverrideVictim", "%admin% attempted to mute you!");
-				banMsg = banMsg.replaceAll("%admin%", admin);
-				victim.sendMessage(victimMsg);
-				return true;
-			}
-		}
 		if(victim != null){
 			if (plugin.muted.contains(p.toLowerCase())){
 				plugin.muted.remove(p);
