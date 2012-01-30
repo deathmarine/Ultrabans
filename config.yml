@@ -12,11 +12,10 @@ mysql-table-ip: banlistip
 sqlite-dbname: banlist
 #parameters#
 auto-complete: true
-#Ultraban requires Vault for the Command /fine#
-#Disable this if you don't not want to use fines#
-#Or would rather not use the Vault Library#
 #Command Checks#
 useFine: true
+#Max allowable fine#
+maxFineAmt: 0
 useJail: true
 useLockdown: true
 useStarve: true

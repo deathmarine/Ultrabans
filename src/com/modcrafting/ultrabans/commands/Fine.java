@@ -98,10 +98,26 @@ public class Fine implements CommandExecutor{
 			if(plugin.setupEconomy()){
 				double bal = plugin.economy.getBalance(p);
 				double amtd = Double.valueOf(amt.trim());
-				if(amtd > bal){
-					plugin.economy.withdrawPlayer(victim.getName(), bal);	
+				int max = config.getInt("maxFineAmt", 0);
+				if (max == 0){
+					if(amtd > bal){
+						plugin.economy.withdrawPlayer(victim.getName(), bal);	
+					}else{
+						plugin.economy.withdrawPlayer(victim.getName(), amtd);
+					}
 				}else{
-					plugin.economy.withdrawPlayer(victim.getName(), amtd);
+					double maxd = Double.valueOf(Integer.toString(max).trim());
+					if(maxd > amtd){
+						//TODO Set Message Config for Overfine
+						sender.sendMessage("Example");
+					}else{
+						if(amtd > bal){
+							plugin.economy.withdrawPlayer(victim.getName(), bal);	
+						}else{
+							plugin.economy.withdrawPlayer(victim.getName(), amtd);
+						}
+					}
+					
 				}
 			}
 			log.log(Level.INFO, "[UltraBan] " + admin + " fined player " + p + " amount of " + amt + ".");
