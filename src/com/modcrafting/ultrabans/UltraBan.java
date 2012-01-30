@@ -140,12 +140,8 @@ public class UltraBan extends JavaPlugin {
 		if (Config != null) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Configuration: config.yml Loaded!");
 		db.initialize(this);	
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvent(Event.Type.PLAYER_LOGIN, playerListener, Priority.Highest, this);
-		pm.registerEvent(Event.Type.PLAYER_JOIN, playerListener, Priority.Monitor, this);
-		pm.registerEvent(Event.Type.PLAYER_COMMAND_PREPROCESS, playerListener, Priority.Highest, this);
-		pm.registerEvent(Event.Type.PLAYER_CHAT, playerListener, Priority.Highest, this);
-		pm.registerEvent(Event.Type.BLOCK_PLACE, blockListener, Priority.Normal, this);
-		pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
+		pm.registerEvents(playerListener, this);
+		pm.registerEvents(blockListener, this);
 		log.log(Level.INFO, "[" + pdfFile.getName() + "] Listeners enabled, Server is secured.");
 		log.log(Level.INFO,"[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " has been initialized!" );
 		

@@ -9,13 +9,14 @@ import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-public class UltraBanPlayerListener extends PlayerListener {
+public class UltraBanPlayerListener implements Listener{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	public UltraBanPlayerListener(UltraBan ultraBans) {
