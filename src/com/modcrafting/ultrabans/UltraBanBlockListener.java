@@ -3,11 +3,11 @@ package com.modcrafting.ultrabans;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockListener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class UltraBanBlockListener extends BlockListener {
+public class UltraBanBlockListener implements Listener {
 	public static UltraBan plugin;
 	public UltraBanBlockListener(UltraBan instance) {
 	plugin = instance;
