@@ -8,6 +8,8 @@ import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -20,6 +22,8 @@ public class UltraBanPlayerListener implements Listener{
 	public UltraBanPlayerListener(UltraBan ultraBans) {
 		this.plugin = ultraBans;
 	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLogin(PlayerLoginEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
@@ -61,6 +65,8 @@ public class UltraBanPlayerListener implements Listener{
 			UltraBan.log.log(Level.INFO,"[UltraBan] " + player.getName() + " attempted to join during lockdown.");
 		}
 	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(PlayerJoinEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
@@ -99,6 +105,8 @@ public class UltraBanPlayerListener implements Listener{
 			plugin.db.updateAddress(player.getName(), ip);
 		}
 	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
@@ -108,6 +116,8 @@ public class UltraBanPlayerListener implements Listener{
 				event.setCancelled(true);
 			 }
 	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChat(PlayerChatEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		 Player player = event.getPlayer();
