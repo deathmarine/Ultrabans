@@ -30,6 +30,7 @@ import com.modcrafting.ultrabans.commands.Empty;
 import com.modcrafting.ultrabans.commands.Export;
 import com.modcrafting.ultrabans.commands.Fine;
 import com.modcrafting.ultrabans.commands.Help;
+import com.modcrafting.ultrabans.commands.History;
 import com.modcrafting.ultrabans.commands.Import;
 import com.modcrafting.ultrabans.commands.Ipban;
 import com.modcrafting.ultrabans.commands.Jail;
@@ -185,6 +186,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("permaban").setExecutor(new Perma(this));
 		getCommand("lockdown").setExecutor(new Lockdown(this));
 		getCommand("umute").setExecutor(new Mute(this));
+		getCommand("history").setExecutor(new History(this));
 	}
 }
 

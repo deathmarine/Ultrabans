@@ -1,6 +1,6 @@
 name: UltraBan
 main: com.modcrafting.ultrabans.UltraBan
-version: 0.1.7
+version: 0.1.8
 website: http://modcrafting.com
 author: Deathmarine
 description: >
@@ -41,6 +41,9 @@ commands:
     usage: /<command>
   importbans:
     description: import bans from banned-players.txt and banned-ips.txt
+    usage: /<command>
+  history:
+    description: shows recent entries
     usage: /<command>
   warn:
     description: Warn a player
