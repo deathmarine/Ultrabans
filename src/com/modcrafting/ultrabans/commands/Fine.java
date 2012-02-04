@@ -108,8 +108,7 @@ public class Fine implements CommandExecutor{
 				}else{
 					double maxd = Double.valueOf(Integer.toString(max).trim());
 					if(maxd > amtd){
-						//TODO Set Message Config for Overfine
-						sender.sendMessage("Example");
+						sender.sendMessage(ChatColor.RED + "Max Allowable Fine: " + String.valueOf(max));
 					}else{
 						if(amtd > bal){
 							plugin.economy.withdrawPlayer(victim.getName(), bal);	
