@@ -1,5 +1,6 @@
 package com.modcrafting.ultrabans.commands;
 
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -54,38 +55,22 @@ public class History implements CommandExecutor{
 		
 		
 		List<EditBan> bans = plugin.db.listRecent(p);
+		//NPE for lower bans is empty 
 		if(bans.isEmpty()){
 			sender.sendMessage(ChatColor.GREEN + "Error in command");
 			return true;
 		}
 		sender.sendMessage(ChatColor.BLUE + "Ultrabans Listing " + ChatColor.GRAY + args[0] + ChatColor.BLUE + " records.");
 		for(EditBan ban : bans){
-			Long ltime = this.parseTimeSpec(Long.toString(ban.time), "hour");
-			String time = Long.toString(ltime);
-			sender.sendMessage(ChatColor.RED + ban.name + ": " + banType(ban.type) + ChatColor.GRAY + " by " + ban.admin + " on " + time + " for " + ban.reason);
+
+			Date date = new Date();
+			date.setTime(ban.time*1000);
+			String dateStr = date.toString();
+			//DDD mmm dd hh:mm:ss zz yyyy
+			
+			sender.sendMessage(ChatColor.RED + banType(ban.type) + ": " + ban.name + ChatColor.GRAY + " by " + ban.admin + " on " + dateStr.substring(4, 19) + " for " + ban.reason);
 		}
 		return true;
 		}
-	}
-	public long parseTimeSpec(String time, String unit) {
-		long sec;
-		try {
-			sec = Integer.parseInt(time)*60;
-		} catch (NumberFormatException ex) {
-			return 0;
-		}
-		if (unit.startsWith("hour"))
-			sec *= 60;
-		else if (unit.startsWith("day"))
-			sec *= (60*24);
-		else if (unit.startsWith("week"))
-			sec *= (7*60*24);
-		else if (unit.startsWith("month"))
-			sec *= (30*60*24);
-		else if (unit.startsWith("min"))
-			sec *= 1;
-		else if (unit.startsWith("sec"))
-			sec /= 60;
-		return sec;
 	}
 }

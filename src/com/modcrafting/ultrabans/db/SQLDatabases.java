@@ -498,7 +498,8 @@ public class SQLDatabases{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlist ORDER BY DESC time LIMIT " + number);
+			ps = conn.prepareStatement("SELECT * FROM banlist ORDER BY time DESC LIMIT ?");
+			ps.setString(1, number);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
 			while(rs.next()){
