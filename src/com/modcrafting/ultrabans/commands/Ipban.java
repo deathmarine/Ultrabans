@@ -54,8 +54,8 @@ public class Ipban implements CommandExecutor{
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
-		String admin = "server";
-		String reason = "not sure";
+		String admin = config.getString("defAdminName", "server");
+		String reason = config.getString("defReason", "not sure");
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if (plugin.setupPermissions()){

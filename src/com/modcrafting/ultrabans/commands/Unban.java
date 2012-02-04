@@ -49,7 +49,7 @@ public class Unban implements CommandExecutor{
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
-		String admin = "server";
+		String admin = config.getString("defAdminName", "server");
 		
 		if (sender instanceof Player){
 			player = (Player)sender;

@@ -60,8 +60,8 @@ public class Jail implements CommandExecutor{
 		if(!plugin.useJail) return true;
 		boolean auth = false;
 			Player player = null;
-			String admin = "server";
-			String reason = "not sure";
+			String admin = config.getString("defAdminName", "server");
+			String reason = config.getString("defReason", "not sure");
 			boolean broadcast = true;
 			if (sender instanceof Player){
 				player = (Player)sender;

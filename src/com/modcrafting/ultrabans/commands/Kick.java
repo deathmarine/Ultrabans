@@ -49,7 +49,7 @@ public class Kick implements CommandExecutor{
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
-		String admin = "server";
+		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if (plugin.setupPermissions()){
@@ -72,7 +72,7 @@ public class Kick implements CommandExecutor{
 		if(autoComplete)
 			p = expandName(p);
 		// Reason stuff
-		String reason = "not sure";
+		String reason = config.getString("defReason", "not sure");
 		boolean broadcast = true;
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){

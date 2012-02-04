@@ -24,6 +24,9 @@ useEmpty: true
 usePermaban: true
 useWarn: true
 useRules: true
+#Default labels#
+defAdminName: 'server'
+defReason: 'not sure'
 #change to true or false to enable lockdown#
 #also can be done ingame /lockdown#
 lockdown: false

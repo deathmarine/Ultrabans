@@ -52,7 +52,7 @@ public class Spawn implements CommandExecutor{
 		if(!plugin.useSpawn) return true;
 		boolean auth = false;
 		Player player = null;
-		String admin = "server";
+		String admin = config.getString("defAdminName", "server");
 		autoComplete = config.getBoolean("auto-complete", true);
 		if (sender instanceof Player){
 			player = (Player)sender;

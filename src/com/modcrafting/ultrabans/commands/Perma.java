@@ -49,7 +49,7 @@ public class Perma implements CommandExecutor{
 		if(!plugin.usePermaban) return true;
 		boolean auth = false;
 		Player player = null;
-		String admin = "server";
+		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if (plugin.setupPermissions()){
@@ -72,7 +72,7 @@ public class Perma implements CommandExecutor{
 		if(autoComplete) p = expandName(p); //If the admin has chosen to do so, autocomplete the name!
 		Player victim = plugin.getServer().getPlayer(p); // What player is really the victim?
 		// Reason stuff
-		String reason = "not sure";
+		String reason = config.getString("defReason", "not sure");
 		boolean broadcast = true;
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){

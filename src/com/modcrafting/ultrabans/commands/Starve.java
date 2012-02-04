@@ -51,7 +51,7 @@ public class Starve implements CommandExecutor{
 		if(!plugin.useStarve) return true;
 		boolean auth = false;
 		Player player = null;
-		String admin = "server";
+		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if (plugin.setupPermissions()){

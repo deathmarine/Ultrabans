@@ -49,7 +49,7 @@ public class Tempban implements CommandExecutor{
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
-		String admin = "server";
+		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if (plugin.setupPermissions()){
@@ -79,7 +79,7 @@ public class Tempban implements CommandExecutor{
 		//victim = Bukkit.getOfflinePlayer(p).getPlayer();
 
 		
-		String reason = "not sure";
+		String reason = config.getString("defReason", "not sure");
 		boolean broadcast = true;
 		if(args.length > 3){
 			if(args[3].equalsIgnoreCase("-s")){
