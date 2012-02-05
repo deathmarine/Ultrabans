@@ -47,6 +47,7 @@ public class Fine implements CommandExecutor{
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		if(!plugin.useFines) return true;
 		boolean auth = false;
+		boolean anon = false;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
@@ -76,14 +77,22 @@ public class Fine implements CommandExecutor{
 		boolean broadcast = true;
 		String amt = args[1]; //set string amount to argument	
 			//Going loud
-			if(args.length > 1){
-				if(args[1].equalsIgnoreCase("-s")){
+		if(args.length > 1){
+			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
-				amt  = combineSplit(2, args, " ");
+				amt = combineSplit(2, args, " ");
+			}else{
+				if(args[1].equalsIgnoreCase("-a")){
+					anon = true;
+					amt = combineSplit(2, args, " ");
 				}else{
 				amt = combineSplit(1, args, " ");
 				}
 			}
+		}
+		if (anon){
+			admin = config.getString("defAdminName", "server");
+		}
 			
 		if(victim != null){
 			if(!broadcast){ //If silent wake his ass up

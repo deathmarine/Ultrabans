@@ -48,6 +48,7 @@ public class Tempban implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
+		boolean anon = false;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
@@ -82,13 +83,22 @@ public class Tempban implements CommandExecutor{
 		String reason = config.getString("defReason", "not sure");
 		boolean broadcast = true;
 		if(args.length > 3){
-			if(args[3].equalsIgnoreCase("-s")){
+			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
 				reason = combineSplit(4, args, " ");
-			}else
+			}else{
+				if(args[1].equalsIgnoreCase("-a")){
+					anon = true;
+					reason = combineSplit(4, args, " ");
+				}else{
 				reason = combineSplit(3, args, " ");
+				}
+			}
 		}
 
+		if (anon){
+			admin = config.getString("defAdminName", "server");
+		}
 
 		long tempTime = parseTimeSpec(args[1],args[2]);
 		if(tempTime == 0)

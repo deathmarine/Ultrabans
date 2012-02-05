@@ -53,6 +53,7 @@ public class Ipban implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
+		boolean anon = false;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		String reason = config.getString("defReason", "not sure");
@@ -108,10 +109,18 @@ public class Ipban implements CommandExecutor{
 			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
 				reason = combineSplit(2, args, " ");
-			}else
+			}else{
+				if(args[1].equalsIgnoreCase("-a")){
+					anon = true;
+					reason = combineSplit(2, args, " ");
+				}else{
 				reason = combineSplit(1, args, " ");
+				}
+			}
 		}
-		
+		if (anon){
+			admin = config.getString("defAdminName", "server");
+		}
 		if(autoComplete)
 			p = expandName(p);
 		Player victim = plugin.getServer().getPlayer(p); 
