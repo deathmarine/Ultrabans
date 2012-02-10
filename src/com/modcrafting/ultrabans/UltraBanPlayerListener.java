@@ -1,6 +1,9 @@
 
 package com.modcrafting.ultrabans;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,13 +76,46 @@ public class UltraBanPlayerListener implements Listener{
 		String ip = player.getAddress().getAddress().getHostAddress();
 		plugin.db.setAddress(player.getName().toLowerCase(), ip);
 		System.out.println("[UltraBan] Logged " + player.getName() + " connecting from ip:" + ip);
-	
+		
+		
 		if(plugin.bannedIPs.contains(ip)){
 			System.out.println("[UltraBan] Banned player attempted Login!");
 			event.setJoinMessage(null);
 			String adminMsg = config.getString("messages.LoginIPBan", "Your IP is banned!");
 			player.kickPlayer(adminMsg);
 		}
+		
+		//Validate IP / Proxy Check
+		//Thanks Havoc :)
+		try {
+			InetAddress InetP = InetAddress.getByName(ip);
+			String hostAddress = InetP.getHostAddress();
+			String hostName = InetP.getHostName();
+			try {
+				Boolean host = InetP.isReachable(config.getInt("HostTimeOut", 1800));
+				if (!host){
+					player.kickPlayer("Destination Host Is Unreachable, Host Timed Out.");
+					Player[] pll = plugin.getServer().getOnlinePlayers();
+		    		for (int iii=0; iii<pll.length; iii++){
+						if (plugin.permission.has(pll[iii], "ultraban.admin")){
+							pll[iii].sendMessage(ChatColor.GOLD + player.getName() + " attempted to join from proxy.");
+							pll[iii].sendMessage(ChatColor.YELLOW + "Host Address: " + hostAddress);
+							pll[iii].sendMessage(ChatColor.YELLOW + "Host Name: " + hostName);
+							pll[iii].sendMessage(ChatColor.YELLOW + "IP Address: " + ip);
+						}
+		    		}
+				}
+			} catch (IOException e) {
+				UltraBan.log.log(Level.INFO, "Host Name Doesn't Exist. Removed Player: " + player.getName());
+				player.kickPlayer("Destination Host Is Unreachable, IP handshake failed.");
+				e.printStackTrace();
+			}
+			
+		} catch (UnknownHostException e) {
+			UltraBan.log.log(Level.INFO, "Host Name Doesn't Exist. Removed Player: " + player.getName());
+			player.kickPlayer("Destination Host Is Unreachable, IP handshake failed.");
+		}
+		
 		//Duplicate IP check and display
 		Player[] pl = plugin.getServer().getOnlinePlayers();
 		for (int i=0; i<pl.length; i++){
