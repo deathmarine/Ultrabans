@@ -33,6 +33,9 @@ defReason: 'not sure'
 lockdown: false
 #Enabling dupePolicy will disallow duplicate IP connections#
 dupePolicy: false
+#IPAddress Validation/Proxy Check#
+#This will also restrict client ping ~ms#
+HostPingTimeOut: 1800
 messages:
   banMsgFailed: '&c%victim% &8is already banned!'
   unbanMsg: '&8Successfully unbanned &c%victim%&8!'
