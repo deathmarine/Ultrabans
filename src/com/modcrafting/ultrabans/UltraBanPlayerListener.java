@@ -1,9 +1,6 @@
 
 package com.modcrafting.ultrabans;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -84,59 +81,7 @@ public class UltraBanPlayerListener implements Listener{
 			String adminMsg = config.getString("messages.LoginIPBan", "Your IP is banned!");
 			player.kickPlayer(adminMsg);
 		}
-		boolean logon = config.getBoolean("LogonInfo", true);
-		if(logon){
-		//Validate IP / Proxy Check
-		//Thanks Havoc :)
-			try {
-				InetAddress InetP = InetAddress.getByName(ip);
-				String hostAddress = InetP.getHostAddress();
-				String hostName = InetP.getHostName();
-				Player[] pll = plugin.getServer().getOnlinePlayers();
-				for (int iii=0; iii<pll.length; iii++){
-					if(pll.length > 0){
-    					if (plugin.setupPermissions()){
-    						if (plugin.permission.has(pll[iii], "ultraban.admin")){
-    							pll[iii].sendMessage(ChatColor.BLUE + "[UltraBans]: " + ChatColor.GRAY + player.getName() + ChatColor.DARK_GRAY + " Connected.");
-    							pll[iii].sendMessage(ChatColor.DARK_GRAY + "Host Address: " + ChatColor.GRAY + hostAddress);
-    							pll[iii].sendMessage(ChatColor.DARK_GRAY + "Host Name: " + ChatColor.GRAY + hostName);
-    						}
-    					}
-					}	
-    			}	
-    		//may cause lag when verifying ip
-    		//will autoboot when unreachable.
-				Boolean pingCheck = config.getBoolean("PingCheck", false);
-				if (pingCheck){
-					try {
-						Boolean host = InetP.isReachable(config.getInt("HostTimeOut", 1800));
-						if (!host){
-							player.kickPlayer("Destination Host Is Unreachable, Host Timed Out.");
-							for (int iiii=0; iiii<pll.length; iiii++){
-								if(pll.length > 0){
-									if (plugin.setupPermissions()){
-										if (plugin.permission.has(pll[iiii], "ultraban.admin")){
-											pll[iiii].sendMessage(ChatColor.GOLD + player.getName() + " attempted to join from proxy.");
-											pll[iiii].sendMessage(ChatColor.YELLOW + "Host Address: " + hostAddress);
-											pll[iiii].sendMessage(ChatColor.YELLOW + "Host Name: " + hostName);
-											pll[iiii].sendMessage(ChatColor.YELLOW + "IP Address: " + ip);
-										}
-									}
-								}
-							}
-						}
-    			
-					} catch (IOException e) {
-						UltraBan.log.log(Level.INFO, "Host Name Doesn't Exist. Removed Player: " + player.getName());
-						player.kickPlayer("Destination Host Is Unreachable, IP handshake failed.");
-						e.printStackTrace();
-					}
-				}	
-			} catch (UnknownHostException e) {
-				UltraBan.log.log(Level.INFO, "Host Name Doesn't Exist. Removed Player: " + player.getName());
-				player.kickPlayer("Destination Host Is Unreachable, IP handshake failed.");
-			}
-		}
+		
 		//Duplicate IP check and display
 		Player[] pl = plugin.getServer().getOnlinePlayers();
 		for (int i=0; i<pl.length; i++){

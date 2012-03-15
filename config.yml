@@ -33,14 +33,6 @@ defReason: 'not sure'
 lockdown: false
 #Enabling dupePolicy will disallow duplicate IP connections#
 dupePolicy: false
-#IPAddress Validation/Proxy Check#
-#Be Advised that players may be too distant for ping check#
-PingCheck: false
-#This will also restrict client ping ~ms#
-#If set to high server will lag when players join#
-HostPingTimeOut: 1800
-#Info Logon Player Host Check#
-LogonInfo: true
 messages:
   banMsgFailed: '&c%victim% &8is already banned!'
   unbanMsg: '&8Successfully unbanned &c%victim%&8!'
