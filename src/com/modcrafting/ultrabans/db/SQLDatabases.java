@@ -496,10 +496,11 @@ public class SQLDatabases{
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		Integer num = Integer.parseInt(number.trim());
 		try {
 			conn = getSQLConnection();
 			ps = conn.prepareStatement("SELECT * FROM banlist ORDER BY time DESC LIMIT ?");
-			ps.setString(1, number);
+			ps.setInt(1, num);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
 			while(rs.next()){

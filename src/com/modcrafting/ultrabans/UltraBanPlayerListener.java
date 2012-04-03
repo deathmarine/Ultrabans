@@ -83,7 +83,7 @@ public class UltraBanPlayerListener implements Listener{
 		}
 		
 		//Duplicate IP check and display
-		Player[] pl = plugin.getServer().getOnlinePlayers();
+		/*Player[] pl = plugin.getServer().getOnlinePlayers();
 		for (int i=0; i<pl.length; i++){
 			String name = pl[i].getAddress().getAddress().getHostAddress();
 	        if (name == ip){
@@ -104,7 +104,7 @@ public class UltraBanPlayerListener implements Listener{
 	    	}
 	    		
 	    }
-		
+		*/
 		if(!plugin.db.matchAddress(player.getName(), ip)){
 			plugin.db.updateAddress(player.getName(), ip);
 		}

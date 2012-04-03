@@ -56,7 +56,7 @@ public class History implements CommandExecutor{
 		
 		List<EditBan> bans = plugin.db.listRecent(p);
 		//NPE for lower bans is empty 
-		if(bans.isEmpty()){
+		if(bans.size() < 1){
 			sender.sendMessage(ChatColor.GREEN + "Error in command");
 			return true;
 		}
