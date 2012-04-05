@@ -156,6 +156,7 @@ public class Jail implements CommandExecutor{
 				plugin.jailed.add(p.toLowerCase());
 				Location stlp = getJail();
 				victim.teleport(stlp);
+				return true;
 			}
 		}
 		return false;
