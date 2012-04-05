@@ -79,6 +79,7 @@ public class UltraBan extends JavaPlugin {
 	
 	public void onDisable() {
 		tempBans.clear();
+		tempJail.clear();
 		bannedPlayers.clear();
 		bannedIPs.clear();
 		jailed.clear();
@@ -138,7 +139,8 @@ public class UltraBan extends JavaPlugin {
 		this.useRules = Config.getBoolean("useRules", true);
 		loadCommands();
 		if (Config != null) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Configuration: config.yml Loaded!");
-		db.initialize(this);	
+		db.initialize(this);
+		db.loadJailed();
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(playerListener, this);
 		pm.registerEvents(blockListener, this);

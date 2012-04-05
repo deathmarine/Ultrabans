@@ -732,4 +732,35 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	public void loadJailed(){
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		Connection conn = getSQLConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String mysqlTable = Config.getString("mysql-table");
+		try{
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE type = 6 AND (temptime > ? OR temptime = 0)");
+			ps.setLong(1, System.currentTimeMillis()/1000);
+        	rs = ps.executeQuery();
+			while (rs.next()){
+			String pName = rs.getString("name").toLowerCase();
+			long pTime = rs.getLong("temptime");
+			plugin.jailed.add(pName);
+				if(pTime != 0){
+					plugin.tempJail.put(pName,pTime);
+				}
+			}
+		} catch (SQLException ex) {
+			UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				UltraBan.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+			}
+		}
+	}
 }
