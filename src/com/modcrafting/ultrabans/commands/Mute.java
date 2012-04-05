@@ -81,7 +81,7 @@ public class Mute implements CommandExecutor {
 		 		sender.sendMessage(ChatColor.GRAY + adminMsgs);
 				return true;
 			}
-			plugin.muted.add(p);
+			plugin.muted.add(p.toLowerCase());
 			String adminMsg = config.getString("messages.muteChatMsg", "You have been muted.");
 	 		victim.sendMessage(ChatColor.GRAY + adminMsg);
 			String adminMsgs = config.getString("messages.muteMsg", "You have muted %victim%.");
