@@ -19,6 +19,9 @@ useFine: true
 maxFineAmt: 0
 #Disable command usage on muted#
 muteVanilla: true
+#Max Warnings#
+enableMaxWarn: false
+maxWarnings: 5
 #Disable command usage#
 useJail: true
 useLockdown: true

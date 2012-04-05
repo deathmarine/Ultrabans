@@ -551,6 +551,36 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	public List<EditBan> maxWarns(String Name) {
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getSQLConnection();
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? AND type = ?");
+			ps.setString(1, Name);
+			ps.setInt(2, 2);
+			rs = ps.executeQuery();
+			List<EditBan> bans = new ArrayList<EditBan>();
+			while (rs.next()){
+				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
+			}
+		} catch (SQLException ex) {
+			UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+				if (rs != null)
+					rs.close();
+			} catch (SQLException ex) {
+				UltraBan.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+			}
+		}
+		return null;
+	}
 	public EditBan loadFullRecordFromId(int id) {
 		Connection conn = null;
 		PreparedStatement ps = null;
