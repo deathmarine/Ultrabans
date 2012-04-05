@@ -6,6 +6,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -49,6 +51,21 @@ public class UltraBanPlayerListener implements Listener{
 			String reason = plugin.db.getBanReason(player.getName());
 			String adminMsg = "You've been tempbanned for " + reason + " Remaining:" + dateStr;
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, adminMsg);
+			return;
+		}
+		if(plugin.tempJail.get(player.getName().toLowerCase()) != null){
+			long tempTime = plugin.tempJail.get(player.getName().toLowerCase());
+			long now = System.currentTimeMillis()/1000;
+			long diff = tempTime - now;
+			if(diff <= 0){
+				plugin.tempJail.remove(player.getName().toLowerCase());
+				plugin.jailed.remove(player.getName().toLowerCase());
+				plugin.db.removeFromJaillist(player.getName().toLowerCase());
+				World wtlp = player.getWorld();
+				Location tlp = wtlp.getSpawnLocation();
+				player.teleport(tlp);
+				return;
+			}
 			return;
 		}
 		boolean lock = config.getBoolean("lockdown", false);
@@ -115,6 +132,25 @@ public class UltraBanPlayerListener implements Listener{
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
 			if(plugin.jailed.contains(player.getName().toLowerCase())){
+			 	if(plugin.tempJail.get(player.getName().toLowerCase()) != null){
+					long tempTime = plugin.tempJail.get(player.getName().toLowerCase());
+					long now = System.currentTimeMillis()/1000;
+					long diff = tempTime - now;
+					if(diff <= 0){
+						plugin.tempJail.remove(player.getName().toLowerCase());
+						plugin.jailed.remove(player.getName().toLowerCase());
+						plugin.db.removeFromJaillist(player.getName().toLowerCase());
+						World wtlp = player.getWorld();
+						Location tlp = wtlp.getSpawnLocation();
+						player.teleport(tlp);
+						return;
+					}
+					Date date = new Date();
+					date.setTime(tempTime*1000);
+					String dateStr = date.toString();
+					String reason = plugin.db.getBanReason(player.getName());
+					player.sendMessage("You've been tempjailed for " + reason + " Remaining:" + dateStr);
+				}
 				String adminMsg = config.getString("messages.jailCmdMsg", "You cannot use commands while Jailed!");
 				player.sendMessage(ChatColor.GRAY + adminMsg);
 				event.setCancelled(true);
@@ -126,6 +162,7 @@ public class UltraBanPlayerListener implements Listener{
 					event.setCancelled(true);
 				}
 			}
+			
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -138,6 +175,25 @@ public class UltraBanPlayerListener implements Listener{
 		 		event.setCancelled(true);
 		 	}
 		 	if(plugin.jailed.contains(player.getName().toLowerCase())){
+			 	if(plugin.tempJail.get(player.getName().toLowerCase()) != null){
+					long tempTime = plugin.tempJail.get(player.getName().toLowerCase());
+					long now = System.currentTimeMillis()/1000;
+					long diff = tempTime - now;
+					if(diff <= 0){
+						plugin.tempJail.remove(player.getName().toLowerCase());
+						plugin.jailed.remove(player.getName().toLowerCase());
+						plugin.db.removeFromJaillist(player.getName().toLowerCase());
+						World wtlp = player.getWorld();
+						Location tlp = wtlp.getSpawnLocation();
+						player.teleport(tlp);
+						return;
+					}
+					Date date = new Date();
+					date.setTime(tempTime*1000);
+					String dateStr = date.toString();
+					String reason = plugin.db.getBanReason(player.getName());
+					player.sendMessage("You've been tempjailed for " + reason + " Remaining:" + dateStr);
+				}
 				String adminMsg = config.getString("messages.jailChatMsg", "Your cry falls on deaf ears.");
 		 		player.sendMessage(ChatColor.GRAY + adminMsg);
 		 		event.setCancelled(true);

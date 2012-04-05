@@ -90,6 +90,9 @@ public class Jail implements CommandExecutor{
 					Player jailee = plugin.getServer().getPlayer(jaile);
 					Location tlp = jailee.getWorld().getSpawnLocation();
 					jailee.teleport(tlp);
+					if(plugin.tempJail.containsKey(jaile.toLowerCase())){
+						plugin.tempJail.remove(jaile.toLowerCase());
+					}
 					String jailMsgRelease = config.getString("messages.jailMsgRelease", "%victim% was released from jail by %admin%!");
 					jailMsgRelease = jailMsgRelease.replaceAll("%admin%", admin);
 					jailMsgRelease = jailMsgRelease.replaceAll("%victim%", jaile);

@@ -42,6 +42,7 @@ import com.modcrafting.ultrabans.commands.Reload;
 import com.modcrafting.ultrabans.commands.Spawn;
 import com.modcrafting.ultrabans.commands.Starve;
 import com.modcrafting.ultrabans.commands.Tempban;
+import com.modcrafting.ultrabans.commands.Tempjail;
 import com.modcrafting.ultrabans.commands.Unban;
 import com.modcrafting.ultrabans.commands.Version;
 import com.modcrafting.ultrabans.commands.Warn;
@@ -59,6 +60,7 @@ public class UltraBan extends JavaPlugin {
 	public HashSet<String> jailed = new HashSet<String>();
 	public HashSet<String> muted = new HashSet<String>();
 	public Map<String, Long> tempBans = new HashMap<String, Long>();
+	public Map<String, Long> tempJail = new HashMap<String, Long>();
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
 	private final UltraBanBlockListener blockListener = new UltraBanBlockListener(this);
@@ -181,6 +183,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("uversion").setExecutor(new Version(this));
 		getCommand("warn").setExecutor(new Warn(this));
 		getCommand("ujail").setExecutor(new Jail(this));
+		getCommand("utempjail").setExecutor(new Tempjail(this));
 		getCommand("permaban").setExecutor(new Perma(this));
 		getCommand("lockdown").setExecutor(new Lockdown(this));
 		getCommand("umute").setExecutor(new Mute(this));

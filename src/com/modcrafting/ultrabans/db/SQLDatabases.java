@@ -297,11 +297,12 @@ public class SQLDatabases{
 		try {
 			conn = getSQLConnection();
 			if(dataHandler.equalsIgnoreCase("sqlite")){
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ?");
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ?");
 			}else{
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? ORDER BY time DESC LIMIT 1");
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
 			}
 			ps.setString(1, player);
+			ps.setInt(2, 0);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
@@ -668,4 +669,39 @@ public class SQLDatabases{
         text = text.replace("\r\n", " ").replace("\n", " ");
         return text.trim();
     }
+
+	public boolean removeFromJaillist(String player) {
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		String dataHandler = Config.getString("Database");
+		
+		String mysqlTable = Config.getString("mysql-table");
+
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getSQLConnection();
+			if(dataHandler.equalsIgnoreCase("sqlite")){
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ?");
+			}else{
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
+			}
+			ps.setString(1, player);
+			ps.setInt(2, 6);
+			ps.executeUpdate();
+		} catch (SQLException ex) {
+			UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			return false;
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+			UltraBan.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+			}
+		}
+		return true;
+		
+	}
 }

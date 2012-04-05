@@ -76,22 +76,11 @@ messages:
   jailChatMsg: 'Your cry falls on deaf ears.'
   jailPlaceMsg: 'You cannot place blocks while you are jailed!'
   jailBreakMsg: 'You cannot break blocks while you are jailed!'
+  tempjailMsgVictim: 'You have been temp. jailed by %admin%. Reason: %reason%!'
+  tempjailMsgBroadcast: '&c%victim% &8was temp. jailed by &9%admin%&8. Reason: &c%reason%!'
   muteChatMsg: 'You have been muted!'
   unmuteMsgVictim: 'You have been unmuted.'
   unmuteMsg: 'You have unmuted %victim%.'
-  ruleMsg: '&9The Servers Rules Are As Follows!'
-#Adjust as you see fit or set ingame.#
-rules:
-  one:
-  two:
-  three:
-  four:
-  five:
-  six:
-  seven:
-  eight:
-  nine:
-  ten:
 #Do Not Change Values Below#
 jail:
   x: 0
