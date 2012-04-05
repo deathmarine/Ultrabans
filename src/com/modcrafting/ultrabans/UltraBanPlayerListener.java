@@ -119,6 +119,13 @@ public class UltraBanPlayerListener implements Listener{
 				player.sendMessage(ChatColor.GRAY + adminMsg);
 				event.setCancelled(true);
 			 }
+			if(plugin.muted.contains(player.getName().toLowerCase())){
+				if(config.getBoolean("muteVanilla", true)){
+					String adminMsg = config.getString("messages.muteChatMsg", "Your cry falls on deaf ears.");
+		 			player.sendMessage(ChatColor.GRAY + adminMsg);
+					event.setCancelled(true);
+				}
+			}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)

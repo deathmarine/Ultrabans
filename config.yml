@@ -17,6 +17,9 @@ useFine: true
 #Max allowable fine#
 #If Zero then no max will be placed#
 maxFineAmt: 0
+#Disable command usage on muted#
+muteVanilla: true
+#Disable command usage#
 useJail: true
 useLockdown: true
 useStarve: true
@@ -73,7 +76,6 @@ messages:
   muteChatMsg: 'You have been muted!'
   unmuteMsgVictim: 'You have been unmuted.'
   unmuteMsg: 'You have unmuted %victim%.'
-  
   ruleMsg: '&9The Servers Rules Are As Follows!'
 #Adjust as you see fit or set ingame.#
 rules:
