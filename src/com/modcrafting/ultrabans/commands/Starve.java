@@ -79,11 +79,11 @@ public class Starve implements CommandExecutor{
 			String starveMsgVictim = config.getString("messages.starveMsgVictim", "You are now starving!");
 			starveMsgVictim = starveMsgVictim.replaceAll("%admin%", admin);
 			starveMsgVictim = starveMsgVictim.replaceAll("%victim%", idoit);
-			sender.sendMessage(formatMessage(starveMsgVictim));
+			victim.sendMessage(formatMessage(starveMsgVictim));
 			String starveMsgBroadcast = config.getString("messages.starveMsgBroadcast", "%victim% is now starving!");
 			starveMsgBroadcast = starveMsgBroadcast.replaceAll("%admin%", admin);
 			starveMsgBroadcast = starveMsgBroadcast.replaceAll("%victim%", idoit);
-			victim.sendMessage(formatMessage(starveMsgBroadcast));
+			sender.sendMessage(formatMessage(starveMsgBroadcast));
 			int st = 0;
 			victim.setFoodLevel(st);
 		}
