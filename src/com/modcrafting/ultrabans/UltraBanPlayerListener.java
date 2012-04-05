@@ -64,6 +64,7 @@ public class UltraBanPlayerListener implements Listener{
 				World wtlp = player.getWorld();
 				Location tlp = wtlp.getSpawnLocation();
 				player.teleport(tlp);
+				player.sendMessage(ChatColor.GREEN + "You've served your time.");
 				return;
 			}
 			return;
@@ -143,13 +144,15 @@ public class UltraBanPlayerListener implements Listener{
 						World wtlp = player.getWorld();
 						Location tlp = wtlp.getSpawnLocation();
 						player.teleport(tlp);
+						player.sendMessage(ChatColor.GREEN + "You've served your time.");
 						return;
 					}
 					Date date = new Date();
 					date.setTime(tempTime*1000);
 					String dateStr = date.toString();
-					String reason = plugin.db.getBanReason(player.getName());
-					player.sendMessage("You've been tempjailed for " + reason + " Remaining:" + dateStr);
+					String reason = plugin.db.getjailReason(player.getName());
+					player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + reason);
+					player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
 				}
 				String adminMsg = config.getString("messages.jailCmdMsg", "You cannot use commands while Jailed!");
 				player.sendMessage(ChatColor.GRAY + adminMsg);
@@ -186,13 +189,15 @@ public class UltraBanPlayerListener implements Listener{
 						World wtlp = player.getWorld();
 						Location tlp = wtlp.getSpawnLocation();
 						player.teleport(tlp);
+						player.sendMessage(ChatColor.GREEN + "You've served your time.");
 						return;
 					}
 					Date date = new Date();
 					date.setTime(tempTime*1000);
 					String dateStr = date.toString();
-					String reason = plugin.db.getBanReason(player.getName());
-					player.sendMessage("You've been tempjailed for " + reason + " Remaining:" + dateStr);
+					String reason = plugin.db.getjailReason(player.getName());
+					player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + reason);
+					player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
 				}
 				String adminMsg = config.getString("messages.jailChatMsg", "Your cry falls on deaf ears.");
 		 		player.sendMessage(ChatColor.GRAY + adminMsg);

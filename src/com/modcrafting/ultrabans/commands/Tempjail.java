@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -111,12 +112,14 @@ public class Tempjail implements CommandExecutor{
 				return true;
 			}
 			plugin.tempJail.put(victim.getName().toLowerCase(), temp);
-			plugin.db.addPlayer(victim.getName(), reason, admin, temp, 0);
+			plugin.db.addPlayer(victim.getName(), reason, admin, temp, 6);
+			plugin.jailed.add(p.toLowerCase());
+			Location stlp = getJail();
+			victim.teleport(stlp);
 			log.log(Level.INFO, "[UltraBan] " + admin + " tempjailned player " + victim.getName() + ".");
 			String tempjailMsgVictim = config.getString("messages.tempjailMsgVictim", "You have been temp. jailed by %admin%. Reason: %reason%!");
 			tempjailMsgVictim = tempjailMsgVictim.replaceAll("%admin%", admin);
 			tempjailMsgVictim = tempjailMsgVictim.replaceAll("%reason%", reason);
-			victim.kickPlayer(formatMessage(tempjailMsgVictim));
 			if(broadcast){
 				String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
 				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%admin%", admin);
@@ -136,6 +139,7 @@ public class Tempjail implements CommandExecutor{
 				return true;
 			}
 			plugin.tempJail.put(p.toLowerCase(), temp);
+			plugin.jailed.add(p.toLowerCase());
 			plugin.db.addPlayer(p, reason, admin, temp, 6);
 			log.log(Level.INFO, "[UltraBan] " + admin + " temp jail player " + p + ".");
 			if(broadcast){
@@ -191,4 +195,14 @@ public class Tempjail implements CommandExecutor{
 		str = str.replaceAll("&", funnyChar);
 		return str;
 	}
+
+    public Location getJail(){
+    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+        Location setlp = new Location(
+                plugin.getServer().getWorld(config.getString("jail.world", plugin.getServer().getWorlds().get(0).getName())),
+                config.getInt("jail.x", 0),
+                config.getInt("jail.y", 0),
+                config.getInt("jail.z", 0));
+        	return setlp;
+    }
 }

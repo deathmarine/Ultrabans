@@ -35,14 +35,16 @@ public class UltraBanBlockListener implements Listener {
 						World wtlp = player.getWorld();
 						Location tlp = wtlp.getSpawnLocation();
 						player.teleport(tlp);
+						player.sendMessage(ChatColor.GREEN + "You've served your time.");
 						return;
 					}
 					Date date = new Date();
 					date.setTime(tempTime*1000);
 					String dateStr = date.toString();
-					String reason = plugin.db.getBanReason(player.getName());
-					player.sendMessage("You've been tempjailed for " + reason + " Remaining:" + dateStr);
-				}
+					String reason = plugin.db.getjailReason(player.getName());
+					player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + reason);
+					player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
+					}
 			String adminMsg = config.getString("messages.jailPlaceMsg", "You cannot place blocks while you are jailed!");
 			player.sendMessage(ChatColor.GRAY + adminMsg);
 			event.setCancelled(true);
@@ -65,13 +67,15 @@ public class UltraBanBlockListener implements Listener {
 						World wtlp = player.getWorld();
 						Location tlp = wtlp.getSpawnLocation();
 						player.teleport(tlp);
+						player.sendMessage(ChatColor.GREEN + "You've served your time.");
 						return;
 					}
 					Date date = new Date();
 					date.setTime(tempTime*1000);
 					String dateStr = date.toString();
-					String reason = plugin.db.getBanReason(player.getName());
-					player.sendMessage("You've been tempjailed for " + reason + " Remaining:" + dateStr);
+					String reason = plugin.db.getjailReason(player.getName());
+					player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + reason);
+					player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
 				}
 			 String adminMsg = config.getString("messages.jailBreakMsg", "You cannot break blocks while you are jailed!");
 			 player.sendMessage(ChatColor.GRAY + adminMsg);

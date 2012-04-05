@@ -704,4 +704,32 @@ public class SQLDatabases{
 		return true;
 		
 	}
+	public String getjailReason(String player) {
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		Connection conn = getSQLConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		String mysqlTable = Config.getString("mysql-table");
+		try {
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND type = 6 ORDER BY time DESC LIMIT 1");
+			ps.setString(1, player);
+			rs = ps.executeQuery();
+			while (rs.next()){
+				String reason = rs.getString("reason");
+				return reason;
+			}
+		} catch (SQLException ex) {
+			UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				UltraBan.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+			}
+		}
+		return null;
+	}
 }
