@@ -297,7 +297,7 @@ public class SQLDatabases{
 		try {
 			conn = getSQLConnection();
 			if(dataHandler.equalsIgnoreCase("sqlite")){
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ?");
 			}else{
 				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
 			}
@@ -681,7 +681,7 @@ public class SQLDatabases{
 		try {
 			conn = getSQLConnection();
 			if(dataHandler.equalsIgnoreCase("sqlite")){
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ?");
 			}else{
 				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
 			}
