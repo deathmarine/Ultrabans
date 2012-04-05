@@ -31,7 +31,7 @@ public class UltraBanPlayerListener implements Listener{
 		Player player = event.getPlayer();
 		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
 			System.out.println("banned player joined");
-			String reason = plugin.db.getBanReason(player.getName().toLowerCase());
+			String reason = plugin.db.getBanReason(player.getName());
 			String adminMsg = "You've been banned for: " + reason;
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, adminMsg);
 		}

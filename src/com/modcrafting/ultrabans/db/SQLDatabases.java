@@ -297,7 +297,7 @@ public class SQLDatabases{
 		try {
 			conn = getSQLConnection();
 			if(dataHandler.equalsIgnoreCase("sqlite")){
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ?");
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
 			}else{
 				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
 			}
@@ -385,7 +385,7 @@ public class SQLDatabases{
 		ResultSet rs = null;
 		String mysqlTable = Config.getString("mysql-table");
 		try {
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1)");
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -681,7 +681,7 @@ public class SQLDatabases{
 		try {
 			conn = getSQLConnection();
 			if(dataHandler.equalsIgnoreCase("sqlite")){
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ?");
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
 			}else{
 				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
 			}
