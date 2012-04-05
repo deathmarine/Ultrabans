@@ -80,7 +80,7 @@ public class Jail implements CommandExecutor{
 			if(args[0].equalsIgnoreCase("set")){
 					this.setlp = player.getLocation();
 					setJail(setlp);
-					sender.sendMessage(ChatColor.GRAY + "Jail has been set to " + ChatColor.AQUA + setlp.toString());
+					sender.sendMessage(ChatColor.GRAY + "Jail has been set!");
 					return true;
 			}
 			if(args[0].equalsIgnoreCase("pardon")){
