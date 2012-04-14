@@ -89,6 +89,8 @@ public class Jail implements CommandExecutor{
 					plugin.jailed.remove(jaile.toLowerCase());
 					Player jailee = plugin.getServer().getPlayer(jaile);
 					Location tlp = jailee.getWorld().getSpawnLocation();
+					plugin.db.removeFromJaillist(jailee.getName());
+					plugin.db.addPlayer(jailee.getName(), "Released From Jail", admin, 0, 8);
 					jailee.teleport(tlp);
 					if(plugin.tempJail.containsKey(jaile.toLowerCase())){
 						plugin.tempJail.remove(jaile.toLowerCase());

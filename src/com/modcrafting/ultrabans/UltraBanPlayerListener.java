@@ -61,6 +61,7 @@ public class UltraBanPlayerListener implements Listener{
 				plugin.tempJail.remove(player.getName().toLowerCase());
 				plugin.jailed.remove(player.getName().toLowerCase());
 				plugin.db.removeFromJaillist(player.getName().toLowerCase());
+				plugin.db.addPlayer(player.getName(), "Released From Jail", "Served Time", 0, 8);
 				World wtlp = player.getWorld();
 				Location tlp = wtlp.getSpawnLocation();
 				player.teleport(tlp);
