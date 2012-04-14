@@ -566,6 +566,7 @@ public class SQLDatabases{
 			while (rs.next()){
 				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
+			return bans;
 		} catch (SQLException ex) {
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {

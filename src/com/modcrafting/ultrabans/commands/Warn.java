@@ -89,8 +89,8 @@ public class Warn implements CommandExecutor{
 		if(victim != null){
 			if(config.getBoolean("enableMaxWarn", false)){
 				Integer max = config.getInt("maxWarnings", 5);
-				if(plugin.db.maxWarns(victim.getName()).size() > max){
-					plugin.bannedPlayers.add(victim.getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
+				if(plugin.db.maxWarns(victim.getName()) != null &&  plugin.db.maxWarns(victim.getName()).size() > max){
+					plugin.bannedPlayers.add(victim.getName().toLowerCase());
 					plugin.db.addPlayer(victim.getName(), "Max Warnings", "Ultrabans", 0, 0);
 					log.log(Level.INFO, "[UltraBan] player " + victim.getName() + " was banned for max warnings.");
 					if(broadcast){
