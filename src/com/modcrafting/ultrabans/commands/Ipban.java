@@ -88,7 +88,6 @@ public class Ipban implements CommandExecutor{
 				plugin.db.setAddress("failedname", p);
 				plugin.db.addPlayer("failedname", reason, admin, 0, 1);
 			}
-			plugin.db.addPlayer(pname, reason, admin, 0, 1);
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
 			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
@@ -128,23 +127,23 @@ public class Ipban implements CommandExecutor{
 		// Strict Offline IP bans - Independent after Online Check
 		if(victim == null){
 			victim = Bukkit.getOfflinePlayer(p).getPlayer();
-			if(plugin.bannedPlayers.contains(p.toLowerCase())){
+			if(plugin.bannedPlayers.contains(victim.getName().toLowerCase())){
 				sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);
 				return true;
 			}
-			String offlineip = plugin.db.getAddress(p.toLowerCase());
-			plugin.bannedPlayers.add(p.toLowerCase());
+			String offlineip = plugin.db.getAddress(victim.getName().toLowerCase());
+			plugin.bannedPlayers.add(victim.getName().toLowerCase());
 			if(offlineip != null){
 				plugin.bannedIPs.add(offlineip);
 				Bukkit.banIP(offlineip);
 				}else{
 					sender.sendMessage(ChatColor.GRAY + "IP address not found by Ultrabans for " + p);
 					sender.sendMessage(ChatColor.GRAY + "Processed as a normal ban for " + p);
-					plugin.db.addPlayer(p, reason, admin, 0, 0);
+					plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
 					log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 					return true;
 				}
-				plugin.db.addPlayer(p, reason, admin, 0, 1);
+				plugin.db.addPlayer(victim.getName(), reason, admin, 0, 1);
 				log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 				if(broadcast){
 					String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");

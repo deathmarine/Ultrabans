@@ -69,8 +69,8 @@ public class Perma implements CommandExecutor{
 		// Has enough arguments?
 		if (args.length < 1) return false;
 		boolean autoComplete = config.getBoolean("auto-complete", true);
-		String p = args[0]; // Get the victim's name
-		if(autoComplete) p = expandName(p); //If the admin has chosen to do so, autocomplete the name!
+		String p = args[0];
+		if(autoComplete) p = expandName(p);
 		Player victim = plugin.getServer().getPlayer(p); // What player is really the victim?
 		// Reason stuff
 		String reason = config.getString("defReason", "not sure");
@@ -108,9 +108,8 @@ public class Perma implements CommandExecutor{
 			String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
 			adminMsg = adminMsg.replaceAll("%admin%", admin);
 			adminMsg = adminMsg.replaceAll("%reason%", reason);
-			plugin.bannedPlayers.add(p.toLowerCase()); // Add name to HASHSET (RAM) Locally
-			plugin.db.addPlayer(p, reason, admin, 0, 9);
-			Bukkit.getOfflinePlayer(p).setBanned(true);
+			plugin.bannedPlayers.add(Bukkit.getOfflinePlayer(p).getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
+			plugin.db.addPlayer(Bukkit.getOfflinePlayer(p).getName(), reason, admin, 0, 9);
 			log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + p + ".");
 		}
 		if(victim != null){ 
@@ -120,7 +119,6 @@ public class Perma implements CommandExecutor{
 			victim.kickPlayer(formatMessage(adminMsg));
 			plugin.bannedPlayers.add(victim.getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
 			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 9);
-			Bukkit.getOfflinePlayer(victim.getName()).setBanned(true);
 			log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + victim.getName() + ".");
 		}
 		if(broadcast){

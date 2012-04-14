@@ -97,7 +97,7 @@ public class Kick implements CommandExecutor{
 				if (plugin.setupPermissions()){
 					if (!plugin.permission.has(player, "ultraban.kick.all")) return true;
 				}else{
-					if (!player.isOp()) return true; //defaulting to Op if no vault doesn't take or node
+					if (!player.isOp()) return true;
 				}
 			log.log(Level.INFO, "[UltraBan] " + admin + " kicked Everyone Reason: " + reason);
 			Player[] pl = plugin.getServer().getOnlinePlayers();
