@@ -127,7 +127,7 @@ public class Ipban implements CommandExecutor{
 		// Strict Offline IP bans - Independent after Online Check
 		if(victim == null){
 			victim = Bukkit.getOfflinePlayer(p).getPlayer();
-			if(plugin.bannedPlayers.contains(victim.getName().toLowerCase())){
+			if(plugin.bannedPlayers.contains(p.toLowerCase())){
 				sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);
 				return true;
 			}
