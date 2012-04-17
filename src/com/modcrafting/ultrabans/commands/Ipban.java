@@ -126,24 +126,24 @@ public class Ipban implements CommandExecutor{
 		
 		// Strict Offline IP bans - Independent after Online Check
 		if(victim == null){
-			victim = Bukkit.getOfflinePlayer(p).getPlayer();
 			if(plugin.bannedPlayers.contains(p.toLowerCase())){
 				sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);
 				return true;
 			}
-			String offlineip = plugin.db.getAddress(victim.getName().toLowerCase());
-			plugin.bannedPlayers.add(victim.getName().toLowerCase());
+			String offlineip = plugin.db.getAddress(p.toLowerCase());
+			plugin.bannedPlayers.add(p.toLowerCase());
 			if(offlineip != null){
 				plugin.bannedIPs.add(offlineip);
 				Bukkit.banIP(offlineip);
 				}else{
 					sender.sendMessage(ChatColor.GRAY + "IP address not found by Ultrabans for " + p);
 					sender.sendMessage(ChatColor.GRAY + "Processed as a normal ban for " + p);
-					plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
+					plugin.bannedPlayers.add(p.toLowerCase());
+					plugin.db.addPlayer(p, reason, admin, 0, 0);
 					log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 					return true;
 				}
-				plugin.db.addPlayer(victim.getName(), reason, admin, 0, 1);
+				plugin.db.addPlayer(p, reason, admin, 0, 1);
 				log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
 				if(broadcast){
 					String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
@@ -162,13 +162,13 @@ public class Ipban implements CommandExecutor{
 			return true;
 		}
 		//End of Offline
-		
+
+		String victimip = plugin.db.getAddress(victim.getName().toLowerCase());
 		//Running Online
-		if(plugin.bannedPlayers.contains(victim.getName().toLowerCase())){
+		if(plugin.bannedIPs.contains(victimip)){
 			sender.sendMessage(ChatColor.BLUE + victim.getName() +  ChatColor.GRAY + " is already banned for " + reason);
 			return true;
 		}
-		String victimip = plugin.db.getAddress(victim.getName().toLowerCase());
 		plugin.bannedPlayers.add(victim.getName().toLowerCase());
 		if(victimip != null){
 		plugin.bannedIPs.add(victimip);
