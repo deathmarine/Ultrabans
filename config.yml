@@ -55,7 +55,7 @@ messages:
   tempbanMsgVictim: 'You have been temp. banned by %admin%. Reason: %reason%!'
   tempbanMsgBroadcast: '&4%victim% &7was temp. banned by &3%admin%&7. Reason: &4%reason%!'
   LoginTempban: '&7You are banned until &4%time%&7! Reason: &4%reason%!'
-  LoginBan: '&7You are banned from this server! Reason: &4%reason%!'
+  LoginBan: '%admin% banned you from this server! Reason: %reason%!'
   LoginIPBan: 'Your IP is banned!'
   fineMsgVictim: 'You have been fined by %admin% in the amount of %amt%!'
   fineMsgBroadcast: '&4%victim% &7was fined by &3%admin%&7 in the amount of &4%amt%!'
