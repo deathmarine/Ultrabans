@@ -79,12 +79,13 @@ public class DupeIP implements CommandExecutor{
 		sender.sendMessage(ChatColor.AQUA + "Scanning Current IP of " + p + ": " + ip + " !");
 		for (int i=0; i<pl.length; i++){
 			sip = plugin.db.getAddress(pl[i].getName());
-	        if (sip.equalsIgnoreCase(ip)){
+	        if (sip != null && sip.equalsIgnoreCase(ip)){
 	        	if (!pl[i].getName().equalsIgnoreCase(p)){
 		        	sender.sendMessage(ChatColor.GRAY + "Player: " + pl[i].getName() + " duplicates player: " + p + "!");
 	        	}
 	        }
 		}
+		sender.sendMessage(ChatColor.GREEN + "Scanning Complete!");
 		return true;
 		}
 	}

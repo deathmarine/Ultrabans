@@ -297,12 +297,11 @@ public class SQLDatabases{
 		try {
 			conn = getSQLConnection();
 			if(dataHandler.equalsIgnoreCase("sqlite")){
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ?");
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1)");
 			}else{
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			}
 			ps.setString(1, player);
-			ps.setInt(2, 0);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
 			UltraBan.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);

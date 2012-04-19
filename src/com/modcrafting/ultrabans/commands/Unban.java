@@ -80,7 +80,6 @@ public class Unban implements CommandExecutor{
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			plugin.bannedPlayers.remove(p.toLowerCase());
 			plugin.db.removeFromBanlist(p);
-			plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
 			Bukkit.getOfflinePlayer(p).setBanned(false);
 			String ip = plugin.db.getAddress(p);
 			if(plugin.bannedIPs.contains(ip)){
@@ -88,7 +87,7 @@ public class Unban implements CommandExecutor{
 				Bukkit.unbanIP(ip);
 				System.out.println("Also removed the IP ban!");
 			}
-			
+			plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
 			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + p + ".");
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
