@@ -102,7 +102,7 @@ public class Kick implements CommandExecutor{
 			log.log(Level.INFO, "[UltraBan] " + admin + " kicked Everyone Reason: " + reason);
 			Player[] pl = plugin.getServer().getOnlinePlayers();
 			for (int i=0; i<pl.length; i++){
-				if (!plugin.permission.has(pl[i], "ultraban.kick.all")){
+				if (pl[i] != player){
 				String adminMsg = config.getString("messages.kickAllMsg", "Everyone has been kicked by %admin%. Reason: %reason%");
 				adminMsg = adminMsg.replaceAll("%admin%", admin);
 				adminMsg = adminMsg.replaceAll("%reason%", reason);
