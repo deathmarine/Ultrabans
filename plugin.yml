@@ -12,6 +12,9 @@ commands:
   tempban:
     description: Temporarily ban a player
     usage: /<command> player time timeform [reason] - Temporarily ban a player
+  tempipban:
+    description: Temporarily ipban a player
+    usage: /<command> player time timeform [reason] - Temporarily ipban a player
   ban:
     description: Ban a player
     usage: /<command> player [reason] - Ban a player

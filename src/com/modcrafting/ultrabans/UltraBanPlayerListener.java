@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -43,6 +44,12 @@ public class UltraBanPlayerListener implements Listener{
 			long now = System.currentTimeMillis()/1000;
 			long diff = tempTime - now;
 			if(diff <= 0){
+				String ip = plugin.db.getAddress(player.getName());
+				if(plugin.bannedIPs.contains(ip)){
+					plugin.bannedIPs.remove(ip);
+					Bukkit.unbanIP(ip);
+					System.out.println("Also removed the IP ban!");
+				}
 				plugin.tempBans.remove(player.getName().toLowerCase());
 				plugin.bannedPlayers.remove(player.getName().toLowerCase());
 				plugin.db.removeFromBanlist(player.getName().toLowerCase());

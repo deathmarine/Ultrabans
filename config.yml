@@ -78,6 +78,8 @@ messages:
   jailBreakMsg: 'You cannot break blocks while you are jailed!'
   tempjailMsgVictim: 'You have been temp. jailed by %admin%. Reason: %reason%!'
   tempjailMsgBroadcast: '&4%victim% &7was temp. jailed by &3%admin%&7. Reason: &4%reason%!'
+  tempipbanMsgVictim: 'You have been temp. ipbanned by %admin%. Reason: %reason%!'
+  tempipbanMsgBroadcast: '&4%victim% &7was temp. ipbanned by &3%admin%&7. Reason: &4%reason%!'
   muteChatMsg: 'You have been muted!'
   unmuteMsgVictim: 'You have been unmuted.'
   unmuteMsg: 'You have unmuted %victim%.'
