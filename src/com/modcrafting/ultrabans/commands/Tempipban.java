@@ -54,7 +54,7 @@ public class Tempipban implements CommandExecutor{
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.tempban")) auth = true;
+				if (plugin.permission.has(player, "ultraban.tempipban")) auth = true;
 			}else{
 			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
 			}
