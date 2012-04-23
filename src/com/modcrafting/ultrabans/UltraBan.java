@@ -185,8 +185,8 @@ public class UltraBan extends JavaPlugin {
 		getCommand("unban").setExecutor(new Unban(this));
 		getCommand("uversion").setExecutor(new Version(this));
 		getCommand("warn").setExecutor(new Warn(this));
-		getCommand("ujail").setExecutor(new Jail(this));
-		getCommand("utempjail").setExecutor(new Tempjail(this));
+		getCommand("jail").setExecutor(new Jail(this));
+		getCommand("tempjail").setExecutor(new Tempjail(this));
 		getCommand("permaban").setExecutor(new Perma(this));
 		getCommand("lockdown").setExecutor(new Lockdown(this));
 		getCommand("umute").setExecutor(new Mute(this));
