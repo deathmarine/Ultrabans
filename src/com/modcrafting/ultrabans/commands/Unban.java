@@ -79,44 +79,44 @@ public class Unban implements CommandExecutor{
 
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			plugin.bannedPlayers.remove(p.toLowerCase());
-			String reason = plugin.db.getBanReason(p);
-			plugin.db.removeFromBanlist(p);
+			String reason = plugin.db.getBanReason(plugin.getServer().getOfflinePlayer(p).getName());
+			plugin.db.removeFromBanlist(plugin.getServer().getOfflinePlayer(p).getName());
 			Bukkit.getOfflinePlayer(p).setBanned(false);
-			String ip = plugin.db.getAddress(p);
+			String ip = plugin.db.getAddress(plugin.getServer().getOfflinePlayer(p).getName());
 			if(plugin.bannedIPs.contains(ip)){
 				plugin.bannedIPs.remove(ip);
 				Bukkit.unbanIP(ip);
 				System.out.println("Also removed the IP ban!");
 			}
-			plugin.db.addPlayer(p, "Unbanned: " + reason, admin, 0, 5);
-			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + p + ".");
+			plugin.db.addPlayer(plugin.getServer().getOfflinePlayer(p).getName(), "Unbanned: " + reason, admin, 0, 5);
+			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
-			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", p);
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", plugin.getServer().getOfflinePlayer(p).getName());
 			sender.sendMessage(formatMessage(unbanMsgBroadcast));
 			return true;
 		}else{
 			if(plugin.tempBans.containsKey(p.toLowerCase())){
 			plugin.tempBans.remove(p.toLowerCase());
-			plugin.db.removeFromBanlist(p);
+			plugin.db.removeFromBanlist(plugin.getServer().getOfflinePlayer(p).getName());
 			Bukkit.getOfflinePlayer(p).setBanned(false);
-			String ip = plugin.db.getAddress(p);
+			String ip = plugin.db.getAddress(plugin.getServer().getOfflinePlayer(p).getName());
 			if(plugin.bannedIPs.contains(ip)){
 				plugin.bannedIPs.remove(ip);
 				Bukkit.unbanIP(ip);
 				System.out.println("Also removed the IP ban!");
 			}
 			plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
-			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + p + ".");
+			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
-			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", p);
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", plugin.getServer().getOfflinePlayer(p).getName());
 			sender.sendMessage(formatMessage(unbanMsgBroadcast));
 			return true;
 			}else{
 			String unbanMsgFailed = config.getString("messages.unbanMsgFailed", "%victim% is already unbanned!");
 			unbanMsgFailed = unbanMsgFailed.replaceAll("%admin%", admin);
-			unbanMsgFailed = unbanMsgFailed.replaceAll("%victim%", p);
+			unbanMsgFailed = unbanMsgFailed.replaceAll("%victim%", plugin.getServer().getOfflinePlayer(p).getName());
 			sender.sendMessage(formatMessage(unbanMsgFailed));
 			return true;
 			}
