@@ -19,7 +19,7 @@ import com.modcrafting.ultrabans.UltraBan;
 public class Ipban implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
-	
+	String permission = "ultraban.ipban";
 	public Ipban(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
@@ -59,11 +59,7 @@ public class Ipban implements CommandExecutor{
 		String reason = config.getString("defReason", "not sure");
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.ipban")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
-			}
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
 		}else{
 			auth = true; //if sender is not a player - Console
@@ -123,9 +119,21 @@ public class Ipban implements CommandExecutor{
 		if(autoComplete)
 			p = expandName(p);
 		Player victim = plugin.getServer().getPlayer(p); 
-		
-		// Strict Offline IP bans - Independent after Online Check
 		if(victim == null){
+			victim = (Player) plugin.getServer().getOfflinePlayer(p);
+			if(victim.hasPermission( "ultraban.override")){
+				sender.sendMessage(ChatColor.RED + "Your ban has been denied!");
+				return true;
+			}
+		}else{
+			if(victim.hasPermission( "ultraban.override")){
+				sender.sendMessage(ChatColor.RED + "Your ban has been denied! Player Notified!");
+				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to ban you!");
+				return true;
+			}	
+		}
+		
+		/*
 			if(plugin.bannedPlayers.contains(p.toLowerCase())){
 				sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);
 				return true;
@@ -160,7 +168,7 @@ public class Ipban implements CommandExecutor{
 				}
 
 			return true;
-		}
+		}*/
 		//End of Offline
 
 		String victimip = plugin.db.getAddress(victim.getName().toLowerCase());

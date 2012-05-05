@@ -16,6 +16,7 @@ import com.modcrafting.ultrabans.UltraBan;
 
 public class CheckIP implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
+	String permission = "ultraban.checkip";
 	UltraBan plugin;
 	
 	public CheckIP(UltraBan ultraBan) {
@@ -28,11 +29,7 @@ public class CheckIP implements CommandExecutor{
 		Player player = null;
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.checkip")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; 
-			 }
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 		}else{
 			auth = true; //if sender is not a player - Console
 		}

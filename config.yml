@@ -22,15 +22,6 @@ muteVanilla: true
 #Max Warnings#
 enableMaxWarn: false
 maxWarnings: 5
-#Disable command usage#
-useJail: true
-useLockdown: true
-useStarve: true
-useForceRespawn: true
-useEmpty: true
-usePermaban: true
-useWarn: true
-useRules: true
 #Default labels#
 defAdminName: 'server'
 defReason: 'not sure'
@@ -39,13 +30,6 @@ defReason: 'not sure'
 lockdown: false
 #Enabling dupePolicy will disallow duplicate IP connections#
 dupePolicy: false
-#Traceback Proxy Check is to test Player Ip's on Connection#
-#Timeout is measured in ms#
-TraceBackProxyCheck: false
-tracetimeout: 600
-LoginDupeIpCheck: false
-
-
 #Messages#
 messages:
   banMsgFailed: '&4%victim% &7is already banned!'

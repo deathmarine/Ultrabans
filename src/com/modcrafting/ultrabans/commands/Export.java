@@ -17,7 +17,7 @@ import com.modcrafting.ultrabans.UltraBan;
 public class Export implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
-	
+	String permission = "ultraban.export";
 	public Export(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
@@ -26,11 +26,7 @@ public class Export implements CommandExecutor{
 		Player player = null;
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.export")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
-			}
+			if(player.hasPermission(permission)) auth = true;
 		}else{
 			auth = true;
 		}

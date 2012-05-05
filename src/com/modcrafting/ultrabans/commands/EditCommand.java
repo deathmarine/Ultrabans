@@ -15,7 +15,7 @@ import com.modcrafting.ultrabans.UltraBan;
 
 public class EditCommand implements CommandExecutor{
 	UltraBan plugin;
-
+	String permission = "ultraban.editban";
 	public EditCommand(UltraBan ultraBan){
 		this.plugin = ultraBan;
 	}
@@ -36,10 +36,8 @@ public class EditCommand implements CommandExecutor{
 		}
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
 		if(sender instanceof Player)
-			if(plugin.setupPermissions()){
-				if (!plugin.permission.has((Player)sender, "ultraban.editban"))
+			if(!((Player) sender).hasPermission(permission) || !((Player) sender).isOp()){
 				return true;
 			}
 		if(args.length < 1)

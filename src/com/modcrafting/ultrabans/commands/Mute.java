@@ -15,6 +15,7 @@ import com.modcrafting.ultrabans.UltraBan;
 public class Mute implements CommandExecutor {
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
+	String permission = "ultraban.mute";
 	public Mute(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}	
@@ -51,12 +52,7 @@ public class Mute implements CommandExecutor {
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
-			 			//new permissions test before reconstruct
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.mute")) auth = true;
-			}else{
-			if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
-			}
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			
 			admin = player.getName();
 		}else{

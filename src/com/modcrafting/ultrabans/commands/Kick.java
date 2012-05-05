@@ -15,7 +15,7 @@ import com.modcrafting.ultrabans.UltraBan;
 public class Kick implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
-	
+	String permission = "ultraban.kick";
 	public Kick(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
@@ -53,11 +53,7 @@ public class Kick implements CommandExecutor{
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.kick")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
-			}
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
 		}else{
 			auth = true; //if sender is not a player - Console
@@ -94,11 +90,7 @@ public class Kick implements CommandExecutor{
 
 		if(p.equals("*")){
 			if (sender instanceof Player)
-				if (plugin.setupPermissions()){
-					if (!plugin.permission.has(player, "ultraban.kick.all")) return true;
-				}else{
-					if (!player.isOp()) return true;
-				}
+				if(player.hasPermission("ultrabans.kick.all") || player.isOp()) auth = true;
 			log.log(Level.INFO, "[UltraBan] " + admin + " kicked Everyone Reason: " + reason);
 			Player[] pl = plugin.getServer().getOnlinePlayers();
 			for (int i=0; i<pl.length; i++){

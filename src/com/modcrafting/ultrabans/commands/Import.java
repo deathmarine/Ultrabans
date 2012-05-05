@@ -18,7 +18,7 @@ public class Import implements CommandExecutor{
 
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
-
+	String permission = "ultraban.import";
 	public Import(UltraBan ultraBan) {
 	this.plugin = ultraBan;
 	}
@@ -29,11 +29,7 @@ public class Import implements CommandExecutor{
 		String admin = "server";
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.import")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
-			}
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
 		}else{
 			auth = true;

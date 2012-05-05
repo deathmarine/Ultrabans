@@ -14,7 +14,7 @@ import com.modcrafting.ultrabans.UltraBan;
 public class Empty implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
-	
+	String permission = "ultraban.empty";
 	public Empty(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
@@ -46,17 +46,12 @@ public class Empty implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-    	if(!plugin.useEmpty) return true;
     	boolean auth = false;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.empty")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
-			}
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
 		}else{
 			auth = true; //if sender is not a player - Console

@@ -72,9 +72,13 @@ public class UltraBanPlayerListener implements Listener{
 				plugin.jailed.remove(player.getName().toLowerCase());
 				plugin.db.removeFromJaillist(player.getName().toLowerCase());
 				plugin.db.addPlayer(player.getName(), "Released From Jail", "Served Time", 0, 8);
-				World wtlp = player.getWorld();
-				Location tlp = wtlp.getSpawnLocation();
-				player.teleport(tlp);
+				String label = "release";
+				Location setlp = new Location(
+		                plugin.getServer().getWorld(config.getString(label+".world", plugin.getServer().getWorlds().get(0).getName())),
+		                config.getInt(label+".x", 0),
+		                config.getInt(label+".y", 0),
+		                config.getInt(label+".z", 0));
+				player.teleport(setlp);
 				player.sendMessage(ChatColor.GREEN + "You've served your time.");
 				return;
 			}
@@ -84,11 +88,7 @@ public class UltraBanPlayerListener implements Listener{
 		if(lock){
 			boolean auth = false;
 			String lockMsgLogin = config.getString("messages.lockMsgLogin", "Server is under a lockdown, Try again later!");
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.lockdown.override")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
-			}
+			if(player.hasPermission("ultraban.lockdown.override") || player.isOp()) auth = true;
 			
 			if (!auth) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
 			UltraBan.log.log(Level.INFO,"[UltraBan] " + player.getName() + " attempted to join during lockdown.");

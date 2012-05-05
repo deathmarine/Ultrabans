@@ -15,7 +15,7 @@ import com.modcrafting.ultrabans.UltraBan;
 public class History implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
-	
+	String permission = "ultraban.history";
 	public History(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	
@@ -38,11 +38,7 @@ public class History implements CommandExecutor{
 		Player player = null;
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.history")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; 
-			 }
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 		}else{
 			auth = true; //if sender is not a player - Console
 		}

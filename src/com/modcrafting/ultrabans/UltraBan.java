@@ -64,18 +64,8 @@ public class UltraBan extends JavaPlugin {
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
 	private final UltraBanBlockListener blockListener = new UltraBanBlockListener(this);
-	public net.milkbowl.vault.permission.Permission permission = null;
 	public net.milkbowl.vault.economy.Economy economy = null;
 	public boolean autoComplete;
-	public boolean useFines;
-	public boolean useJail;
-	public boolean useLockdown;
-	public boolean useEmpty;
-	public boolean useSpawn;
-	public boolean useStarve;
-	public boolean useWarn;
-	public boolean usePermaban;
-	public boolean useRules;
 	
 	public void onDisable() {
 		tempBans.clear();
@@ -128,15 +118,6 @@ public class UltraBan extends JavaPlugin {
 		new File(maindir).mkdir();
 		createDefaultConfiguration("config.yml"); //Swap for new setup
 		this.autoComplete = Config.getBoolean("auto-complete", true);
-		this.useFines = Config.getBoolean("useFines", true);
-		this.useJail = Config.getBoolean("useJail", true);
-		this.useLockdown = Config.getBoolean("useLockdown", true);
-		this.useEmpty = Config.getBoolean("useEmpty", true);
-		this.useSpawn = Config.getBoolean("useForceRespawn", true);
-		this.useStarve = Config.getBoolean("useStarve", true);
-		this.useWarn = Config.getBoolean("useWarn", true);
-		this.usePermaban = Config.getBoolean("usePermaban", true);
-		this.useRules = Config.getBoolean("useRules", true);
 		loadCommands();
 		if (Config != null) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Configuration: config.yml Loaded!");
 		db.initialize(this);
@@ -148,14 +129,6 @@ public class UltraBan extends JavaPlugin {
 		log.log(Level.INFO,"[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " has been initialized!" );
 		
 	}
-	public Boolean setupPermissions()
-    {
-        RegisteredServiceProvider<net.milkbowl.vault.permission.Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null) {
-            permission = permissionProvider.getProvider();
-        }
-        return (permission != null);
-    }
 	public boolean setupEconomy(){
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
 			if (economyProvider != null) {

@@ -14,6 +14,7 @@ import com.modcrafting.ultrabans.UltraBan;
 public class Check implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
+	String permission = "utlraban.check";
 	
 	public Check(UltraBan ultraBan) {
 		this.plugin = ultraBan;
@@ -37,13 +38,9 @@ public class Check implements CommandExecutor{
 		Player player = null;
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.check")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; 
-			 }
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 		}else{
-			auth = true; //if sender is not a player - Console
+			auth = true;
 		}
 		if (!auth){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");

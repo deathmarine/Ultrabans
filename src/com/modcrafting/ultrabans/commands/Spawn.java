@@ -19,6 +19,7 @@ public class Spawn implements CommandExecutor{
 	SQLDatabases db;
 	UltraBan plugin;
 	public boolean autoComplete;
+	String permission = "ultraban.spawn";
 	public Spawn(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
@@ -49,18 +50,13 @@ public class Spawn implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		if(!plugin.useSpawn) return true;
 		boolean auth = false;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		autoComplete = config.getBoolean("auto-complete", true);
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.spawn")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
-			}
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
 		}else{
 			auth = true; //if sender is not a player - Console

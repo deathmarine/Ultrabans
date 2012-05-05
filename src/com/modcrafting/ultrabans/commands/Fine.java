@@ -14,6 +14,7 @@ import com.modcrafting.ultrabans.UltraBan;
 public class Fine implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
+	String permission = "ultraban.fine";
 	public Fine(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
@@ -45,22 +46,13 @@ public class Fine implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		if(!plugin.useFines) return true;
 		boolean auth = false;
 		boolean anon = false;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
-			 			//new permissions test before reconstruct
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.fine")) auth = true;
-			}else{
-				sender.sendMessage(ChatColor.RED + "You do not have the required dependancy: Vault.");
-				return true;
-			// if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
-			}
-			
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
 		}else{
 			auth = true; //if sender is not a player - Console

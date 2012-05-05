@@ -17,6 +17,7 @@ public class Jail implements CommandExecutor{
 
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
+	String permission = "ultraban.jail";
 	public World world;
 	public String jworld;
     public double x;
@@ -57,7 +58,6 @@ public class Jail implements CommandExecutor{
 		}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		if(!plugin.useJail) return true;
 		boolean auth = false;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
@@ -66,32 +66,38 @@ public class Jail implements CommandExecutor{
 		boolean anon = false;
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if (plugin.setupPermissions()){
-				if (plugin.permission.has(player, "ultraban.jail")) auth = true;
-			}else{
-			 if (player.isOp()) auth = true; //defaulting to Op if no vault doesn't take or node
-			}
+			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
 		}else{
 			auth = true; //if sender is not a player - Console
 		}
 		if(auth){
 			if (args.length < 1) return false;
-			if(args[0].equalsIgnoreCase("set")){
-					this.setlp = player.getLocation();
-					setJail(setlp);
-					sender.sendMessage(ChatColor.GRAY + "Jail has been set!");
-					return true;
+			if(args[0].equalsIgnoreCase("setjail")){
+				this.setlp = player.getLocation();
+				setJail(setlp, "jail");
+				sender.sendMessage(ChatColor.GRAY + "Jail has been set!");
+				return true;
+			}
+			if(args[0].equalsIgnoreCase("setrelease")){
+				this.setlp = player.getLocation();
+				setJail(setlp, "release");
+				sender.sendMessage(ChatColor.GRAY + "Release has been set!");
+				return true;
 			}
 			if(args[0].equalsIgnoreCase("pardon")){
 					String jaile = args[1];
 					if(autoComplete) jaile = expandName(jaile);
 					plugin.jailed.remove(jaile.toLowerCase());
 					Player jailee = plugin.getServer().getPlayer(jaile);
-					Location tlp = jailee.getWorld().getSpawnLocation();
 					plugin.db.removeFromJaillist(jailee.getName());
 					plugin.db.addPlayer(jailee.getName(), "Released From Jail", admin, 0, 8);
-					jailee.teleport(tlp);
+					Location stlp = getJail("release");
+					if(stlp != null){
+						jailee.teleport(stlp);
+					}else{
+						jailee.teleport(jailee.getWorld().getSpawnLocation());
+					}
 					if(plugin.tempJail.containsKey(jaile.toLowerCase())){
 						plugin.tempJail.remove(jaile.toLowerCase());
 					}
@@ -156,7 +162,7 @@ public class Jail implements CommandExecutor{
 				}
 				plugin.db.addPlayer(p, reason, admin, 0, 6);
 				plugin.jailed.add(p.toLowerCase());
-				Location stlp = getJail();
+				Location stlp = getJail("jail");
 				victim.teleport(stlp);
 				return true;
 			}
@@ -164,22 +170,22 @@ public class Jail implements CommandExecutor{
 		return false;
 	}
 
-	public void setJail(Location location) {
+	public void setJail(Location location, String label) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-        config.set("jail.x", (int) setlp.getX());
-        config.set("jail.y", (int) setlp.getY());
-        config.set("jail.z", (int) setlp.getZ());
-        config.set("jail.world", setlp.getWorld().getName());
+        config.set(label+".x", (int) setlp.getX());
+        config.set(label+".y", (int) setlp.getY());
+        config.set(label+".z", (int) setlp.getZ());
+        config.set(label+".world", setlp.getWorld().getName());
         plugin.saveConfig();
 
     }
-    public Location getJail(){
+    public Location getJail(String label){
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
         Location setlp = new Location(
                 plugin.getServer().getWorld(config.getString("jail.world", plugin.getServer().getWorlds().get(0).getName())),
-                config.getInt("jail.x", 0),
-                config.getInt("jail.y", 0),
-                config.getInt("jail.z", 0));
+                config.getInt(label+".x", 0),
+                config.getInt(label+".y", 0),
+                config.getInt(label+".z", 0));
         	return setlp;
     }
 	public String combineSplit(int startIndex, String[] string, String seperator) {
