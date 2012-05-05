@@ -2,6 +2,9 @@ package com.modcrafting.ultrabans.commands;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -66,10 +69,28 @@ public class Unban implements CommandExecutor{
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
-
-		// Has enough arguments?
 		if (args.length < 1)return false;
 		String p = args[0];
+		
+		//unban IPv4
+		if(validIP(p)){
+			plugin.bannedIPs.remove(p);
+			String pname = plugin.db.getName(p);
+			Bukkit.unbanIP(p);
+			if (pname != null){
+				String reason = plugin.db.getBanReason(plugin.getServer().getOfflinePlayer(pname).getName());
+				plugin.db.removeFromBanlist(plugin.getServer().getOfflinePlayer(pname).getName());
+				plugin.db.addPlayer(plugin.getServer().getOfflinePlayer(p).getName(), "Unbanned: " + reason, admin, 0, 5);
+				log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");				
+			}else{
+				plugin.db.removeFromBanlist(pname);			
+			}
+			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", p);
+			sender.sendMessage(formatMessage(unbanMsgBroadcast));
+			return true;
+		}
 		
 		if(plugin.db.permaBan(p.toLowerCase())){
 			sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is PermaBanned.");
@@ -121,6 +142,20 @@ public class Unban implements CommandExecutor{
 			return true;
 			}
 		}
+	}
+
+	public static boolean validIP(String ip) {
+	    if (ip == null || ip.isEmpty()) return false;
+	    ip = ip.trim();
+	    if ((ip.length() < 6) & (ip.length() > 15)) return false;
+
+	    try {
+	        Pattern pattern = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+	        Matcher matcher = pattern.matcher(ip);
+	        return matcher.matches();
+	    } catch (PatternSyntaxException ex) {
+	        return false;
+	    }
 	}
 	public String formatMessage(String str){
 		String funnyChar = new Character((char) 167).toString();
