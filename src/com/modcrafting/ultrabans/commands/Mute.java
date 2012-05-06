@@ -69,7 +69,7 @@ public class Mute implements CommandExecutor {
 		Player victim = plugin.getServer().getPlayer(p);
 		if(victim != null){
 			if (plugin.muted.contains(p.toLowerCase())){
-				plugin.muted.remove(p);
+				plugin.muted.remove(p.toLowerCase());
 				String adminMsg = config.getString("messages.unmuteMsgVictim", "You have been unmuted.");
 		 		victim.sendMessage(ChatColor.GRAY + adminMsg);
 				String adminMsgs = config.getString("messages.unmuteMsg", "You have unmuted %victim%.");
