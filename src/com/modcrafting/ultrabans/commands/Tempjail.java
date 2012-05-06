@@ -112,7 +112,7 @@ public class Tempjail implements CommandExecutor{
 			plugin.jailed.add(p.toLowerCase());
 			Location stlp = getJail();
 			victim.teleport(stlp);
-			log.log(Level.INFO, "[UltraBan] " + admin + " tempjailned player " + victim.getName() + ".");
+			log.log(Level.INFO, "[UltraBan] " + admin + " tempjailed player " + victim.getName() + ".");
 			String tempjailMsgVictim = config.getString("messages.tempjailMsgVictim", "You have been temp. jailed by %admin%. Reason: %reason%!");
 			tempjailMsgVictim = tempjailMsgVictim.replaceAll("%admin%", admin);
 			tempjailMsgVictim = tempjailMsgVictim.replaceAll("%reason%", reason);

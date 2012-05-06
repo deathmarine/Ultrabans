@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,9 +31,13 @@ public class UltraBanBlockListener implements Listener {
 						plugin.tempJail.remove(player.getName().toLowerCase());
 						plugin.jailed.remove(player.getName().toLowerCase());
 						plugin.db.removeFromJaillist(player.getName().toLowerCase());
-						World wtlp = player.getWorld();
-						Location tlp = wtlp.getSpawnLocation();
-						player.teleport(tlp);
+						String label = "release";
+						Location setlp = new Location(
+				                plugin.getServer().getWorld(config.getString(label+".world", plugin.getServer().getWorlds().get(0).getName())),
+				                config.getInt(label+".x", 0),
+				                config.getInt(label+".y", 0),
+				                config.getInt(label+".z", 0));
+						player.teleport(setlp);
 						player.sendMessage(ChatColor.GREEN + "You've served your time.");
 						return;
 					}
@@ -64,9 +67,13 @@ public class UltraBanBlockListener implements Listener {
 						plugin.tempJail.remove(player.getName().toLowerCase());
 						plugin.jailed.remove(player.getName().toLowerCase());
 						plugin.db.removeFromJaillist(player.getName().toLowerCase());
-						World wtlp = player.getWorld();
-						Location tlp = wtlp.getSpawnLocation();
-						player.teleport(tlp);
+						String label = "release";
+						Location setlp = new Location(
+				                plugin.getServer().getWorld(config.getString(label+".world", plugin.getServer().getWorlds().get(0).getName())),
+				                config.getInt(label+".x", 0),
+				                config.getInt(label+".y", 0),
+				                config.getInt(label+".z", 0));
+						player.teleport(setlp);
 						player.sendMessage(ChatColor.GREEN + "You've served your time.");
 						return;
 					}
