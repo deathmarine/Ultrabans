@@ -83,6 +83,15 @@ public class Warn implements CommandExecutor{
 			
 		}
 		if(victim != null){
+			if(victim.getName() == admin){
+				sender.sendMessage(ChatColor.RED + "You cannot emowarn yourself!");
+				return true;
+			}
+			if(victim.hasPermission( "ultraban.override.warn")){
+				sender.sendMessage(ChatColor.RED + "Your warning has been denied! Player Notified!");
+				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to warn you!");
+				return true;
+			}	
 			if(config.getBoolean("enableMaxWarn", false)){
 				Integer max = config.getInt("maxWarnings", 5);
 				if(plugin.db.maxWarns(victim.getName()) != null &&  plugin.db.maxWarns(victim.getName()).size() > max){
@@ -122,6 +131,11 @@ public class Warn implements CommandExecutor{
 				
 			}	
 		}else{
+			victim = (Player) plugin.getServer().getOfflinePlayer(p);
+			if(victim.hasPermission( "ultraban.override.warn")){
+				sender.sendMessage(ChatColor.RED + "Your warning has been denied!");
+				return true;
+			}
 			plugin.db.addPlayer(p, reason, admin, 0, 2);
 			log.log(Level.INFO, "[UltraBan] " + admin + " warned player " + p + ".");
 			if(broadcast){ 

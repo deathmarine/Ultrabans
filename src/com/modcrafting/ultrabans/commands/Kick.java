@@ -94,7 +94,7 @@ public class Kick implements CommandExecutor{
 			log.log(Level.INFO, "[UltraBan] " + admin + " kicked Everyone Reason: " + reason);
 			Player[] pl = plugin.getServer().getOnlinePlayers();
 			for (int i=0; i<pl.length; i++){
-				if (pl[i] != player){
+				if (pl[i] != player || pl[i].hasPermission("ultraban.override.kick.all")){
 				String adminMsg = config.getString("messages.kickAllMsg", "Everyone has been kicked by %admin%. Reason: %reason%");
 				adminMsg = adminMsg.replaceAll("%admin%", admin);
 				adminMsg = adminMsg.replaceAll("%reason%", reason);
@@ -108,6 +108,16 @@ public class Kick implements CommandExecutor{
 		Player victim = plugin.getServer().getPlayer(p);
 		if(victim == null){
 			sender.sendMessage(ChatColor.GRAY + "Player must be online!");
+			return true;
+		}
+
+		if(victim.getName() == admin){
+			sender.sendMessage(ChatColor.RED + "You cannot emokick yourself!");
+			return true;
+		}
+		if(victim.hasPermission( "ultraban.override.kick")){
+			sender.sendMessage(ChatColor.RED + "Your kick has been denied! Player Notified!");
+			victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to kick you!");
 			return true;
 		}
 		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 3);

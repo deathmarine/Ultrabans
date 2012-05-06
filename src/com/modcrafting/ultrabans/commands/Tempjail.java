@@ -103,6 +103,15 @@ public class Tempjail implements CommandExecutor{
 		long temp = System.currentTimeMillis()/1000+tempTime; //epoch time
 		//Separate for Online-Offline
 		if(victim != null){
+			if(victim.getName() == admin){
+				sender.sendMessage(ChatColor.RED + "You cannot emotempjail yourself!");
+				return true;
+			}
+			if(victim.hasPermission( "ultraban.override.tempjail")){
+				sender.sendMessage(ChatColor.RED + "Your tempjail has been denied! Player Notified!");
+				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to tempjail you!");
+				return true;
+			}	
 			if(plugin.jailed.contains(victim.getName().toLowerCase())){
 				sender.sendMessage(ChatColor.BLUE + victim.getName() +  ChatColor.GRAY + " is already jailed for " + reason);
 				return true;
@@ -130,6 +139,11 @@ public class Tempjail implements CommandExecutor{
 				sender.sendMessage(formatMessage(":S:" + tempjailMsgBroadcast));
 			}
 		}else{
+			victim = (Player) plugin.getServer().getOfflinePlayer(p);
+			if(victim.hasPermission( "ultraban.override.tempjail")){
+				sender.sendMessage(ChatColor.RED + "Your tempjail has been denied!");
+				return true;
+			}
 			if(plugin.jailed.contains(p.toLowerCase())){
 				sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already jailed for " + reason);
 				return true;

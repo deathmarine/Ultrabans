@@ -101,14 +101,27 @@ public class Perma implements CommandExecutor{
 		}
 
 		if(victim == null){
+			victim = (Player) plugin.getServer().getOfflinePlayer(p);
+			if(victim.hasPermission( "ultraban.override.permaban")){
+				sender.sendMessage(ChatColor.RED + "Your permaban attempt has been denied!");
+				return true;
+			}
 			String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
 			adminMsg = adminMsg.replaceAll("%admin%", admin);
 			adminMsg = adminMsg.replaceAll("%reason%", reason);
 			plugin.bannedPlayers.add(Bukkit.getOfflinePlayer(p).getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
 			plugin.db.addPlayer(Bukkit.getOfflinePlayer(p).getName(), reason, admin, 0, 9);
 			log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + p + ".");
-		}
-		if(victim != null){ 
+		}else{ 
+			if(victim.getName() == admin){
+				sender.sendMessage(ChatColor.RED + "You cannot permaban yourself!");
+				return true;
+			}
+			if(victim.hasPermission( "ultraban.override.permaban")){
+				sender.sendMessage(ChatColor.RED + "Your permaban has been denied! Player Notified!");
+				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to permaban you!");
+				return true;
+			}
 			String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
 			adminMsg = adminMsg.replaceAll("%admin%", admin);
 			adminMsg = adminMsg.replaceAll("%reason%", reason);
@@ -121,21 +134,13 @@ public class Perma implements CommandExecutor{
 			String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%admin%", admin);
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%reason%", reason);
-			if(victim == null){
-			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", p);
-			}else{
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", victim.getName());
-			}
 			plugin.getServer().broadcastMessage(formatMessage(permbanMsgBroadcast));
 		}else{
 			String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%admin%", admin);
 			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%reason%", reason);
-			if(victim == null){
-				permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", p);
-				}else{
-				permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", victim.getName());
-				}
+			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", victim.getName());
 			sender.sendMessage(formatMessage(permbanMsgBroadcast));
 		}
 		return true;

@@ -118,6 +118,24 @@ permissions:
       ultraban.version: true
       ultraban.export: true
       ultraban.import: true
+      ultraban.override.*: true
+  ultraban.override.*:
+    description: Allows the Administration to Override Commands
+    children:
+      ultraban.override.ban: true
+      ultraban.override.ipban: true
+      ultraban.override.jail: true
+      ultraban.override.kick: true
+      ultraban.override.kick.all: true
+      ultraban.override.fine: true
+      ultraban.override.mute: true
+      ultraban.override.permaban: true
+      ultraban.override.starve: true
+      ultraban.override.tempban: true
+      ultraban.override.tempipban: true
+      ultraban.override.tempjail: true
+      ultraban.override.warn: true
+      ultraban.override.lockdown: true
   ultraban.ban:
     default: op
     description: Allows the Administration to ban a player
@@ -198,3 +216,31 @@ permissions:
     description: Allows the user to import a banlist
   ultraban.export:
     description: Allows the user to export a banlist
+  ultraban.override.ban:
+    description: Allows the Administration to override bans
+  ultraban.override.ipban:
+    description: Allows the Administration to override ipbans
+  ultraban.override.jail:
+    description: Allows the Administration to override jail
+  ultraban.override.kick:
+    description: Allows the Administration to override kick
+  ultraban.override.kick.all:
+    description: Allows the Administration to override kickall
+  ultraban.override.fine:
+    description: Allows the Administration to override fine
+  ultraban.override.mute:
+    description: Allows the Administration to override mute
+  ultraban.override.permaban:
+    description: Allows the Administration to override permabans
+  ultraban.override.starve:
+    description: Allows the Administration to override starve command
+  ultraban.override.tempban:
+    description: Allows the Administration to override tempban
+  ultraban.override.tempipban:
+    description: Allows the Administration to override tempipban
+  ultraban.override.tempjail:
+    description: Allows the Administration to override tempjail
+  ultraban.override.warn:
+    description: Allows the Administration to override warn
+  ultraban.override.lockdown:
+    description: Allows the Administration to override lockdowns

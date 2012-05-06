@@ -87,6 +87,14 @@ public class Fine implements CommandExecutor{
 		}
 			
 		if(victim != null){
+			if(victim.getName() == admin){
+				sender.sendMessage(ChatColor.RED + "You cannot emofine yourself!");
+			}
+			if(victim.hasPermission( "ultraban.override.fine")){
+				sender.sendMessage(ChatColor.RED + "Your fine has been denied! Player Notified!");
+				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to fine you!");
+				return true;
+			}
 			if(!broadcast){ //If silent wake his ass up
 				String fineMsg = config.getString("messages.fineMsgVictim", "You have been fined by %admin% in the amount of %amt%!");
 				String idoit = victim.getName();

@@ -128,6 +128,11 @@ public class Jail implements CommandExecutor{
 				admin = config.getString("defAdminName", "server");
 			}
 			if(victim == null){
+				victim = (Player) plugin.getServer().getOfflinePlayer(p);
+				if(victim.hasPermission( "ultraban.override.jail")){
+					sender.sendMessage(ChatColor.RED + "Your jail attempt has been denied!");
+					return true;
+				}
 				if(plugin.jailed.contains(p)){
 					sender.sendMessage(ChatColor.GRAY + p + " is already in jail.");
 					return true;
@@ -137,6 +142,15 @@ public class Jail implements CommandExecutor{
 				sender.sendMessage(ChatColor.GRAY + "Player Must be online to be jailed.");
 				return true;
 			}else{
+				if(victim.getName() == admin){
+					sender.sendMessage(ChatColor.RED + "You cannot emojail yourself!");
+					return true;
+				}
+				if(victim.hasPermission( "ultraban.override.jail")){
+					sender.sendMessage(ChatColor.RED + "Your jail attempt has been denied! Player Notified!");
+					victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to jail you!");
+					return true;
+				}
 				if(plugin.jailed.contains(victim.getName().toLowerCase())){
 					sender.sendMessage(ChatColor.GRAY + victim.getName() + " is already in jail.");
 					return true;

@@ -88,7 +88,7 @@ public class UltraBanPlayerListener implements Listener{
 		if(lock){
 			boolean auth = false;
 			String lockMsgLogin = config.getString("messages.lockMsgLogin", "Server is under a lockdown, Try again later!");
-			if(player.hasPermission("ultraban.lockdown.override") || player.isOp()) auth = true;
+			if(player.hasPermission("ultraban.override.lockdown") || player.isOp()) auth = true;
 			
 			if (!auth) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
 			UltraBan.log.log(Level.INFO,"[UltraBan] " + player.getName() + " attempted to join during lockdown.");

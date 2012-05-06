@@ -68,6 +68,16 @@ public class Mute implements CommandExecutor {
 		String p = expandName(args[0]); 
 		Player victim = plugin.getServer().getPlayer(p);
 		if(victim != null){
+
+			if(victim.getName() == admin){
+				sender.sendMessage(ChatColor.RED + "You cannot emomute yourself!");
+				return true;
+			}
+			if(victim.hasPermission( "ultraban.override.mute")){
+				sender.sendMessage(ChatColor.RED + "Your mute has been denied! Player Notified!");
+				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to mute you!");
+				return true;
+			}
 			if (plugin.muted.contains(p.toLowerCase())){
 				plugin.muted.remove(p.toLowerCase());
 				String adminMsg = config.getString("messages.unmuteMsgVictim", "You have been unmuted.");

@@ -67,6 +67,15 @@ public class Starve implements CommandExecutor{
 			String idoit = null;
 			if (victim != null){
 				idoit = victim.getName();
+				if(victim.getName() == admin){
+					sender.sendMessage(ChatColor.RED + "You cannot starve yourself!");
+					return true;
+				}
+				if(victim.hasPermission( "ultraban.override.starve")){
+					sender.sendMessage(ChatColor.RED + "Your starve attempt has been denied! Player Notified!");
+					victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to starve you!");
+					return true;
+				}
 			}else{
 				sender.sendMessage(ChatColor.GRAY + "Player must be online!");
 				return true;

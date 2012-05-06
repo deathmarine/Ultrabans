@@ -121,56 +121,22 @@ public class Ipban implements CommandExecutor{
 		Player victim = plugin.getServer().getPlayer(p); 
 		if(victim == null){
 			victim = (Player) plugin.getServer().getOfflinePlayer(p);
-			if(victim.hasPermission( "ultraban.override")){
-				sender.sendMessage(ChatColor.RED + "Your ban has been denied!");
+			if(victim.hasPermission( "ultraban.override.ipban")){
+				sender.sendMessage(ChatColor.RED + "Your ipban has been denied!");
 				return true;
 			}
 		}else{
-			if(victim.hasPermission( "ultraban.override")){
-				sender.sendMessage(ChatColor.RED + "Your ban has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to ban you!");
+			if(victim.getName() == admin){
+				sender.sendMessage(ChatColor.RED + "You cannot emoipban yourself!");
+				return true;
+			}
+			if(victim.hasPermission( "ultraban.override.ipban")){
+				sender.sendMessage(ChatColor.RED + "Your ipban has been denied! Player Notified!");
+				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to ipban you!");
 				return true;
 			}	
 		}
 		
-		/*
-			if(plugin.bannedPlayers.contains(p.toLowerCase())){
-				sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);
-				return true;
-			}
-			String offlineip = plugin.db.getAddress(p.toLowerCase());
-			plugin.bannedPlayers.add(p.toLowerCase());
-			if(offlineip != null){
-				plugin.bannedIPs.add(offlineip);
-				Bukkit.banIP(offlineip);
-				}else{
-					sender.sendMessage(ChatColor.GRAY + "IP address not found by Ultrabans for " + p);
-					sender.sendMessage(ChatColor.GRAY + "Processed as a normal ban for " + p);
-					plugin.bannedPlayers.add(p.toLowerCase());
-					plugin.db.addPlayer(p, reason, admin, 0, 0);
-					log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
-					return true;
-				}
-				plugin.db.addPlayer(p, reason, admin, 0, 1);
-				log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p + ".");
-				if(broadcast){
-					String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
-					banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
-					banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
-					banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
-					plugin.getServer().broadcastMessage(formatMessage(banMsgBroadcast));
-				}else{
-					String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
-					banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
-					banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
-					banMsgBroadcast = banMsgBroadcast.replaceAll("%victim%", p);
-					sender.sendMessage(formatMessage(":S:" + banMsgBroadcast));
-				}
-
-			return true;
-		}*/
-		//End of Offline
-
 		String victimip = plugin.db.getAddress(victim.getName().toLowerCase());
 		//Running Online
 		if(plugin.bannedIPs.contains(victimip)){

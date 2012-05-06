@@ -96,6 +96,15 @@ public class Tempipban implements CommandExecutor{
 		long temp = System.currentTimeMillis()/1000+tempTime; //epoch time
 		//Separate for Online-Offline
 		if(victim != null){
+			if(victim.getName() == admin){
+				sender.sendMessage(ChatColor.RED + "You cannot emotempipban yourself!");
+				return true;
+			}
+			if(victim.hasPermission( "ultraban.override.tempipban")){
+				sender.sendMessage(ChatColor.RED + "Your tempipban has been denied! Player Notified!");
+				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to tempipban you!");
+				return true;
+			}	
 			if(plugin.bannedPlayers.contains(victim.getName().toLowerCase())){
 				sender.sendMessage(ChatColor.BLUE + victim.getName() +  ChatColor.GRAY + " is already banned for " + reason);
 				return true;
@@ -132,6 +141,11 @@ public class Tempipban implements CommandExecutor{
 				sender.sendMessage(formatMessage(":S:" + tempbanMsgBroadcast));
 			}
 		}else{
+			victim = (Player) plugin.getServer().getOfflinePlayer(p);
+			if(victim.hasPermission( "ultraban.override.tempipban")){
+				sender.sendMessage(ChatColor.RED + "Your tempipban has been denied!");
+				return true;
+			}
 			if(plugin.bannedPlayers.contains(p.toLowerCase())){
 				sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);
 				return true;
