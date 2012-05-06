@@ -3,7 +3,6 @@ package com.modcrafting.ultrabans.commands;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -101,17 +100,22 @@ public class Perma implements CommandExecutor{
 		}
 
 		if(victim == null){
-			victim = (Player) plugin.getServer().getOfflinePlayer(p);
-			if(victim.hasPermission( "ultraban.override.permaban")){
-				sender.sendMessage(ChatColor.RED + "Your permaban attempt has been denied!");
-				return true;
+			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
+			if(victim != null){
+				if(victim.hasPermission( "ultraban.override.permaban")){
+					sender.sendMessage(ChatColor.RED + "Your permaban attempt has been denied!");
+					return true;
+				}
+				String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
+				adminMsg = adminMsg.replaceAll("%admin%", admin);
+				adminMsg = adminMsg.replaceAll("%reason%", reason);
+				plugin.bannedPlayers.add(victim.getName().toLowerCase());
+				plugin.db.addPlayer(victim.getName(), reason, admin, 0, 9);
+				log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + p + ".");				
+			}else{
+				sender.sendMessage(ChatColor.RED + "Unable to find player!");
 			}
-			String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
-			adminMsg = adminMsg.replaceAll("%admin%", admin);
-			adminMsg = adminMsg.replaceAll("%reason%", reason);
-			plugin.bannedPlayers.add(Bukkit.getOfflinePlayer(p).getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
-			plugin.db.addPlayer(Bukkit.getOfflinePlayer(p).getName(), reason, admin, 0, 9);
-			log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + p + ".");
+			
 		}else{ 
 			if(victim.getName() == admin){
 				sender.sendMessage(ChatColor.RED + "You cannot permaban yourself!");
@@ -119,7 +123,7 @@ public class Perma implements CommandExecutor{
 			}
 			if(victim.hasPermission( "ultraban.override.permaban")){
 				sender.sendMessage(ChatColor.RED + "Your permaban has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to permaban you!");
+				victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to permaban you!");
 				return true;
 			}
 			String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");

@@ -109,7 +109,7 @@ public class Tempjail implements CommandExecutor{
 			}
 			if(victim.hasPermission( "ultraban.override.tempjail")){
 				sender.sendMessage(ChatColor.RED + "Your tempjail has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to tempjail you!");
+				victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to tempjail you!");
 				return true;
 			}	
 			if(plugin.jailed.contains(victim.getName().toLowerCase())){
@@ -139,10 +139,12 @@ public class Tempjail implements CommandExecutor{
 				sender.sendMessage(formatMessage(":S:" + tempjailMsgBroadcast));
 			}
 		}else{
-			victim = (Player) plugin.getServer().getOfflinePlayer(p);
-			if(victim.hasPermission( "ultraban.override.tempjail")){
-				sender.sendMessage(ChatColor.RED + "Your tempjail has been denied!");
-				return true;
+			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
+			if(victim != null){
+				if(victim.hasPermission( "ultraban.override.tempjail")){
+					sender.sendMessage(ChatColor.RED + "Your tempjail has been denied!");
+					return true;
+				}
 			}
 			if(plugin.jailed.contains(p.toLowerCase())){
 				sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already jailed for " + reason);

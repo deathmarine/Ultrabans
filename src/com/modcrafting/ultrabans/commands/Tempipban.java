@@ -102,7 +102,7 @@ public class Tempipban implements CommandExecutor{
 			}
 			if(victim.hasPermission( "ultraban.override.tempipban")){
 				sender.sendMessage(ChatColor.RED + "Your tempipban has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to tempipban you!");
+				victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to tempipban you!");
 				return true;
 			}	
 			if(plugin.bannedPlayers.contains(victim.getName().toLowerCase())){
@@ -141,10 +141,12 @@ public class Tempipban implements CommandExecutor{
 				sender.sendMessage(formatMessage(":S:" + tempbanMsgBroadcast));
 			}
 		}else{
-			victim = (Player) plugin.getServer().getOfflinePlayer(p);
-			if(victim.hasPermission( "ultraban.override.tempipban")){
-				sender.sendMessage(ChatColor.RED + "Your tempipban has been denied!");
-				return true;
+			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
+			if(victim != null){
+				if(victim.hasPermission( "ultraban.override.tempipban")){
+					sender.sendMessage(ChatColor.RED + "Your tempipban has been denied!");
+					return true;
+				}
 			}
 			if(plugin.bannedPlayers.contains(p.toLowerCase())){
 				sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + reason);

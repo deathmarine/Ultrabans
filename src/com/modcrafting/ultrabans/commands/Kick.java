@@ -117,7 +117,7 @@ public class Kick implements CommandExecutor{
 		}
 		if(victim.hasPermission( "ultraban.override.kick")){
 			sender.sendMessage(ChatColor.RED + "Your kick has been denied! Player Notified!");
-			victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to kick you!");
+			victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to kick you!");
 			return true;
 		}
 		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 3);

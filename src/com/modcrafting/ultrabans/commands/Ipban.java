@@ -120,19 +120,23 @@ public class Ipban implements CommandExecutor{
 			p = expandName(p);
 		Player victim = plugin.getServer().getPlayer(p); 
 		if(victim == null){
-			victim = (Player) plugin.getServer().getOfflinePlayer(p);
-			if(victim.hasPermission( "ultraban.override.ipban")){
-				sender.sendMessage(ChatColor.RED + "Your ipban has been denied!");
-				return true;
+			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
+			if(victim != null){
+				if(victim.hasPermission( "ultraban.override.ipban")){
+					sender.sendMessage(ChatColor.RED + "Your ipban has been denied!");
+					return true;
+				}
+			}else{
+				sender.sendMessage(ChatColor.RED + "Unable to find player!");
 			}
 		}else{
 			if(victim.getName() == admin){
-				sender.sendMessage(ChatColor.RED + "You cannot emoipban yourself!");
+				sender.sendMessage(ChatColor.RED + "You cannot ipban yourself!");
 				return true;
 			}
 			if(victim.hasPermission( "ultraban.override.ipban")){
 				sender.sendMessage(ChatColor.RED + "Your ipban has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to ipban you!");
+				victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to ipban you!");
 				return true;
 			}	
 		}
