@@ -32,7 +32,7 @@ public class Help implements CommandExecutor{
 			sender.sendMessage("/ipban      {player} (-s/-a) {reason}");
 			sender.sendMessage("/tempipban  {player} (-s/-a) {amt} {sec/min/hour/day} {Reason}");
 			sender.sendMessage("/unban      {player}");
-			sender.sendMessage("/jail (set/pardon/{player}) {player}");
+			sender.sendMessage("/jail (setjail/setrelease/pardon/{player}) {player}");
 			sender.sendMessage("/tempjail   {player} (-s/-a) {amt} {sec/min/hour/day} {Reason}");
 			sender.sendMessage("/checkban   {player}");
 			sender.sendMessage("/checkip    {player}");
@@ -69,7 +69,7 @@ public class Help implements CommandExecutor{
 		if (player.hasPermission("ultraban.mute"))sender.sendMessage(ChatColor.GRAY + "/umute (unmute/{player}) {player}");
 		if (player.hasPermission("ultraban.rules"))sender.sendMessage(ChatColor.GRAY + "/rules (help)");
 		if (player.hasPermission("ultraban.editban"))sender.sendMessage(ChatColor.GRAY + "/editban (help)");
-		if (player.hasPermission("ultraban.jail"))sender.sendMessage(ChatColor.GRAY + "/jail (set/pardon/{player}) {player}");		
+		if (player.hasPermission("ultraban.jail"))sender.sendMessage(ChatColor.GRAY + "/jail (setjail/setrelease/pardon/{player}) {player}");		
 		if (player.hasPermission("ultraban.tempjail"))sender.sendMessage(ChatColor.GRAY + "/tempjail {player} {amt} {sec/min/hour/day} {Reason}");
 		if (player.hasPermission("ultraban.lockdown"))sender.sendMessage(ChatColor.GRAY + "/lockdown {on/off/status}");
 		if (player.hasPermission("ultraban.admin")) sender.sendMessage(ChatColor.GRAY + "/uhelp /exportbans /ureload /uversion /importbans");

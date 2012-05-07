@@ -118,7 +118,6 @@ permissions:
       ultraban.version: true
       ultraban.export: true
       ultraban.import: true
-      ultraban.override.*: true
   ultraban.override.*:
     description: Allows the Administration to Override Commands
     children:
