@@ -53,6 +53,9 @@ public class UltraBanPlayerListener implements Listener{
 				plugin.tempBans.remove(player.getName().toLowerCase());
 				plugin.bannedPlayers.remove(player.getName().toLowerCase());
 				plugin.db.removeFromBanlist(player.getName().toLowerCase());
+				String admin = config.getString("defAdminName", "server");
+				String reason = plugin.db.getBanReason(player.getName());
+				plugin.db.addPlayer(player.getName(), "Untempbanned: " + reason, admin, 0, 5);
 				return;
 			}
 			Date date = new Date();
