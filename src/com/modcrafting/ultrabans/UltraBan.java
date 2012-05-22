@@ -4,9 +4,6 @@ package com.modcrafting.ultrabans;
  * Got to love the magic!
  */
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -48,13 +45,14 @@ import com.modcrafting.ultrabans.commands.Unban;
 import com.modcrafting.ultrabans.commands.Version;
 import com.modcrafting.ultrabans.commands.Warn;
 import com.modcrafting.ultrabans.db.SQLDatabases;
+import com.modcrafting.ultrabans.util.DataHandler;
+import com.modcrafting.ultrabans.util.Formatting;
 
 public class UltraBan extends JavaPlugin {
 
 	public final static Logger log = Logger.getLogger("Minecraft");
 	public SQLDatabases db = new SQLDatabases();
 	//public IPScope ipscope = new IPScope(this);
-	public String maindir = "plugins/UltraBan/";
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
 	public HashSet<String> jailed = new HashSet<String>();
@@ -64,6 +62,8 @@ public class UltraBan extends JavaPlugin {
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
 	private final UltraBanBlockListener blockListener = new UltraBanBlockListener(this);
+	public DataHandler data = new DataHandler(this);
+	public Formatting util = new Formatting(this);
 	public net.milkbowl.vault.economy.Economy economy = null;
 	public boolean autoComplete;
 	
@@ -77,46 +77,11 @@ public class UltraBan extends JavaPlugin {
 		banEditors.clear();
 		System.out.println("UltraBan disabled.");
 	}
-	protected void createDefaultConfiguration(String name) {
-		File actual = new File(getDataFolder(), name);
-		if (!actual.exists()) {
-
-			InputStream input =
-				this.getClass().getResourceAsStream("/" + name);
-			if (input != null) {
-				FileOutputStream output = null;
-
-				try {
-					output = new FileOutputStream(actual);
-					byte[] buf = new byte[8192];
-					int length = 0;
-					while ((length = input.read(buf)) > 0) {
-						output.write(buf, 0, length);
-					}
-
-					System.out.println(getDescription().getName()
-							+ ": Default configuration file written: " + name);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					try {
-						if (input != null)
-							input.close();
-					} catch (IOException e) {}
-
-					try {
-						if (output != null)
-							output.close();
-					} catch (IOException e) {}
-				}
-			}
-		}
-	}
 	public void onEnable() {
 		YamlConfiguration Config = (YamlConfiguration) getConfig();
 		PluginDescriptionFile pdfFile = this.getDescription();
-		new File(maindir).mkdir();
-		createDefaultConfiguration("config.yml"); //Swap for new setup
+		new File("plugins/UltraBan/").mkdir();
+		data.createDefaultConfiguration("config.yml"); //Swap for new setup
 		this.autoComplete = Config.getBoolean("auto-complete", true);
 		loadCommands();
 		if (Config != null) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Configuration: config.yml Loaded!");
@@ -125,7 +90,6 @@ public class UltraBan extends JavaPlugin {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(playerListener, this);
 		pm.registerEvents(blockListener, this);
-		log.log(Level.INFO, "[" + pdfFile.getName() + "] Listeners enabled, Server is secured.");
 		log.log(Level.INFO,"[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " has been initialized!" );
 		
 	}
@@ -137,7 +101,6 @@ public class UltraBan extends JavaPlugin {
 				return (economy != null);
 		}
 	public void loadCommands(){
-
 		getCommand("ban").setExecutor(new Ban(this));
 		getCommand("checkban").setExecutor(new Check(this));
 		getCommand("checkip").setExecutor(new CheckIP(this));

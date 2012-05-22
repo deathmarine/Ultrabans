@@ -21,7 +21,7 @@ public class Export implements CommandExecutor{
 	public Export(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, String[] args) {
 		boolean auth = false;
 		Player player = null;
 		if (sender instanceof Player){
@@ -31,27 +31,35 @@ public class Export implements CommandExecutor{
 			auth = true;
 		}
 		if (auth) {
-			try
-			{
-				BufferedWriter banlist = new BufferedWriter(new FileWriter("banned-players.txt",true));
-				for(String p : plugin.bannedPlayers){
-					banlist.newLine();
-					banlist.write(p);
+			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
+
+				@Override
+				public void run() {
+					try
+					{
+						BufferedWriter banlist = new BufferedWriter(new FileWriter("banned-players.txt",true));
+						for(String p : plugin.bannedPlayers){
+							banlist.newLine();
+							banlist.write(p);
+						}
+						banlist.close();
+						BufferedWriter iplist = new BufferedWriter(new FileWriter("banned-ips.txt",true));
+						for(String p : plugin.bannedIPs){
+							iplist.newLine();
+							iplist.write(p);
+						}
+						iplist.close();
+					}
+					catch(IOException e)          
+					{
+						UltraBan.log.log(Level.SEVERE,"UltraBan: Couldn't write to banned-players.txt");
+					}
+					sender.sendMessage("§2Exported banlist to banned-players.txt.");
+					sender.sendMessage("§2Exported iplist to banned-ips.txt.");
 				}
-				banlist.close();
-				BufferedWriter iplist = new BufferedWriter(new FileWriter("banned-ips.txt",true));
-				for(String p : plugin.bannedIPs){
-					iplist.newLine();
-					iplist.write(p);
-				}
-				iplist.close();
-			}
-			catch(IOException e)          
-			{
-				UltraBan.log.log(Level.SEVERE,"UltraBan: Couldn't write to banned-players.txt");
-			}
-			sender.sendMessage("§2Exported banlist to banned-players.txt.");
-			sender.sendMessage("§2Exported iplist to banned-ips.txt.");
+				
+			});
+			
 			return true;
 		}else{
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");

@@ -17,20 +17,19 @@ import com.modcrafting.ultrabans.UltraBan;
 public class Import implements CommandExecutor{
 
 	public static final Logger log = Logger.getLogger("Minecraft");
+	boolean server = false;
 	UltraBan plugin;
 	String permission = "ultraban.import";
 	public Import(UltraBan ultraBan) {
 	this.plugin = ultraBan;
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, String[] args) {
     	boolean auth = false;
-    	boolean server = false;
 		Player player = null;
-		String admin = "server";
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if(player.hasPermission(permission) || player.isOp()) auth = true;
-			admin = player.getName();
+			player.getName();
 		}else{
 			auth = true;
 			server = true;
@@ -40,6 +39,10 @@ public class Import implements CommandExecutor{
 			return true;
 		}
 		if(auth){
+			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
+
+			@Override
+			public void run() {
 			if(!server){
 			sender.sendMessage(ChatColor.GRAY + "[UltraBan] Be patient. Loading");
 			sender.sendMessage(ChatColor.GRAY + "[UltraBan] Depending on size of list may lag the server for a moment.");
@@ -52,7 +55,7 @@ public class Import implements CommandExecutor{
 			
 			while ((p = banlist.readLine()) != null){
 					if(!plugin.bannedPlayers.contains(p.toLowerCase()))
-						plugin.db.addPlayer(p.toLowerCase(), "imported", admin, 0, 0);
+						plugin.db.addPlayer(p.toLowerCase(), "imported", "system", 0, 0);
 						Bukkit.getOfflinePlayer(p).setBanned(true);
 				  }
 			BufferedReader bannedIP = new BufferedReader(new FileReader("banned-ips.txt"));
@@ -64,23 +67,25 @@ public class Import implements CommandExecutor{
 						plugin.bannedIPs.add(ip);
 					String cknullIP = plugin.db.getName(ip);
 					if (cknullIP != null){
-						plugin.db.addPlayer(plugin.db.getName(ip), "imported", admin, 0, 1);
+						plugin.db.addPlayer(plugin.db.getName(ip), "imported", "system", 0, 1);
 					}else{
 						plugin.db.setAddress("import", ip);
-						plugin.db.addPlayer("import", "imported", admin, 0, 1);
+						plugin.db.addPlayer("import", "imported", "system", 0, 1);
 					}
 					Bukkit.banIP(ip);
 				  }
 			
 			sender.sendMessage(ChatColor.GREEN + "Banlist imported.");
-			UltraBan.log.log(Level.INFO,"[UltraBan] " + admin + " imported the banlist to the database.");
-			return true;
+			UltraBan.log.log(Level.INFO,"[UltraBan] " + "system" + " imported the banlist to the database.");
+			
+			return;
 			
 		} catch (IOException e) {
 			UltraBan.log.log(Level.SEVERE, "[Ultrabans] could not import ban list.");
 			sender.sendMessage(ChatColor.RED + "Could not import ban list.");
 		}
-		
+			}
+			});
 
 		return true;
 		}

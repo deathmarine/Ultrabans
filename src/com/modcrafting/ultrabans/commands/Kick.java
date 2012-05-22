@@ -19,32 +19,6 @@ public class Kick implements CommandExecutor{
 	public Kick(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean autoComplete;
-	public String expandName(String p) {
-		int m = 0;
-		String Result = "";
-		for (int n = 0; n < plugin.getServer().getOnlinePlayers().length; n++) {
-			String str = plugin.getServer().getOnlinePlayers()[n].getName();
-			if (str.matches("(?i).*" + p + ".*")) {
-				m++;
-				Result = str;
-				if(m==2) {
-					return null;
-				}
-			}
-			if (str.equalsIgnoreCase(p))
-				return str;
-		}
-		if (m == 1)
-			return Result;
-		if (m > 1) {
-			return null;
-		}
-		if (m < 1) {
-			return p;
-		}
-		return p;
-	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
@@ -66,21 +40,21 @@ public class Kick implements CommandExecutor{
 		if (args.length < 1) return false;
 
 		String p = args[0].toLowerCase();
-		if(autoComplete)
-			p = expandName(p);
+		if(plugin.autoComplete)
+			p = plugin.util.expandName(p);
 		// Reason stuff
 		String reason = config.getString("defReason", "not sure");
 		boolean broadcast = true;
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
-				reason = combineSplit(2, args, " ");
+				reason = plugin.util.combineSplit(2, args, " ");
 			}else{
 				if(args[1].equalsIgnoreCase("-a")){
 					anon = true;
-					reason = combineSplit(2, args, " ");
+					reason = plugin.util.combineSplit(2, args, " ");
 				}else{
-				reason = combineSplit(1, args, " ");
+				reason = plugin.util.combineSplit(1, args, " ");
 				}
 			}
 		}
@@ -98,13 +72,13 @@ public class Kick implements CommandExecutor{
 				String adminMsg = config.getString("messages.kickAllMsg", "Everyone has been kicked by %admin%. Reason: %reason%");
 				adminMsg = adminMsg.replaceAll("%admin%", admin);
 				adminMsg = adminMsg.replaceAll("%reason%", reason);
-				pl[i].kickPlayer(formatMessage(adminMsg));
+				pl[i].kickPlayer(plugin.util.formatMessage(adminMsg));
 				}
 			}
 			return true;
 		}
 		if(plugin.autoComplete)
-			p = expandName(p);
+			p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
 		if(victim == null){
 			sender.sendMessage(ChatColor.GRAY + "Player must be online!");
@@ -125,37 +99,21 @@ public class Kick implements CommandExecutor{
 		String adminMsg = config.getString("messages.kickMsgVictim", "You have been kicked by %admin%. Reason: %reason%");
 		adminMsg = adminMsg.replaceAll("%admin%", admin);
 		adminMsg = adminMsg.replaceAll("%reason%", reason);
-		victim.kickPlayer(formatMessage(adminMsg));
+		victim.kickPlayer(plugin.util.formatMessage(adminMsg));
 	
 		if(broadcast){
 			String kickMsgBroadcast = config.getString("messages.kickMsgBroadcast", "%victim% has been kicked by %admin%. Reason: %reason%");
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%admin%", admin);
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%victim%", victim.getName());
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%reason%", reason);
-			plugin.getServer().broadcastMessage(formatMessage(kickMsgBroadcast));
+			plugin.getServer().broadcastMessage(plugin.util.formatMessage(kickMsgBroadcast));
 		}else{
 			String kickMsgBroadcast = config.getString("messages.kickMsgBroadcast", "%victim% has been kicked by %admin%. Reason: %reason%");
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%admin%", admin);
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%victim%", victim.getName());
 			kickMsgBroadcast = kickMsgBroadcast.replaceAll("%reason%", reason);
-			sender.sendMessage(formatMessage(":S:" + kickMsgBroadcast));
+			sender.sendMessage(plugin.util.formatMessage(":S:" + kickMsgBroadcast));
 		}
 		return true;
-	}
-	public String combineSplit(int startIndex, String[] string, String seperator) {
-		StringBuilder builder = new StringBuilder();
-
-		for (int i = startIndex; i < string.length; i++) {
-			builder.append(string[i]);
-			builder.append(seperator);
-		}
-
-		builder.deleteCharAt(builder.length() - seperator.length()); // remove
-		return builder.toString();
-	}
-	public String formatMessage(String str){
-		String funnyChar = new Character((char) 167).toString();
-		str = str.replaceAll("&", funnyChar);
-		return str;
 	}
 }

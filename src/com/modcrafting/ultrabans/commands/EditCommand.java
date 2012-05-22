@@ -20,21 +20,6 @@ public class EditCommand implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 
-	private String banType(int num){
-		switch(num){
-		case 0: return "B";
-		case 1: return "IP";
-		case 2: return "W";
-		case 3: return "K";
-		case 4: return "F";
-		case 5: return "UN";
-		case 6: return "J";
-		case 7: return "M";
-		case 8: return "UNJ";
-		case 9: return "PB";
-		default: return "?";
-		}
-	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(sender instanceof Player)
 			if(!((Player) sender).hasPermission(permission) || !((Player) sender).isOp()){
@@ -73,7 +58,7 @@ public class EditCommand implements CommandExecutor{
 			}
 			sender.sendMessage(ChatColor.GOLD + "Found " + bans.size() + " records for user "+bans.get(0).name+":");
 			for(EditBan ban : bans){
-				sender.sendMessage(ChatColor.AQUA + banType(ban.type) + ChatColor.YELLOW + ban.id + ": " + ChatColor.GREEN + ban.reason + ChatColor.YELLOW +" by " + ban.admin);
+				sender.sendMessage(ChatColor.AQUA + plugin.util.banType(ban.type) + ChatColor.YELLOW + ban.id + ": " + ChatColor.GREEN + ban.reason + ChatColor.YELLOW +" by " + ban.admin);
 			}
 			return true;
 		}

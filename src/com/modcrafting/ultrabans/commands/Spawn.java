@@ -23,31 +23,6 @@ public class Spawn implements CommandExecutor{
 	public Spawn(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public String expandName(String p) {
-		int m = 0;
-		String Result = "";
-		for (int n = 0; n < plugin.getServer().getOnlinePlayers().length; n++) {
-			String str = plugin.getServer().getOnlinePlayers()[n].getName();
-			if (str.matches("(?i).*" + p + ".*")) {
-				m++;
-				Result = str;
-				if(m==2) {
-					return null;
-				}
-			}
-			if (str.equalsIgnoreCase(p))
-				return str;
-		}
-		if (m == 1)
-			return Result;
-		if (m > 1) {
-			return null;
-		}
-		if (m < 1) {
-			return p;
-		}
-		return p;
-	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
@@ -64,7 +39,7 @@ public class Spawn implements CommandExecutor{
 		if(auth){
 			if (args.length < 1) return false;
 			String p = args[0]; //type name correct or 
-			if(autoComplete) p = expandName(p); 
+			if(autoComplete) p = plugin.util.expandName(p); 
 			Player victim = plugin.getServer().getPlayer(p);
 			String idoit = null;
 			if (victim != null){
@@ -76,11 +51,11 @@ public class Spawn implements CommandExecutor{
 			String fspawnMsgVictim = config.getString("messages.fspawnMsgVictim", "You have been sent to spawn!");
 			fspawnMsgVictim = fspawnMsgVictim.replaceAll("%admin%", admin);
 			fspawnMsgVictim = fspawnMsgVictim.replaceAll("%victim%", idoit);
-			victim.sendMessage(formatMessage(fspawnMsgVictim));
+			victim.sendMessage(plugin.util.formatMessage(fspawnMsgVictim));
 			String fspawnMsgBroadcast = config.getString("messages.fspawnMsgBroadcast", "%victim% is now at spawn!");
 			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll("%admin%", admin);
 			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll("%victim%", idoit);
-			sender.sendMessage(formatMessage(fspawnMsgBroadcast));
+			sender.sendMessage(plugin.util.formatMessage(fspawnMsgBroadcast));
 				//Further Research	
 				World wtlp = victim.getWorld();
 				Location tlp = wtlp.getSpawnLocation();
@@ -88,10 +63,5 @@ public class Spawn implements CommandExecutor{
 		}
 		
 		return true;
-	}
-	public String formatMessage(String str){
-		String funnyChar = new Character((char) 167).toString();
-		str = str.replaceAll("&", funnyChar);
-		return str;
 	}
 }

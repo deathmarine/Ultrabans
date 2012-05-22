@@ -18,32 +18,6 @@ public class Mute implements CommandExecutor {
 	String permission = "ultraban.mute";
 	public Mute(UltraBan ultraBan) {
 		this.plugin = ultraBan;
-	}	
-	public boolean autoComplete;
-	public String expandName(String p) {
-		int m = 0;
-		String Result = "";
-		for (int n = 0; n < plugin.getServer().getOnlinePlayers().length; n++) {
-			String str = plugin.getServer().getOnlinePlayers()[n].getName();
-			if (str.matches("(?i).*" + p + ".*")) {
-				m++;
-				Result = str;
-				if(m==2) {
-					return null;
-				}
-			}
-			if (str.equalsIgnoreCase(p))
-				return str;
-		}
-		if (m == 1)
-			return Result;
-		if (m > 1) {
-			return null;
-		}
-		if (m < 1) {
-			return p;
-		}
-		return p;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
@@ -65,7 +39,7 @@ public class Mute implements CommandExecutor {
 		
 		if (args.length < 1) return false;
 		
-		String p = expandName(args[0]); 
+		String p = plugin.util.expandName(args[0]); 
 		Player victim = plugin.getServer().getPlayer(p);
 		if(victim != null){
 
