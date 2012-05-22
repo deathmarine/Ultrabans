@@ -15,7 +15,7 @@ import com.modcrafting.ultrabans.UltraBan;
 public class Lockdown implements CommandExecutor {
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
-	String permission = "ultrabans.lockdown";
+	String permission = "ultraban.lockdown";
 	public Lockdown(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
