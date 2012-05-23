@@ -1,4 +1,4 @@
-package com.modcrafting.ultrabans.commands;
+package com.modcrafting.ultrabans.util;
 
 public class EditBan {
 

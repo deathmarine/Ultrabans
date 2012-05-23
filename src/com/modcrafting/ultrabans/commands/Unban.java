@@ -53,8 +53,8 @@ public class Unban implements CommandExecutor{
 				plugin.db.removeFromBanlist(pname);			
 			}
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
-			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
-			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", p);
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexVictim, p);
 			sender.sendMessage(plugin.util.formatMessage(unbanMsgBroadcast));
 			return true;
 		}
@@ -79,8 +79,8 @@ public class Unban implements CommandExecutor{
 			plugin.db.addPlayer(plugin.getServer().getOfflinePlayer(p).getName(), "Unbanned: " + reason, admin, 0, 5);
 			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
-			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
-			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", plugin.getServer().getOfflinePlayer(p).getName());
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexVictim, plugin.getServer().getOfflinePlayer(p).getName());
 			sender.sendMessage(plugin.util.formatMessage(unbanMsgBroadcast));
 			return true;
 		}else{
@@ -97,14 +97,14 @@ public class Unban implements CommandExecutor{
 			plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
 			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
-			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%admin%", admin);
-			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll("%victim%", plugin.getServer().getOfflinePlayer(p).getName());
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexVictim, plugin.getServer().getOfflinePlayer(p).getName());
 			sender.sendMessage(plugin.util.formatMessage(unbanMsgBroadcast));
 			return true;
 			}else{
 			String unbanMsgFailed = config.getString("messages.unbanMsgFailed", "%victim% is already unbanned!");
-			unbanMsgFailed = unbanMsgFailed.replaceAll("%admin%", admin);
-			unbanMsgFailed = unbanMsgFailed.replaceAll("%victim%", plugin.getServer().getOfflinePlayer(p).getName());
+			unbanMsgFailed = unbanMsgFailed.replaceAll(plugin.regexAdmin, admin);
+			unbanMsgFailed = unbanMsgFailed.replaceAll(plugin.regexVictim, plugin.getServer().getOfflinePlayer(p).getName());
 			sender.sendMessage(plugin.util.formatMessage(unbanMsgFailed));
 			return true;
 			}

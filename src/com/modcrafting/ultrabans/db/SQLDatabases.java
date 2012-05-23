@@ -22,7 +22,7 @@ import java.util.logging.Level;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import com.modcrafting.ultrabans.UltraBan;
-import com.modcrafting.ultrabans.commands.EditBan;
+import com.modcrafting.ultrabans.util.EditBan;
 
 public class SQLDatabases{
 	static UltraBan plugin;

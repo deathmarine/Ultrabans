@@ -54,15 +54,16 @@ public class Import implements CommandExecutor{
 			String p;
 			
 			while ((p = banlist.readLine()) != null){
-					if(!plugin.bannedPlayers.contains(p.toLowerCase()))
+					if(!plugin.bannedPlayers.contains(p.toLowerCase())){
 						plugin.db.addPlayer(p.toLowerCase(), "imported", "system", 0, 0);
-						Bukkit.getOfflinePlayer(p).setBanned(true);
+						plugin.bannedPlayers.add(p.toLowerCase());
+						
+					}
 				  }
 			BufferedReader bannedIP = new BufferedReader(new FileReader("banned-ips.txt"));
 			String ip;
 			
 			while ((ip = bannedIP.readLine()) != null){
-				  // add it to the database :(
 					if(!plugin.bannedIPs.contains(ip))
 						plugin.bannedIPs.add(ip);
 					String cknullIP = plugin.db.getName(ip);
@@ -70,6 +71,7 @@ public class Import implements CommandExecutor{
 						plugin.db.addPlayer(plugin.db.getName(ip), "imported", "system", 0, 1);
 					}else{
 						plugin.db.setAddress("import", ip);
+						
 						plugin.db.addPlayer("import", "imported", "system", 0, 1);
 					}
 					Bukkit.banIP(ip);

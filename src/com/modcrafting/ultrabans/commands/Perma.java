@@ -21,53 +21,48 @@ public class Perma implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
-		boolean anon = false;
+		boolean broadcast = true;
 		Player player = null;
+		String reason = config.getString("defReason", "not sure");
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
 		}else{
-			auth = true; //if sender is not a player - Console
+			auth = true;
 		}
 		if (!auth){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
-		// Has enough arguments?
+
 		if (args.length < 1) return false;
-		boolean autoComplete = config.getBoolean("auto-complete", true);
 		String p = args[0];
-		if(autoComplete) p = plugin.util.expandName(p);
-		Player victim = plugin.getServer().getPlayer(p); // What player is really the victim?
-		// Reason stuff
-		String reason = config.getString("defReason", "not sure");
-		boolean broadcast = true;
+		
+		if(plugin.autoComplete) p = plugin.util.expandName(p);
+		Player victim = plugin.getServer().getPlayer(p);
+		
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
 				reason = plugin.util.combineSplit(2, args, " ");
 			}else{
 				if(args[1].equalsIgnoreCase("-a")){
-					anon = true;
+					admin = config.getString("defAdminName", "server");
 					reason = plugin.util.combineSplit(2, args, " ");
 				}else{
-				reason = plugin.util.combineSplit(1, args, " ");
+					reason = plugin.util.combineSplit(1, args, " ");
 				}
 			}
 		}
-		if (anon){
-			admin = config.getString("defAdminName", "server");
-		}
 
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
-			String adminMsg = config.getString("messages.banMsgFailed", 
-			"&8Player &4%victim% &8is already banned!");
+			String adminMsg = config.getString("messages.banMsgFailed", "&8Player &4%victim% &8is already banned!");
 				if(victim == null){
-					adminMsg = adminMsg.replaceAll("%victim%", p);
+					adminMsg = adminMsg.replaceAll(plugin.regexVictim, p);
 				}else{
-					adminMsg = adminMsg.replaceAll("%victim%", victim.getName());
+					adminMsg = adminMsg.replaceAll(plugin.regexVictim, victim.getName());
 				}
 			sender.sendMessage(plugin.util.formatMessage(adminMsg));
 			return true;
@@ -75,52 +70,43 @@ public class Perma implements CommandExecutor{
 
 		if(victim == null){
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
-			if(victim != null){
-				if(victim.hasPermission( "ultraban.override.permaban")){
-					sender.sendMessage(ChatColor.RED + "Your permaban attempt has been denied!");
-					return true;
-				}
-				String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
-				adminMsg = adminMsg.replaceAll("%admin%", admin);
-				adminMsg = adminMsg.replaceAll("%reason%", reason);
-				plugin.bannedPlayers.add(victim.getName().toLowerCase());
-				plugin.db.addPlayer(victim.getName(), reason, admin, 0, 9);
-				log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + p + ".");				
-			}else{
+			if(victim == null){
 				sender.sendMessage(ChatColor.RED + "Unable to find player!");
+				return true;
 			}
 			
-		}else{ 
-			if(victim.getName() == admin){
-				sender.sendMessage(ChatColor.RED + "You cannot permaban yourself!");
-				return true;
-			}
-			if(victim.hasPermission( "ultraban.override.permaban")){
-				sender.sendMessage(ChatColor.RED + "Your permaban has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to permaban you!");
-				return true;
-			}
-			String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
-			adminMsg = adminMsg.replaceAll("%admin%", admin);
-			adminMsg = adminMsg.replaceAll("%reason%", reason);
-			victim.kickPlayer(plugin.util.formatMessage(adminMsg));
-			plugin.bannedPlayers.add(victim.getName().toLowerCase()); // Add name to HASHSET (RAM) Locally
-			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 9);
-			log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + victim.getName() + ".");
 		}
-		if(broadcast){
-			String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
-			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%admin%", admin);
-			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%reason%", reason);
-			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", victim.getName());
-			plugin.getServer().broadcastMessage(plugin.util.formatMessage(permbanMsgBroadcast));
-		}else{
-			String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
-			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%admin%", admin);
-			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%reason%", reason);
-			permbanMsgBroadcast = permbanMsgBroadcast.replaceAll("%victim%", victim.getName());
-			sender.sendMessage(plugin.util.formatMessage(permbanMsgBroadcast));
+		if(victim.getName() == admin){
+			sender.sendMessage(ChatColor.RED + "You cannot permaban yourself!");
+			return true;
 		}
+		if(victim.hasPermission( "ultraban.override.permaban")){
+			sender.sendMessage(ChatColor.RED + "Your permaban has been denied! Player Notified!");
+			victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to permaban you!");
+			return true;
+		}
+				
+		plugin.bannedPlayers.add(victim.getName().toLowerCase());
+		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 9);
+		
+
+		String adminMsg = config.getString("messages.banMsgVictim", "You have been permabanned by %admin%. Reason: %reason%");
+		if(adminMsg.contains(plugin.regexAdmin)) adminMsg = adminMsg.replaceAll(plugin.regexAdmin, admin);
+		if(adminMsg.contains(plugin.regexReason)) adminMsg = adminMsg.replaceAll(plugin.regexReason, reason);
+		victim.kickPlayer(plugin.util.formatMessage(adminMsg));
+		
+		String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
+		if(permbanMsgBroadcast.contains(plugin.regexAdmin)) permbanMsgBroadcast = permbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+		if(permbanMsgBroadcast.contains(plugin.regexReason)) permbanMsgBroadcast = permbanMsgBroadcast.replaceAll(plugin.regexReason, reason);
+		if(permbanMsgBroadcast.contains(plugin.regexVictim)) permbanMsgBroadcast = permbanMsgBroadcast.replaceAll(plugin.regexVictim, victim.getName());
+		if(permbanMsgBroadcast != null){
+			if(broadcast){
+				plugin.getServer().broadcastMessage(plugin.util.formatMessage(permbanMsgBroadcast));
+			}else{
+				sender.sendMessage(plugin.util.formatMessage(permbanMsgBroadcast));
+			}
+		}
+		log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + victim.getName() + ".");
 		return true;
 	}
 }

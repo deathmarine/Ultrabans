@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.util.EditBan;
 
 public class History implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
@@ -19,19 +20,6 @@ public class History implements CommandExecutor{
 	public History(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	
-	}private String banType(int num){
-		switch(num){
-		case 0: return "Ban  ";
-		case 1: return "IPBan";
-		case 2: return "Warn ";
-		case 3: return "Kick ";
-		case 4: return "Fine ";
-		case 5: return "Unban";
-		case 6: return "Jail ";
-		case 7: return "Mute ";
-		case 9: return "PERMA";
-		default: return "?";
-		}
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		boolean auth = false;
@@ -63,8 +51,7 @@ public class History implements CommandExecutor{
 			date.setTime(ban.time*1000);
 			String dateStr = date.toString();
 			//DDD mmm dd hh:mm:ss zz yyyy
-			
-			sender.sendMessage(ChatColor.RED + banType(ban.type) + ": " + ban.name + ChatColor.GRAY + " by " + ban.admin + " on " + dateStr.substring(4, 19) + " for " + ban.reason);
+			sender.sendMessage(ChatColor.RED + plugin.util.banType(ban.type) + ": " + ban.name + ChatColor.GRAY + " by " + ban.admin + " on " + dateStr.substring(4, 19) + " for " + ban.reason);
 		}
 		return true;
 		}

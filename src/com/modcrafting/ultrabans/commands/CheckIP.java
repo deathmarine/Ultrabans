@@ -23,8 +23,8 @@ public class CheckIP implements CommandExecutor{
 		this.plugin = ultraBan;
 	
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, final String[] args) {
+		final YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
 		Player player = null;
 		if (sender instanceof Player){
@@ -36,13 +36,17 @@ public class CheckIP implements CommandExecutor{
 		if (!auth){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
-		}else{
+		}
 		if (args.length < 1) return false;
+		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
+
+			@Override
+			public void run() {
 		String p = args[0];
 		String ip = plugin.db.getAddress(p.toLowerCase());
 		InetAddress InetP;
 		if(ip == null){
-			plugin.db.setAddress(player.getName().toLowerCase(), player.getAddress().getAddress().getHostAddress());
+			plugin.db.setAddress(plugin.getServer().getPlayer(p).getName().toLowerCase(), plugin.getServer().getPlayer(p).getAddress().getAddress().getHostAddress());
 		}
 		try {
 			InetP = InetAddress.getByName(ip);
@@ -54,7 +58,7 @@ public class CheckIP implements CommandExecutor{
 			try {
 				boolean ping = InetP.isReachable(config.getInt("HostTimeOut", 1800));
 				if (ping){
-					sender.sendMessage(ChatColor.YELLOW + "Ping Test Passed.");
+					sender.sendMessage(ChatColor.GREEN + "Ping Test Passed.");
 				}else{
 					sender.sendMessage(ChatColor.RED + "Ping Test Failed.");
 				}
@@ -64,8 +68,9 @@ public class CheckIP implements CommandExecutor{
 		} catch (UnknownHostException e) {
 			sender.sendMessage(ChatColor.RED + "Gathering Information Failed: Recommend Kick!");
 		}
-		
+			}
+		});
 		return true;
-		}
+		
 	}
 }

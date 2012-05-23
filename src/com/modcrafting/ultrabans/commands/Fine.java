@@ -18,36 +18,10 @@ public class Fine implements CommandExecutor{
 	public Fine(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean autoComplete;
-	public String expandName(String p) {
-		int m = 0;
-		String Result = "";
-		for (int n = 0; n < plugin.getServer().getOnlinePlayers().length; n++) {
-			String str = plugin.getServer().getOnlinePlayers()[n].getName();
-			if (str.matches("(?i).*" + p + ".*")) {
-				m++;
-				Result = str;
-				if(m==2) {
-					return null;
-				}
-			}
-			if (str.equalsIgnoreCase(p))
-				return str;
-		}
-		if (m == 1)
-			return Result;
-		if (m > 1) {
-			return null;
-		}
-		if (m < 1) {
-			return p;
-		}
-		return p;
-	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+		boolean broadcast = true;
 		boolean auth = false;
-		boolean anon = false;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
@@ -64,102 +38,91 @@ public class Fine implements CommandExecutor{
 		
 		if (args.length < 1) return false;
 		String p = args[0];
-		if(autoComplete) p = expandName(p); 
-		Player victim = plugin.getServer().getPlayer(p);
-		boolean broadcast = true;
-		String amt = args[1]; //set string amount to argument	
-			//Going loud
+		if(plugin.autoComplete) p = plugin.util.expandName(p); 
+		
+		
+		//Enhanced Variables
+		String amt = args[1];
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
-				amt = combineSplit(2, args, " ");
+				amt = plugin.util.combineSplit(2, args, " ");
 			}else{
 				if(args[1].equalsIgnoreCase("-a")){
-					anon = true;
-					amt = combineSplit(2, args, " ");
+					admin = config.getString("defAdminName", "server");
+					amt = plugin.util.combineSplit(2, args, " ");
 				}else{
-				amt = combineSplit(1, args, " ");
+					amt = plugin.util.combineSplit(1, args, " ");
 				}
 			}
 		}
-		if (anon){
-			admin = config.getString("defAdminName", "server");
-		}
-			
-		if(victim != null){
-			if(victim.getName() == admin){
-				sender.sendMessage(ChatColor.RED + "You cannot emofine yourself!");
-			}
-			if(victim.hasPermission( "ultraban.override.fine")){
-				sender.sendMessage(ChatColor.RED + "Your fine has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to fine you!");
-				return true;
-			}
-			if(!broadcast){ //If silent wake his ass up
-				String fineMsg = config.getString("messages.fineMsgVictim", "You have been fined by %admin% in the amount of %amt%!");
-				String idoit = victim.getName();
-				fineMsg = fineMsg.replaceAll("%admin%", admin);
-				fineMsg = fineMsg.replaceAll("%amt%", amt);
-				fineMsg = fineMsg.replaceAll("%victim%", idoit);
-				sender.sendMessage(formatMessage(":S:" + fineMsg));
-				victim.sendMessage(formatMessage(fineMsg));
-			}
-			if(plugin.setupEconomy()){
-				double bal = plugin.economy.getBalance(p);
-				double amtd = Double.valueOf(amt.trim());
-				int max = config.getInt("maxFineAmt", 0);
-				if (max == 0){
-					if(amtd > bal){
-						plugin.economy.withdrawPlayer(victim.getName(), bal);	
-					}else{
-						plugin.economy.withdrawPlayer(victim.getName(), amtd);
-					}
-				}else{
-					double maxd = Double.valueOf(Integer.toString(max).trim());
-					if(maxd > amtd){
-						sender.sendMessage(ChatColor.RED + "Max Allowable Fine: " + String.valueOf(max));
-					}else{
-						if(amtd > bal){
-							plugin.economy.withdrawPlayer(victim.getName(), bal);	
-						}else{
-							plugin.economy.withdrawPlayer(victim.getName(), amtd);
-						}
-					}
-					
-				}
-			}
-			log.log(Level.INFO, "[UltraBan] " + admin + " fined player " + p + " amount of " + amt + ".");
-			plugin.db.addPlayer(p, amt, admin, 0, 4);
-			if(broadcast){
-				String idoit = victim.getName();
-				String fineMsgAll = config.getString("messages.fineMsgBroadcast", "%victim% was fined by %admin% in the amount of %amt%!!");
-				fineMsgAll = fineMsgAll.replaceAll("%admin%", admin);
-				fineMsgAll = fineMsgAll.replaceAll("%amt%", amt);
-				fineMsgAll = fineMsgAll.replaceAll("%victim%", idoit);
-				plugin.getServer().broadcastMessage(formatMessage(fineMsgAll));
-				return true;
-			}
-			return true;
-		}else{
+		
+		//Player Checks
+		Player victim = plugin.getServer().getPlayer(p);
+		if(victim == null){
 			sender.sendMessage(ChatColor.GRAY + "Player must be online!");
 			return true;
-		}		
-	}
-	public String combineSplit(int startIndex, String[] string, String seperator) {
-		StringBuilder builder = new StringBuilder();
-
-		for (int i = startIndex; i < string.length; i++) {
-			builder.append(string[i]);
-			builder.append(seperator);
+		}	
+		if(victim.getName() == admin){
+			sender.sendMessage(ChatColor.RED + "You cannot fine yourself!");
+			return true;
 		}
-
-		builder.deleteCharAt(builder.length() - seperator.length()); // remove
-		return builder.toString();
-	}
-	
-	public String formatMessage(String str){
-			String funnyChar = new Character((char) 167).toString();
-			str = str.replaceAll("&", funnyChar);
-			return str;
+		if(victim.hasPermission( "ultraban.override.fine")){
+			sender.sendMessage(ChatColor.RED + "Your fine has been denied! Player Notified!");
+			victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to fine you!");
+			return true;
+		}
+		
+		String idoit = victim.getName();
+		//Money
+		if(plugin.setupEconomy()){
+			double bal = plugin.economy.getBalance(idoit);
+			double amtd = Double.valueOf(amt.trim());
+			int max = config.getInt("maxFineAmt", 0);
+			if(amtd < 0){
+				sender.sendMessage(ChatColor.RED + "Error invalid amount!");
+				return true;
+			}
+			if (max == 0){
+				if(amtd > bal){
+					plugin.economy.withdrawPlayer(idoit, bal);	
+				}else{
+					plugin.economy.withdrawPlayer(idoit, amtd);
+				}
+			}else{
+				double maxd = Double.valueOf(Integer.toString(max).trim());
+				if(maxd > amtd){
+					sender.sendMessage(ChatColor.RED + "Max Allowable Fine: " + String.valueOf(max));
+				}else{
+					if(amtd > bal){
+						plugin.economy.withdrawPlayer(idoit, bal);	
+					}else{
+						plugin.economy.withdrawPlayer(idoit, amtd);
+					}
+				}
+				
+			}
+		}		
+		if(!broadcast){ //If silent wake his ass up
+			String fineMsg = config.getString("messages.fineMsgVictim");
+			if(fineMsg.contains(plugin.regexAdmin)) fineMsg = fineMsg.replaceAll(plugin.regexAdmin, admin);
+			if(fineMsg.contains(plugin.regexAmt)) fineMsg = fineMsg.replaceAll(plugin.regexAmt, amt);
+			if(fineMsg.contains(plugin.regexVictim)) fineMsg = fineMsg.replaceAll(plugin.regexVictim, idoit);
+			if(fineMsg != null){
+				sender.sendMessage(plugin.util.formatMessage(ChatColor.ITALIC + fineMsg));
+				victim.sendMessage(plugin.util.formatMessage(fineMsg));					
+			}
+		}else{
+			String fineMsgAll = config.getString("messages.fineMsgBroadcast", "%victim% was fined by %admin% in the amount of %amt%!!");
+			if(fineMsgAll.contains(plugin.regexAdmin)) fineMsgAll = fineMsgAll.replaceAll(plugin.regexAdmin, admin);
+			if(fineMsgAll.contains(plugin.regexAmt)) fineMsgAll = fineMsgAll.replaceAll(plugin.regexAmt, amt);
+			if(fineMsgAll.contains(plugin.regexVictim)) fineMsgAll = fineMsgAll.replaceAll(plugin.regexVictim, idoit);
+			if(fineMsgAll != null) plugin.getServer().broadcastMessage(plugin.util.formatMessage(fineMsgAll));
+			return true;
+		}
+		log.log(Level.INFO, "[UltraBan] " + admin + " fined player " + idoit + " amount of " + amt + ".");
+		plugin.db.addPlayer(idoit, amt, admin, 0, 4);
+		return true;
+		
 	}
 }

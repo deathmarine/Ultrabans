@@ -73,6 +73,7 @@ messages:
   tempipbanMsgVictim: 'You have been temp. ipbanned by %admin%. Reason: %reason%!'
   tempipbanMsgBroadcast: '&4%victim% &7was temp. ipbanned by &3%admin%&7. Reason: &4%reason%!'
   muteChatMsg: 'You have been muted!'
+  muteMsg: 'You have muted %victim%.'
   unmuteMsgVictim: 'You have been unmuted.'
   unmuteMsg: 'You have unmuted %victim%.'
 #Do Not Change Values Below#

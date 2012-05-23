@@ -97,19 +97,19 @@ public class Tempjail implements CommandExecutor{
 			victim.teleport(stlp);
 			log.log(Level.INFO, "[UltraBan] " + admin + " tempjailed player " + victim.getName() + ".");
 			String tempjailMsgVictim = config.getString("messages.tempjailMsgVictim", "You have been temp. jailed by %admin%. Reason: %reason%!");
-			tempjailMsgVictim = tempjailMsgVictim.replaceAll("%admin%", admin);
-			tempjailMsgVictim = tempjailMsgVictim.replaceAll("%reason%", reason);
+			tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexAdmin, admin);
+			tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexReason, reason);
 			if(broadcast){
 				String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%admin%", admin);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%reason%", reason);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%victim%", victim.getName());
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, victim.getName());
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(tempjailMsgBroadcast));
 			}else{
 				String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%admin%", admin);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%reason%", reason);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%victim%", victim.getName());
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, victim.getName());
 				sender.sendMessage(plugin.util.formatMessage(":S:" + tempjailMsgBroadcast));
 			}
 		}else{
@@ -130,15 +130,15 @@ public class Tempjail implements CommandExecutor{
 			log.log(Level.INFO, "[UltraBan] " + admin + " temp jail player " + p + ".");
 			if(broadcast){
 				String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%admin%", admin);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%reason%", reason);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%victim%", p);
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, p);
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(tempjailMsgBroadcast));
 			}else{
 				String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%admin%", admin);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%reason%", reason);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll("%victim%", p);
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
+				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, p);
 				sender.sendMessage(plugin.util.formatMessage(":S:" + tempjailMsgBroadcast));
 			}
 		}

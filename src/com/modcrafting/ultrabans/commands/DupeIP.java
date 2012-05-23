@@ -19,7 +19,7 @@ public class DupeIP implements CommandExecutor{
 		this.plugin = ultraBan;
 	
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, final String[] args) {
 		boolean auth = false;
 		Player player = null;
 		if (sender instanceof Player){
@@ -33,30 +33,32 @@ public class DupeIP implements CommandExecutor{
 			return true;
 		}else{
 		if (args.length < 1) return false;
-		String p = args[0];
+		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
 
-		if(p == null){
-			sender.sendMessage(ChatColor.RED + "Unable to view ip. Please type the name.");
-			return true;
-		}
-		p = plugin.util.expandName(p); 
-		String ip = plugin.db.getAddress(p);
-		if(ip == null){
-			sender.sendMessage(ChatColor.RED + "Unable to view ip for " + p + " !");
-			return true;
-		}
-		String sip = null;
-		OfflinePlayer[] pl = plugin.getServer().getOfflinePlayers();
-		sender.sendMessage(ChatColor.AQUA + "Scanning Current IP of " + p + ": " + ip + " !");
-		for (int i=0; i<pl.length; i++){
-			sip = plugin.db.getAddress(pl[i].getName());
-	        if (sip != null && sip.equalsIgnoreCase(ip)){
-	        	if (!pl[i].getName().equalsIgnoreCase(p)){
-		        	sender.sendMessage(ChatColor.GRAY + "Player: " + pl[i].getName() + " duplicates player: " + p + "!");
-	        	}
-	        }
-		}
-		sender.sendMessage(ChatColor.GREEN + "Scanning Complete!");
+			@Override
+			public void run() {
+				String p = args[0];
+
+				p = plugin.util.expandName(p); 
+				String ip = plugin.db.getAddress(p);
+				if(ip == null){
+					sender.sendMessage(ChatColor.RED + "Unable to view ip for " + p + " !");
+					return;
+				}
+				String sip = null;
+				OfflinePlayer[] pl = plugin.getServer().getOfflinePlayers();
+				sender.sendMessage(ChatColor.AQUA + "Scanning Current IP of " + p + ": " + ip + " !");
+				for (int i=0; i<pl.length; i++){
+					sip = plugin.db.getAddress(pl[i].getName());
+			        if (sip != null && sip.equalsIgnoreCase(ip)){
+			        	if (!pl[i].getName().equalsIgnoreCase(p)){
+				        	sender.sendMessage(ChatColor.GRAY + "Player: " + pl[i].getName() + " duplicates player: " + p + "!");
+			        	}
+			        }
+				}
+				sender.sendMessage(ChatColor.GREEN + "Scanning Complete!");
+			}
+		});
 		return true;
 		}
 	}

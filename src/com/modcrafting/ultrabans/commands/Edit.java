@@ -12,11 +12,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.util.EditBan;
 
-public class EditCommand implements CommandExecutor{
+public class Edit implements CommandExecutor{
 	UltraBan plugin;
 	String permission = "ultraban.editban";
-	public EditCommand(UltraBan ultraBan){
+	public Edit(UltraBan ultraBan){
 		this.plugin = ultraBan;
 	}
 

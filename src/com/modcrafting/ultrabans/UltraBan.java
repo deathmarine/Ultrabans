@@ -21,8 +21,7 @@ import com.modcrafting.ultrabans.commands.Ban;
 import com.modcrafting.ultrabans.commands.Check;
 import com.modcrafting.ultrabans.commands.CheckIP;
 import com.modcrafting.ultrabans.commands.DupeIP;
-import com.modcrafting.ultrabans.commands.EditBan;
-import com.modcrafting.ultrabans.commands.EditCommand;
+import com.modcrafting.ultrabans.commands.Edit;
 import com.modcrafting.ultrabans.commands.Empty;
 import com.modcrafting.ultrabans.commands.Export;
 import com.modcrafting.ultrabans.commands.Fine;
@@ -34,6 +33,7 @@ import com.modcrafting.ultrabans.commands.Jail;
 import com.modcrafting.ultrabans.commands.Kick;
 import com.modcrafting.ultrabans.commands.Lockdown;
 import com.modcrafting.ultrabans.commands.Mute;
+import com.modcrafting.ultrabans.commands.Pardon;
 import com.modcrafting.ultrabans.commands.Perma;
 import com.modcrafting.ultrabans.commands.Reload;
 import com.modcrafting.ultrabans.commands.Spawn;
@@ -46,7 +46,9 @@ import com.modcrafting.ultrabans.commands.Version;
 import com.modcrafting.ultrabans.commands.Warn;
 import com.modcrafting.ultrabans.db.SQLDatabases;
 import com.modcrafting.ultrabans.util.DataHandler;
+import com.modcrafting.ultrabans.util.EditBan;
 import com.modcrafting.ultrabans.util.Formatting;
+import com.modcrafting.ultrabans.util.Jailtools;
 
 public class UltraBan extends JavaPlugin {
 
@@ -64,9 +66,13 @@ public class UltraBan extends JavaPlugin {
 	private final UltraBanBlockListener blockListener = new UltraBanBlockListener(this);
 	public DataHandler data = new DataHandler(this);
 	public Formatting util = new Formatting(this);
+	public Jailtools jail = new Jailtools(this);
 	public net.milkbowl.vault.economy.Economy economy = null;
 	public boolean autoComplete;
-	
+	public String regexAdmin = "%admin%";
+	public String regexReason = "%reason%";
+	public String regexVictim = "%victim%";
+	public String regexAmt = "%amt%";
 	public void onDisable() {
 		tempBans.clear();
 		tempJail.clear();
@@ -105,7 +111,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("checkban").setExecutor(new Check(this));
 		getCommand("checkip").setExecutor(new CheckIP(this));
 		getCommand("dupeip").setExecutor(new DupeIP(this));
-		getCommand("editban").setExecutor(new EditCommand(this));
+		getCommand("editban").setExecutor(new Edit(this));
 		getCommand("empty").setExecutor(new Empty(this));
 		getCommand("importbans").setExecutor(new Import(this));
 		getCommand("exportbans").setExecutor(new Export(this));
@@ -127,6 +133,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("lockdown").setExecutor(new Lockdown(this));
 		getCommand("umute").setExecutor(new Mute(this));
 		getCommand("history").setExecutor(new History(this));
+		getCommand("pardon").setExecutor(new Pardon(this));
 	}
 }
 

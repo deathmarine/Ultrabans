@@ -10,11 +10,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.modcrafting.ultrabans.db.SQLDatabases;
 
 public class Starve implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
-	SQLDatabases db;
 	UltraBan plugin;
 	String permission = "ultraban.starve";
 	public Starve(UltraBan ultraBan) {
@@ -55,15 +53,14 @@ public class Starve implements CommandExecutor{
 				return true;
 			}
 			String starveMsgVictim = config.getString("messages.starveMsgVictim", "You are now starving!");
-			starveMsgVictim = starveMsgVictim.replaceAll("%admin%", admin);
-			starveMsgVictim = starveMsgVictim.replaceAll("%victim%", idoit);
+			starveMsgVictim = starveMsgVictim.replaceAll(plugin.regexAdmin, admin);
+			starveMsgVictim = starveMsgVictim.replaceAll(plugin.regexVictim, idoit);
 			victim.sendMessage(plugin.util.formatMessage(starveMsgVictim));
 			String starveMsgBroadcast = config.getString("messages.starveMsgBroadcast", "%victim% is now starving!");
-			starveMsgBroadcast = starveMsgBroadcast.replaceAll("%admin%", admin);
-			starveMsgBroadcast = starveMsgBroadcast.replaceAll("%victim%", idoit);
+			starveMsgBroadcast = starveMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+			starveMsgBroadcast = starveMsgBroadcast.replaceAll(plugin.regexVictim, idoit);
 			sender.sendMessage(plugin.util.formatMessage(starveMsgBroadcast));
-			int st = 0;
-			victim.setFoodLevel(st);
+			victim.setFoodLevel(0);
 		}
 		
 		return true;

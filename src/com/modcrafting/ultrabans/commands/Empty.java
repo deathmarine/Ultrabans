@@ -28,36 +28,34 @@ public class Empty implements CommandExecutor{
 			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
 		}else{
-			auth = true; //if sender is not a player - Console
+			auth = true;
 		}
-		if(auth){
-			if (args.length < 1) return false;
-			String p = args[0];
-			if(plugin.autoComplete) p = plugin.util.expandName(p); 
-			String idoit = null;
-			Player victim = plugin.getServer().getPlayer(p);
-			if (victim != null){
-				idoit = victim.getName();
-			}else{
-				sender.sendMessage(ChatColor.GRAY + "Player must be online!");
-				return true;
-			}
-			String emptyMsg = config.getString("messages.emptyMsgVictim", "%admin% has cleared your inventory!'");
-			emptyMsg = emptyMsg.replaceAll("%admin%", admin);
-			emptyMsg = emptyMsg.replaceAll("%victim%", idoit);
-			sender.sendMessage(plugin.util.formatMessage(emptyMsg));
-			String empyMsgAll = config.getString("messages.emptyMsgBroadcast", "%admin% has cleared the inventory of %victim%!");
-			empyMsgAll = empyMsgAll.replaceAll("%admin%", admin);
-			empyMsgAll = empyMsgAll.replaceAll("%victim%", idoit);
-			victim.sendMessage(plugin.util.formatMessage(empyMsgAll));
-			victim.getInventory().clear();
-			return true;
-			
-		}else{
+		if(!auth){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
-			}
+		}
+		if (args.length < 1) return false;
+		String p = args[0];
+		if(plugin.autoComplete) p = plugin.util.expandName(p); 
 		
+		Player victim = plugin.getServer().getPlayer(p);
+		if (victim == null){
+			sender.sendMessage(ChatColor.GRAY + "Player must be online!");
+			return true;
+		}
+		String idoit = victim.getName();
+		String emptyMsgAll = config.getString("messages.emptyMsgBroadcast");
+		if(emptyMsgAll.contains(plugin.regexAdmin))emptyMsgAll = emptyMsgAll.replaceAll(plugin.regexAdmin, admin);
+		if(emptyMsgAll.contains(plugin.regexVictim)) emptyMsgAll = emptyMsgAll.replaceAll(plugin.regexVictim, idoit);
+		if(emptyMsgAll != null) sender.sendMessage(plugin.util.formatMessage(emptyMsgAll));
+		
+		String emptyMsg = config.getString("messages.emptyMsgVictim");
+		if(emptyMsg.contains(plugin.regexAdmin)) emptyMsg = emptyMsg.replaceAll(plugin.regexAdmin, admin);
+		if(emptyMsg.contains(plugin.regexVictim)) emptyMsg = emptyMsg.replaceAll(plugin.regexVictim, idoit);
+		if(emptyMsg != null) victim.sendMessage(plugin.util.formatMessage(emptyMsg));
+		
+		victim.getInventory().clear();
+		return true;		
 	}
 
 }

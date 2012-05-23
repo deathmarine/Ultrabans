@@ -12,13 +12,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
-import com.modcrafting.ultrabans.db.SQLDatabases;
 
 public class Spawn implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
-	SQLDatabases db;
 	UltraBan plugin;
-	public boolean autoComplete;
 	String permission = "ultraban.spawn";
 	public Spawn(UltraBan ultraBan) {
 		this.plugin = ultraBan;
@@ -28,7 +25,6 @@ public class Spawn implements CommandExecutor{
 		boolean auth = false;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
-		autoComplete = config.getBoolean("auto-complete", true);
 		if (sender instanceof Player){
 			player = (Player)sender;
 			if(player.hasPermission(permission) || player.isOp()) auth = true;
@@ -39,7 +35,7 @@ public class Spawn implements CommandExecutor{
 		if(auth){
 			if (args.length < 1) return false;
 			String p = args[0]; //type name correct or 
-			if(autoComplete) p = plugin.util.expandName(p); 
+			if(plugin.autoComplete) p = plugin.util.expandName(p); 
 			Player victim = plugin.getServer().getPlayer(p);
 			String idoit = null;
 			if (victim != null){
@@ -49,12 +45,13 @@ public class Spawn implements CommandExecutor{
 				return true;
 			}
 			String fspawnMsgVictim = config.getString("messages.fspawnMsgVictim", "You have been sent to spawn!");
-			fspawnMsgVictim = fspawnMsgVictim.replaceAll("%admin%", admin);
-			fspawnMsgVictim = fspawnMsgVictim.replaceAll("%victim%", idoit);
+			fspawnMsgVictim = fspawnMsgVictim.replaceAll(plugin.regexAdmin, admin);
+			fspawnMsgVictim = fspawnMsgVictim.replaceAll(plugin.regexVictim, idoit);
 			victim.sendMessage(plugin.util.formatMessage(fspawnMsgVictim));
+			
 			String fspawnMsgBroadcast = config.getString("messages.fspawnMsgBroadcast", "%victim% is now at spawn!");
-			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll("%admin%", admin);
-			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll("%victim%", idoit);
+			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll(plugin.regexVictim, idoit);
 			sender.sendMessage(plugin.util.formatMessage(fspawnMsgBroadcast));
 				//Further Research	
 				World wtlp = victim.getWorld();
