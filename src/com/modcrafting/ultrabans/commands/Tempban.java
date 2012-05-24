@@ -38,26 +38,28 @@ public class Tempban implements CommandExecutor{
 			return true;
 		}
 		if (args.length < 3) return false;
+		// tempban arg0:1stname arg1:2nd time or expression arg2:3rdtime arg3:4th time or reason arg4:ifarg3=express reason
+		long tempTime = 0;
 		if(args.length > 3){
 			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
 				reason = plugin.util.combineSplit(4, args, " ");
+				tempTime = plugin.util.parseTimeSpec(args[2],args[3]);
+			}else if(args[1].equalsIgnoreCase("-a")){
+				admin = config.getString("defAdminName", "server");
+				reason = plugin.util.combineSplit(4, args, " ");
+				tempTime = plugin.util.parseTimeSpec(args[2],args[3]);
 			}else{
-				if(args[1].equalsIgnoreCase("-a")){
-					admin = config.getString("defAdminName", "server");
-					reason = plugin.util.combineSplit(4, args, " ");
-				}else{
-					reason = plugin.util.combineSplit(3, args, " ");
-				}
+				tempTime = plugin.util.parseTimeSpec(args[1],args[2]);
+				reason = plugin.util.combineSplit(3, args, " ");
+				
 			}
 		}
-
+		if(tempTime == 0) return false;
+		
 		String p = args[0];
 		if(plugin.autoComplete) p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
-		
-		long tempTime = plugin.util.parseTimeSpec(args[1],args[2]);
-		if(tempTime == 0) return false;
 		long temp = System.currentTimeMillis()/1000+tempTime; //epoch time
 		
 		if(victim != null){
@@ -77,6 +79,7 @@ public class Tempban implements CommandExecutor{
 			plugin.tempBans.put(victim.getName().toLowerCase(), temp);
 			plugin.db.addPlayer(victim.getName(), reason, admin, temp, 0);
 			log.log(Level.INFO, "[UltraBan] " + admin + " tempbanned player " + victim.getName() + ".");
+			
 			String tempbanMsgVictim = config.getString("messages.tempbanMsgVictim", "You have been temp. banned by %admin%. Reason: %reason%!");
 			tempbanMsgVictim = tempbanMsgVictim.replaceAll(plugin.regexAdmin, admin);
 			tempbanMsgVictim = tempbanMsgVictim.replaceAll(plugin.regexReason, reason);
@@ -87,12 +90,14 @@ public class Tempban implements CommandExecutor{
 				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll(plugin.regexReason, reason);
 				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll(plugin.regexVictim, victim.getName());
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(tempbanMsgBroadcast));
+				return true;
 			}else{
 				String tempbanMsgBroadcast = config.getString("messages.tempbanMsgBroadcast", "%victim% was temp. banned by %admin%. Reason: %reason%!");
 				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll(plugin.regexReason, reason);
 				tempbanMsgBroadcast = tempbanMsgBroadcast.replaceAll(plugin.regexVictim, victim.getName());
-				sender.sendMessage(plugin.util.formatMessage(":S:" + tempbanMsgBroadcast));
+				sender.sendMessage(plugin.util.formatMessage(ChatColor.ITALIC + tempbanMsgBroadcast));
+				return true;
 			}
 		}else{
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
@@ -117,13 +122,12 @@ public class Tempban implements CommandExecutor{
 				if(broadcast){
 					plugin.getServer().broadcastMessage(plugin.util.formatMessage(tempbanMsgBroadcast));
 				}else{
-					sender.sendMessage(plugin.util.formatMessage(":S:" + tempbanMsgBroadcast));
+					sender.sendMessage(plugin.util.formatMessage(ChatColor.ITALIC + tempbanMsgBroadcast));
 				}				
 			}
 
 			log.log(Level.INFO, "[UltraBan] " + admin + " tempbanned player " + p + ".");
 			return true;
 		}
-		return false;
 	}
 }

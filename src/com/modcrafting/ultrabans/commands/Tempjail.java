@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,8 +22,9 @@ public class Tempjail implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean auth = false;
-		boolean anon = false;
+		boolean broadcast = true;
 		Player player = null;
+		String reason = config.getString("defReason", "not sure");
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
@@ -41,44 +41,30 @@ public class Tempjail implements CommandExecutor{
 
 		String p = args[0]; // Get the victim's potential name
 		
-		if(plugin.autoComplete)
-			p = plugin.util.expandName(p);
+		if(plugin.autoComplete) p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
-		
-		//Figured this out after the fact...... Ugh
-		//Neglect to study bukkit. 
-		//Screw it if it works... go with it.
-		//victim = Bukkit.getOfflinePlayer(p).getPlayer();
-
-		
-		String reason = config.getString("defReason", "not sure");
-		boolean broadcast = true;
+		long tempTime = 0;
 		if(args.length > 3){
 			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
 				reason = plugin.util.combineSplit(4, args, " ");
+				tempTime = plugin.util.parseTimeSpec(args[2],args[3]);
+			}else if(args[1].equalsIgnoreCase("-a")){
+				admin = config.getString("defAdminName", "server");
+				reason = plugin.util.combineSplit(4, args, " ");
+				tempTime = plugin.util.parseTimeSpec(args[2],args[3]);
 			}else{
-				if(args[1].equalsIgnoreCase("-a")){
-					anon = true;
-					reason = plugin.util.combineSplit(4, args, " ");
-				}else{
+				tempTime = plugin.util.parseTimeSpec(args[1],args[2]);
 				reason = plugin.util.combineSplit(3, args, " ");
-				}
+				
 			}
 		}
-
-		if (anon){
-			admin = config.getString("defAdminName", "server");
-		}
-
-		long tempTime = plugin.util.parseTimeSpec(args[1],args[2]);
-		if(tempTime == 0)
-			return false;
+		if(tempTime == 0) return false;
 		long temp = System.currentTimeMillis()/1000+tempTime; //epoch time
 		//Separate for Online-Offline
 		if(victim != null){
 			if(victim.getName() == admin){
-				sender.sendMessage(ChatColor.RED + "You cannot emotempjail yourself!");
+				sender.sendMessage(ChatColor.RED + "You cannot tempjail yourself!");
 				return true;
 			}
 			if(victim.hasPermission( "ultraban.override.tempjail")){
@@ -93,8 +79,8 @@ public class Tempjail implements CommandExecutor{
 			plugin.tempJail.put(victim.getName().toLowerCase(), temp);
 			plugin.db.addPlayer(victim.getName(), reason, admin, temp, 6);
 			plugin.jailed.add(p.toLowerCase());
-			Location stlp = getJail();
-			victim.teleport(stlp);
+			victim.teleport(plugin.jail.getJail("jail"));
+			
 			log.log(Level.INFO, "[UltraBan] " + admin + " tempjailed player " + victim.getName() + ".");
 			String tempjailMsgVictim = config.getString("messages.tempjailMsgVictim", "You have been temp. jailed by %admin%. Reason: %reason%!");
 			tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexAdmin, admin);
@@ -144,14 +130,4 @@ public class Tempjail implements CommandExecutor{
 		}
 		return true;
 	}
-
-    public Location getJail(){
-    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-        Location setlp = new Location(
-                plugin.getServer().getWorld(config.getString("jail.world", plugin.getServer().getWorlds().get(0).getName())),
-                config.getInt("jail.x", 0),
-                config.getInt("jail.y", 0),
-                config.getInt("jail.z", 0));
-        	return setlp;
-    }
 }
