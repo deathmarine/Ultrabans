@@ -84,7 +84,7 @@ public class Kick implements CommandExecutor{
 		}
 		if(victim.hasPermission( "ultraban.override.kick")){
 			sender.sendMessage(ChatColor.RED + "Your kick has been denied! Player Notified!");
-			victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to kick you!");
+			victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to kick you!");
 			return true;
 		}
 		
@@ -97,7 +97,7 @@ public class Kick implements CommandExecutor{
 			if(broadcast){
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(kickMsgBroadcast));
 			}else{
-				sender.sendMessage(plugin.util.formatMessage(ChatColor.ITALIC + kickMsgBroadcast));
+				sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(kickMsgBroadcast));
 			}
 		}
 		

@@ -45,21 +45,22 @@ public class Starve implements CommandExecutor{
 				}
 				if(victim.hasPermission( "ultraban.override.starve")){
 					sender.sendMessage(ChatColor.RED + "Your starve attempt has been denied! Player Notified!");
-					victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to starve you!");
+					victim.sendMessage(ChatColor.RED + "Player: " + player.getName() + " Attempted to starve you!");
 					return true;
 				}
 			}else{
 				sender.sendMessage(ChatColor.GRAY + "Player must be online!");
 				return true;
 			}
-			String starveMsgVictim = config.getString("messages.starveMsgVictim", "You are now starving!");
-			starveMsgVictim = starveMsgVictim.replaceAll(plugin.regexAdmin, admin);
-			starveMsgVictim = starveMsgVictim.replaceAll(plugin.regexVictim, idoit);
-			victim.sendMessage(plugin.util.formatMessage(starveMsgVictim));
-			String starveMsgBroadcast = config.getString("messages.starveMsgBroadcast", "%victim% is now starving!");
-			starveMsgBroadcast = starveMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-			starveMsgBroadcast = starveMsgBroadcast.replaceAll(plugin.regexVictim, idoit);
-			sender.sendMessage(plugin.util.formatMessage(starveMsgBroadcast));
+			String starveMsgVictim = config.getString("messages.starveMsgVictim");
+			if(starveMsgVictim.contains(plugin.regexAdmin)) starveMsgVictim = starveMsgVictim.replaceAll(plugin.regexAdmin, admin);
+			if(starveMsgVictim.contains(plugin.regexVictim)) starveMsgVictim = starveMsgVictim.replaceAll(plugin.regexVictim, idoit);
+			if(starveMsgVictim != null) victim.sendMessage(plugin.util.formatMessage(starveMsgVictim));
+			
+			String starveMsgBroadcast = config.getString("messages.starveMsgBroadcast");
+			if(starveMsgBroadcast.contains(plugin.regexAdmin)) starveMsgBroadcast = starveMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+			if(starveMsgBroadcast.contains(plugin.regexVictim)) starveMsgBroadcast = starveMsgBroadcast.replaceAll(plugin.regexVictim, idoit);
+			if(starveMsgBroadcast != null) sender.sendMessage(plugin.util.formatMessage(starveMsgBroadcast));
 			victim.setFoodLevel(0);
 		}
 		

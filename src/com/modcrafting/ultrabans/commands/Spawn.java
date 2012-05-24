@@ -44,15 +44,15 @@ public class Spawn implements CommandExecutor{
 				sender.sendMessage(ChatColor.GRAY + "Player must be online!");
 				return true;
 			}
-			String fspawnMsgVictim = config.getString("messages.fspawnMsgVictim", "You have been sent to spawn!");
-			fspawnMsgVictim = fspawnMsgVictim.replaceAll(plugin.regexAdmin, admin);
-			fspawnMsgVictim = fspawnMsgVictim.replaceAll(plugin.regexVictim, idoit);
-			victim.sendMessage(plugin.util.formatMessage(fspawnMsgVictim));
+			String fspawnMsgVictim = config.getString("messages.fspawnMsgVictim");
+			if(fspawnMsgVictim.contains(plugin.regexAdmin)) fspawnMsgVictim = fspawnMsgVictim.replaceAll(plugin.regexAdmin, admin);
+			if(fspawnMsgVictim.contains(plugin.regexVictim)) fspawnMsgVictim = fspawnMsgVictim.replaceAll(plugin.regexVictim, idoit);
+			if(fspawnMsgVictim != null) victim.sendMessage(plugin.util.formatMessage(fspawnMsgVictim));
 			
 			String fspawnMsgBroadcast = config.getString("messages.fspawnMsgBroadcast", "%victim% is now at spawn!");
-			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-			fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll(plugin.regexVictim, idoit);
-			sender.sendMessage(plugin.util.formatMessage(fspawnMsgBroadcast));
+			if(fspawnMsgBroadcast.contains(plugin.regexAdmin)) fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+			if(fspawnMsgBroadcast.contains(plugin.regexVictim)) fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll(plugin.regexVictim, idoit);
+			if(fspawnMsgBroadcast != null)  sender.sendMessage(plugin.util.formatMessage(fspawnMsgBroadcast));
 				//Further Research	
 				World wtlp = victim.getWorld();
 				Location tlp = wtlp.getSpawnLocation();

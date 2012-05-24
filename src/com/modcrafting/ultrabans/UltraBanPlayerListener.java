@@ -22,6 +22,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 public class UltraBanPlayerListener implements Listener{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
+	String spamcheck = null;
 	public UltraBanPlayerListener(UltraBan ultraBans) {
 		this.plugin = ultraBans;
 	}
@@ -149,13 +150,13 @@ public class UltraBanPlayerListener implements Listener{
 					player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
 				}
 				String adminMsg = config.getString("messages.jailCmdMsg", "You cannot use commands while Jailed!");
-				player.sendMessage(ChatColor.GRAY + adminMsg);
+				player.sendMessage(plugin.util.formatMessage(adminMsg));
 				event.setCancelled(true);
 			 }
 			if(plugin.muted.contains(player.getName().toLowerCase())){
 				if(config.getBoolean("muteVanilla", true)){
 					String adminMsg = config.getString("messages.muteChatMsg", "Your cry falls on deaf ears.");
-		 			player.sendMessage(ChatColor.GRAY + adminMsg);
+		 			player.sendMessage(plugin.util.formatMessage(adminMsg));
 					event.setCancelled(true);
 				}
 			}
@@ -163,12 +164,39 @@ public class UltraBanPlayerListener implements Listener{
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerChat(PlayerChatEvent event){
+	public void onPlayerChat(final PlayerChatEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		 Player player = event.getPlayer();
+		 
+		 if(config.getBoolean("Chat.IPCheck", true)){
+			 String msg = event.getMessage();
+			//127.0.0.1:25565
+			String[] content = {"/",",","-","_","+","="};
+			if(msg.contains(":")) msg = msg.replaceAll(":", " ");
+			if(msg.contains(";")) msg = msg.replaceAll(";", " ");
+			for (int ii=0;ii<content.length;ii++){
+				if(msg.contains(content[ii])) msg = msg.replaceAll(content[ii], "."); 									
+			}
+			String[] ipcheck = msg.split(" ");
+			for (int i=0; i<ipcheck.length; i++){
+				if(plugin.util.validIP(ipcheck[i].trim())){
+					event.setMessage(event.getMessage().replaceAll(ipcheck[i].trim(), "{BLOCKED}"));
+					//{BLOCKED}:25565
+				}
+			}
+			 
+			 
+		 }
+		 if(config.getBoolean("Chat.SpamCheck", true)){
+			 if(!event.getMessage().equalsIgnoreCase(spamcheck)){
+				 spamcheck = event.getMessage();
+			 }else{
+				 event.setCancelled(true);
+			 }
+		 }
 		 	if(plugin.muted.contains(player.getName().toLowerCase())){
 				String adminMsg = config.getString("messages.muteChatMsg", "Your cry falls on deaf ears.");
-		 		player.sendMessage(ChatColor.GRAY + adminMsg);
+		 		player.sendMessage(plugin.util.formatMessage(adminMsg));
 		 		event.setCancelled(true);
 		 	}
 		 	if(plugin.jailed.contains(player.getName().toLowerCase())){
@@ -194,7 +222,7 @@ public class UltraBanPlayerListener implements Listener{
 					player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
 				}
 				String adminMsg = config.getString("messages.jailChatMsg", "Your cry falls on deaf ears.");
-		 		player.sendMessage(ChatColor.GRAY + adminMsg);
+		 		player.sendMessage(plugin.util.formatMessage(adminMsg));
 		 		event.setCancelled(true);
 		 	}
 	}

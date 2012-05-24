@@ -74,7 +74,7 @@ public class Ipban implements CommandExecutor{
 				if(broadcast){
 					plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
 				}else{
-					sender.sendMessage(plugin.util.formatMessage(ChatColor.ITALIC + banMsgBroadcast));
+					sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(banMsgBroadcast));
 				}
 			}
 			log.log(Level.INFO, "[UltraBan] " + admin + " banned ip " + p + ".");
@@ -111,7 +111,7 @@ public class Ipban implements CommandExecutor{
 			}
 			if(victim.hasPermission( "ultraban.override.ipban")){
 				sender.sendMessage(ChatColor.RED + "Your ipban has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to ipban you!");
+				victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to ipban you!");
 				return true;
 			}
 			victimip = plugin.db.getAddress(victim.getName().toLowerCase());
@@ -153,7 +153,7 @@ public class Ipban implements CommandExecutor{
 			if(broadcast){
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
 			}else{
-				sender.sendMessage(plugin.util.formatMessage(ChatColor.ITALIC + banMsgBroadcast));
+				sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(banMsgBroadcast));
 			}
 		}
 		log.log(Level.INFO, "[UltraBan] " + admin + " banned player " + p.toLowerCase() + ".");

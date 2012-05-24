@@ -12,16 +12,21 @@ mysql-table-ip: banlistip
 sqlite-dbname: banlist
 #parameters#
 auto-complete: true
-#Command Checks#
-useFine: true
 #Max allowable fine#
 #If Zero then no max will be placed#
 maxFineAmt: 0
 #Disable command usage on muted#
 muteVanilla: true
 #Max Warnings#
-enableMaxWarn: false
+enableMaxWarn: false#
 maxWarnings: 5
+#ban,kick,ipban,perma,tempban,tempipban#
+maxWarnResult: ban
+#Used with Temporary actions#
+maxWarnResulttime:
+  amt: 5
+  #sec,min,hour,day,week,month#
+  mode: day
 #Default labels#
 defAdminName: 'server'
 defReason: 'not sure'
@@ -30,6 +35,11 @@ defReason: 'not sure'
 lockdown: false
 #Enabling dupePolicy will disallow duplicate IP connections#
 dupePolicy: false
+Chat:
+  #Checks Chat Messages for valid IP address#
+  IPCheck: true
+  #Checks if the message is duplicate and disables it#
+  SpamCheck: true
 #Messages#
 messages:
   banMsgFailed: '&4%victim% &7is already banned!'

@@ -69,7 +69,7 @@ public class Tempjail implements CommandExecutor{
 			}
 			if(victim.hasPermission( "ultraban.override.tempjail")){
 				sender.sendMessage(ChatColor.RED + "Your tempjail has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to tempjail you!");
+				victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to tempjail you!");
 				return true;
 			}	
 			if(plugin.jailed.contains(victim.getName().toLowerCase())){
@@ -79,25 +79,20 @@ public class Tempjail implements CommandExecutor{
 			plugin.tempJail.put(victim.getName().toLowerCase(), temp);
 			plugin.db.addPlayer(victim.getName(), reason, admin, temp, 6);
 			plugin.jailed.add(p.toLowerCase());
-			victim.teleport(plugin.jail.getJail("jail"));
 			
 			log.log(Level.INFO, "[UltraBan] " + admin + " tempjailed player " + victim.getName() + ".");
 			String tempjailMsgVictim = config.getString("messages.tempjailMsgVictim", "You have been temp. jailed by %admin%. Reason: %reason%!");
-			tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexAdmin, admin);
-			tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexReason, reason);
-			if(broadcast){
-				String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, victim.getName());
-				plugin.getServer().broadcastMessage(plugin.util.formatMessage(tempjailMsgBroadcast));
+			if(tempjailMsgVictim.contains(plugin.regexAdmin)) tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexAdmin, admin);
+			if(tempjailMsgVictim.contains(plugin.regexReason)) tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexReason, reason);
+			if(tempjailMsgVictim.contains(plugin.regexVictim)) tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexVictim, victim.getName());
+			if(broadcast && tempjailMsgVictim != null){
+				plugin.getServer().broadcastMessage(plugin.util.formatMessage(tempjailMsgVictim));
 			}else{
-				String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, victim.getName());
-				sender.sendMessage(plugin.util.formatMessage(":S:" + tempjailMsgBroadcast));
+				sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(tempjailMsgVictim));
 			}
+
+			victim.teleport(plugin.jail.getJail("jail"));
+			return true;
 		}else{
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim != null){
@@ -113,21 +108,19 @@ public class Tempjail implements CommandExecutor{
 			plugin.tempJail.put(p.toLowerCase(), temp);
 			plugin.jailed.add(p.toLowerCase());
 			plugin.db.addPlayer(p, reason, admin, temp, 6);
-			log.log(Level.INFO, "[UltraBan] " + admin + " temp jail player " + p + ".");
-			if(broadcast){
-				String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, p);
+			
+			String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
+			if(tempjailMsgBroadcast.contains(plugin.regexAdmin)) tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+			if(tempjailMsgBroadcast.contains(plugin.regexReason)) tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
+			if(tempjailMsgBroadcast.contains(plugin.regexVictim)) tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, p);
+			if(broadcast && tempjailMsgBroadcast != null){
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(tempjailMsgBroadcast));
 			}else{
-				String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
-				tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, p);
-				sender.sendMessage(plugin.util.formatMessage(":S:" + tempjailMsgBroadcast));
+				sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(tempjailMsgBroadcast));
 			}
+
+			log.log(Level.INFO, "[UltraBan] " + admin + " temp jailed player " + p + ".");
+			return true;
 		}
-		return true;
 	}
 }

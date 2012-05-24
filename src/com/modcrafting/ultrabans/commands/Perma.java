@@ -82,7 +82,7 @@ public class Perma implements CommandExecutor{
 		}
 		if(victim.hasPermission( "ultraban.override.permaban")){
 			sender.sendMessage(ChatColor.RED + "Your permaban has been denied! Player Notified!");
-			victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to permaban you!");
+			victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to permaban you!");
 			return true;
 		}
 				
@@ -103,7 +103,7 @@ public class Perma implements CommandExecutor{
 			if(broadcast){
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(permbanMsgBroadcast));
 			}else{
-				sender.sendMessage(plugin.util.formatMessage(permbanMsgBroadcast));
+				sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(permbanMsgBroadcast));
 			}
 		}
 		log.log(Level.INFO, "[UltraBan] " + admin + " permabanned player " + victim.getName() + ".");

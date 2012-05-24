@@ -93,7 +93,7 @@ public class Ban implements CommandExecutor{
 			if(broadcast){
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
 			}else{
-				sender.sendMessage(plugin.util.formatMessage(ChatColor.ITALIC + banMsgBroadcast));
+				sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(banMsgBroadcast));
 			}
 			return true;			
 		}
@@ -109,7 +109,7 @@ public class Ban implements CommandExecutor{
 		//Override
 		if(victim.hasPermission("ultraban.override.ban")){
 			sender.sendMessage(ChatColor.RED + "Your ban has been denied! Player Notified!");
-			victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to ban you!");
+			victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to ban you!");
 			return true;
 		}
 		
@@ -132,7 +132,7 @@ public class Ban implements CommandExecutor{
 		if(broadcast){
 			plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
 		}else{
-			sender.sendMessage(plugin.util.formatMessage(ChatColor.ITALIC + banMsgBroadcast));
+			sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(banMsgBroadcast));
 		}
 		
 		//Log

@@ -91,7 +91,7 @@ public class Jail implements CommandExecutor{
 				}
 				if(victim.hasPermission( "ultraban.override.jail")){
 					sender.sendMessage(ChatColor.RED + "Your jail attempt has been denied! Player Notified!");
-					victim.sendMessage(ChatColor.RED + "Player:" + admin + " Attempted to jail you!");
+					victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to jail you!");
 					return true;
 				}
 				if(plugin.jailed.contains(victim.getName().toLowerCase())){
@@ -114,7 +114,7 @@ public class Jail implements CommandExecutor{
 					plugin.getServer().broadcastMessage(plugin.util.formatMessage(adminMsgAll));
 				}else{
 					if(jailMsgVictim != null) victim.sendMessage(plugin.util.formatMessage(jailMsgVictim));
-					sender.sendMessage(plugin.util.formatMessage(":S:" + adminMsgAll));
+					sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(adminMsgAll));
 				}
 				plugin.db.addPlayer(p, reason, admin, 0, 6);
 				plugin.jailed.add(p.toLowerCase());

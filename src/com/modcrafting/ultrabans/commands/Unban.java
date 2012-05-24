@@ -36,7 +36,7 @@ public class Unban implements CommandExecutor{
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
-		if (args.length < 1)return false;
+		if (args.length < 1) return false;
 		String p = args[0];
 		
 		//unban IPv4
@@ -55,7 +55,7 @@ public class Unban implements CommandExecutor{
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexVictim, p);
-			sender.sendMessage(plugin.util.formatMessage(unbanMsgBroadcast));
+			plugin.getServer().broadcastMessage(plugin.util.formatMessage(unbanMsgBroadcast));
 			return true;
 		}
 		
@@ -81,7 +81,7 @@ public class Unban implements CommandExecutor{
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexVictim, plugin.getServer().getOfflinePlayer(p).getName());
-			sender.sendMessage(plugin.util.formatMessage(unbanMsgBroadcast));
+			plugin.getServer().broadcastMessage(plugin.util.formatMessage(unbanMsgBroadcast));
 			return true;
 		}else{
 			if(plugin.tempBans.containsKey(p.toLowerCase())){
@@ -99,7 +99,7 @@ public class Unban implements CommandExecutor{
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexVictim, plugin.getServer().getOfflinePlayer(p).getName());
-			sender.sendMessage(plugin.util.formatMessage(unbanMsgBroadcast));
+			plugin.getServer().broadcastMessage(plugin.util.formatMessage(unbanMsgBroadcast));
 			return true;
 			}else{
 			String unbanMsgFailed = config.getString("messages.unbanMsgFailed", "%victim% is already unbanned!");

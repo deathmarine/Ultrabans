@@ -48,7 +48,7 @@ public class Mute implements CommandExecutor {
 			}
 			if(victim.hasPermission( "ultraban.override.mute")){
 				sender.sendMessage(ChatColor.RED + "Your mute has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to mute you!");
+				victim.sendMessage(ChatColor.RED + "Player: " + player.getName() + " Attempted to mute you!");
 				return true;
 			}
 			

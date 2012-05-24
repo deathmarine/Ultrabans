@@ -69,7 +69,7 @@ public class Fine implements CommandExecutor{
 		}
 		if(victim.hasPermission( "ultraban.override.fine")){
 			sender.sendMessage(ChatColor.RED + "Your fine has been denied! Player Notified!");
-			victim.sendMessage(ChatColor.RED + "Player:" + player.getName() + " Attempted to fine you!");
+			victim.sendMessage(ChatColor.RED + "Player: " + player.getName() + " Attempted to fine you!");
 			return true;
 		}
 		
@@ -109,7 +109,7 @@ public class Fine implements CommandExecutor{
 			if(fineMsg.contains(plugin.regexAmt)) fineMsg = fineMsg.replaceAll(plugin.regexAmt, amt);
 			if(fineMsg.contains(plugin.regexVictim)) fineMsg = fineMsg.replaceAll(plugin.regexVictim, idoit);
 			if(fineMsg != null){
-				sender.sendMessage(plugin.util.formatMessage(ChatColor.ITALIC + fineMsg));
+				sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(fineMsg));
 				victim.sendMessage(plugin.util.formatMessage(fineMsg));					
 			}
 		}else{
