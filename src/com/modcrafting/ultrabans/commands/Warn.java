@@ -70,31 +70,36 @@ public class Warn implements CommandExecutor{
 			if(config.getBoolean("enableMaxWarn", false)){
 				Integer max = config.getInt("maxWarnings", 5);
 				String idoit = victim.getName();
-				if(plugin.db.maxWarns(idoit) != null && plugin.db.maxWarns(idoit).size() > max){
-					plugin.bannedPlayers.add(idoit.toLowerCase());
-					plugin.db.addPlayer(idoit, "Max Warnings", "Ultrabans", 0, 0);
-					log.log(Level.INFO, "[UltraBan] player " + idoit + " was banned for max warnings.");
-					if(broadcast){
-						
-						String cmd =config.getString("maxWarnResult", "ban");
-						if(cmd.equalsIgnoreCase("ban") || cmd.equalsIgnoreCase("kick") || cmd.equalsIgnoreCase("ipban") || cmd.equalsIgnoreCase("jail") || cmd.equalsIgnoreCase("permaban")){
-							player.getPlayer().performCommand(cmd + " " + idoit + " " + "-s" + " " + " Max Warnings");
-						}else if(cmd.equalsIgnoreCase("tempban") || cmd.equalsIgnoreCase("tempipban") || cmd.equalsIgnoreCase("tempjail")){
-							player.getPlayer().performCommand(cmd + " " + idoit + " " + "-s" + " "
-									+ config.getString("maxWarnResulttime.amt", "5") + " " 
-									+ config.getString("maxWarnResulttime.mode", "day") + " "
-									+ "Max Warnings");
+				if(plugin.db.maxWarns(idoit) != null && plugin.db.maxWarns(idoit).size() >= max){						
+					String cmd = config.getString("maxWarnResult", "ban");
+					if(cmd.equalsIgnoreCase("ban") || cmd.equalsIgnoreCase("kick") || cmd.equalsIgnoreCase("ipban") || cmd.equalsIgnoreCase("jail") || cmd.equalsIgnoreCase("permaban")){
+						String fakecmd = cmd + " " + idoit + " " + "-s" + " " + " Max Warnings";
+						if(player != null){
+							player.getPlayer().performCommand(fakecmd);
 						}else{
-							sender.sendMessage(ChatColor.RED + "Max Warnings improperly configured Defaulting to ban.");
-							player.getPlayer().performCommand("ban" + " " + idoit + " " + " Max Warnings");
+							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
 						}
+					}else if(cmd.equalsIgnoreCase("tempban") || cmd.equalsIgnoreCase("tempipban") || cmd.equalsIgnoreCase("tempjail")){
+						String fakecmd = cmd + " " + idoit + " " + "-s" + " "
+								+ config.getString("maxWarnResulttime.amt", "5") + " " 
+								+ config.getString("maxWarnResulttime.mode", "day") + " "
+								+ "Max Warnings";
+						if(player != null){
+							player.getPlayer().performCommand(fakecmd);
+						}else{
+							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
+						}
+					}else{
+						sender.sendMessage(ChatColor.RED + "Max Warnings improperly configured Defaulting to ban.");
+						return true;
+					}
 						String banMsgBroadcast = "%victim% was %cmd% by Ultrabans. Reason: %reason%";
 						banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 						banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexReason, "Reached Max Warnings");
 						banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexVictim, idoit);
 						banMsgBroadcast = banMsgBroadcast.replaceAll("%cmd%", cmd);
 						plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
-					}
+					
 					return true;
 				}	
 			}
