@@ -4,6 +4,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Formatting {
@@ -37,15 +39,20 @@ public class Formatting {
 		return p;
 	}
 	public String combineSplit(int startIndex, String[] string, String seperator) {
+    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		StringBuilder builder = new StringBuilder();
+		if(string.length >= 1){
+			for (int i = startIndex; i < string.length; i++) {
+				builder.append(string[i]);
+				builder.append(seperator);
+			}
 
-		for (int i = startIndex; i < string.length; i++) {
-			builder.append(string[i]);
-			builder.append(seperator);
+			if(builder.length() > seperator.length()){
+				builder.deleteCharAt(builder.length() - seperator.length()); // remove
+				return builder.toString();
+			}
 		}
-
-		builder.deleteCharAt(builder.length() - seperator.length()); // remove
-		return builder.toString();
+		return config.getString("defReason", "not sure");
 	}
 	public String formatMessage(String str){
 		String funnyChar = new Character((char) 167).toString();
