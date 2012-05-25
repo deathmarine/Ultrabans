@@ -136,7 +136,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("pardon").setExecutor(new Pardon(this));
 	}
 }
-
+;
 		
 
 

@@ -110,11 +110,13 @@ public class Jail implements CommandExecutor{
 				if(jailMsgVictim.contains(plugin.regexAdmin)) jailMsgVictim = jailMsgVictim.replaceAll(plugin.regexAdmin, admin);
 				if(jailMsgVictim.contains(plugin.regexVictim)) jailMsgVictim = jailMsgVictim.replaceAll(plugin.regexVictim, p);
 				
-				if(broadcast & adminMsgAll != null){
-					plugin.getServer().broadcastMessage(plugin.util.formatMessage(adminMsgAll));
-				}else{
-					if(jailMsgVictim != null) victim.sendMessage(plugin.util.formatMessage(jailMsgVictim));
-					sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(adminMsgAll));
+				if(adminMsgAll != null){
+					if(broadcast){
+						plugin.getServer().broadcastMessage(plugin.util.formatMessage(adminMsgAll));
+					}else{
+						if(jailMsgVictim != null) victim.sendMessage(plugin.util.formatMessage(jailMsgVictim));
+						sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(adminMsgAll));
+					}
 				}
 				plugin.db.addPlayer(p, reason, admin, 0, 6);
 				plugin.jailed.add(p.toLowerCase());
