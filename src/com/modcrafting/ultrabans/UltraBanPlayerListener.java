@@ -23,11 +23,12 @@ public class UltraBanPlayerListener implements Listener{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	String spamcheck = null;
+	int spamCount = 0;
 	public UltraBanPlayerListener(UltraBan ultraBans) {
 		this.plugin = ultraBans;
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerLogin(PlayerLoginEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
@@ -36,8 +37,8 @@ public class UltraBanPlayerListener implements Listener{
 			String reason = plugin.db.getBanReason(player.getName());
 			String admin = plugin.db.getAdmin(player.getName());
 			String banMsgBroadcast = config.getString("messages.LoginBan", "%admin% banned you from this server! Reason: %reason%!");
-			banMsgBroadcast = banMsgBroadcast.replaceAll("%admin%", admin);
-			banMsgBroadcast = banMsgBroadcast.replaceAll("%reason%", reason);
+			banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
+			banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexReason, reason);
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, banMsgBroadcast);
 		}
 		if(plugin.tempBans.get(player.getName().toLowerCase()) != null){
@@ -99,7 +100,7 @@ public class UltraBanPlayerListener implements Listener{
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
@@ -119,7 +120,7 @@ public class UltraBanPlayerListener implements Listener{
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
@@ -163,68 +164,142 @@ public class UltraBanPlayerListener implements Listener{
 			
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerChat(final PlayerChatEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		 Player player = event.getPlayer();
+		 String message = event.getMessage();
+		 //Mute Check
+		 if(plugin.muted.contains(player.getName().toLowerCase())){
+			String adminMsg = config.getString("messages.muteChatMsg", "Your cry falls on deaf ears.");
+			player.sendMessage(plugin.util.formatMessage(adminMsg));
+			event.setCancelled(true);
+		 }
 		 
-		 if(config.getBoolean("Chat.IPCheck", true)){
-			 String msg = event.getMessage();
+		 //Jail Check
+		 if(plugin.jailed.contains(player.getName().toLowerCase())){
+		 	if(plugin.tempJail.get(player.getName().toLowerCase()) != null){
+				long tempTime = plugin.tempJail.get(player.getName().toLowerCase());
+				long now = System.currentTimeMillis()/1000;
+				long diff = tempTime - now;
+				if(diff <= 0){
+					plugin.tempJail.remove(player.getName().toLowerCase());
+					plugin.jailed.remove(player.getName().toLowerCase());
+					plugin.db.removeFromJaillist(player.getName().toLowerCase());
+					World wtlp = player.getWorld();
+					Location tlp = wtlp.getSpawnLocation();
+					player.teleport(tlp);
+					player.sendMessage(ChatColor.GREEN + "You've served your time.");
+					return;
+				}
+				Date date = new Date();
+				date.setTime(tempTime*1000);
+				String dateStr = date.toString();
+				String reason = plugin.db.getjailReason(player.getName());
+				player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + reason);
+				player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
+			}
+			String adminMsg = config.getString("messages.jailChatMsg", "Your cry falls on deaf ears.");
+			player.sendMessage(plugin.util.formatMessage(adminMsg));
+			event.setCancelled(true);
+		}
+		 //Block IP
+		 if(config.getBoolean("Chat.IPCheck.Enable", true)){
 			//127.0.0.1:25565
 			String[] content = {"/",",","-","_","+","="};
-			if(msg.contains(":")) msg = msg.replaceAll(":", " ");
-			if(msg.contains(";")) msg = msg.replaceAll(";", " ");
+			if(message.contains(":")) message = message.replaceAll(":", " ");
+			if(message.contains(";")) message = message.replaceAll(";", " ");
 			for (int ii=0;ii<content.length;ii++){
-				if(msg.contains(content[ii])) msg = msg.replaceAll(content[ii], "."); 									
+				if(message.contains(content[ii])) message = message.replaceAll(content[ii], "."); 									
 			}
-			String[] ipcheck = msg.split(" ");
+			String[] ipcheck = message.split(" ");
+			String mode = config.getString("Chat.IPCheck.Blocking");
+			if(mode == null) mode = "";
+			boolean valid = false;
 			for (int i=0; i<ipcheck.length; i++){
 				if(plugin.util.validIP(ipcheck[i].trim())){
-					event.setMessage(event.getMessage().replaceAll(ipcheck[i].trim(), "{BLOCKED}"));
-					//{BLOCKED}:25565
+					if(mode.equalsIgnoreCase("%scramble%")){
+						event.setMessage(message.replaceAll(ipcheck[i].trim(), ChatColor.MAGIC + "AAAAA"));
+					 }else if(mode.equalsIgnoreCase("%replace%")){
+						event.setMessage(message.replaceAll(ipcheck[i].trim(), plugin.getServer().getIp()));
+					 }else{
+						 event.setMessage(message.replaceAll(ipcheck[i].trim(), mode));
+					 }
+					 valid = true;
+				}
+			}
+			String result = config.getString("Chat.IPCheck.Result");
+			if(valid && result != null){
+				if(result.equalsIgnoreCase("ban") || result.equalsIgnoreCase("kick") || result.equalsIgnoreCase("ipban") || result.equalsIgnoreCase("jail") || result.equalsIgnoreCase("warn")){
+					String fakecmd = null;
+					if(config.getBoolean("Chat.IPCheck.Silent", false)){
+						fakecmd = result + " " + player.getName() + " " + "-s" + " " + " Ultrabans AutoMated: Advertising";
+					}else{
+						fakecmd = result + " " + player.getName() + " " + " Ultrabans AutoMated: Advertising";
+					}
+					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
+				}
+			}
+		 }
+		 
+		 //Block Spam
+		 if(config.getBoolean("Chat.SpamCheck.Enable", true)){
+			 if(!message.equalsIgnoreCase(spamcheck)){
+				 spamcheck = event.getMessage();
+				 spamCount = 0;
+			 }else{
+				 event.setCancelled(true);
+				 spamCount++;
+			 }
+			String result = config.getString("Chat.SpamCheck.Result");
+			if(config.getInt("Chat.SpamCheck.Counter") < spamCount  && result != null){
+				if(result.equalsIgnoreCase("ban") || result.equalsIgnoreCase("kick") || result.equalsIgnoreCase("ipban") || result.equalsIgnoreCase("jail") || result.equalsIgnoreCase("warn")){
+					String fakecmd = null;
+					if(config.getBoolean("Chat.SpamCheck.Silent", false)){
+						fakecmd = result + " " + player.getName() + " " + "-s" + " " + " Ultrabans AutoMated: Spam";
+					}else{
+						fakecmd = result + " " + player.getName() + " " + " Ultrabans AutoMated: Spam";
+					}
+					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
 				}
 			}
 			 
-			 
 		 }
-		 if(config.getBoolean("Chat.SpamCheck", true)){
-			 if(!event.getMessage().equalsIgnoreCase(spamcheck)){
-				 spamcheck = event.getMessage();
-			 }else{
-				 event.setCancelled(true);
-			 }
-		 }
-		 	if(plugin.muted.contains(player.getName().toLowerCase())){
-				String adminMsg = config.getString("messages.muteChatMsg", "Your cry falls on deaf ears.");
-		 		player.sendMessage(plugin.util.formatMessage(adminMsg));
-		 		event.setCancelled(true);
-		 	}
-		 	if(plugin.jailed.contains(player.getName().toLowerCase())){
-			 	if(plugin.tempJail.get(player.getName().toLowerCase()) != null){
-					long tempTime = plugin.tempJail.get(player.getName().toLowerCase());
-					long now = System.currentTimeMillis()/1000;
-					long diff = tempTime - now;
-					if(diff <= 0){
-						plugin.tempJail.remove(player.getName().toLowerCase());
-						plugin.jailed.remove(player.getName().toLowerCase());
-						plugin.db.removeFromJaillist(player.getName().toLowerCase());
-						World wtlp = player.getWorld();
-						Location tlp = wtlp.getSpawnLocation();
-						player.teleport(tlp);
-						player.sendMessage(ChatColor.GREEN + "You've served your time.");
-						return;
-					}
-					Date date = new Date();
-					date.setTime(tempTime*1000);
-					String dateStr = date.toString();
-					String reason = plugin.db.getjailReason(player.getName());
-					player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + reason);
-					player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
+		 
+		 //Block Swearing
+		 if(config.getBoolean("Chat.SwearCensor.Enable", true)){
+			String[] string = config.getString("Chat.SwearCensor.Words").split(" ");
+			String mode = config.getString("Chat.SwearCensor.Blocking");
+			if(mode == null) mode = "";
+			boolean valid = false;
+			
+			for (int i=0; i<string.length; i++){
+				if(message.contains(string[i].trim())){
+					 if(mode.equalsIgnoreCase("%scramble%")){
+						event.setMessage(message.replaceAll(string[i].trim(), ChatColor.MAGIC + "AAAAA"));
+					 }else if(mode.equalsIgnoreCase("%replace%")){
+						event.setMessage(message.replaceAll(string[i].trim(), plugin.getServer().getIp()));
+					 }else{
+						 event.setMessage(message.replaceAll(string[i].trim(), mode));
+					 }
+					 valid = true;
 				}
-				String adminMsg = config.getString("messages.jailChatMsg", "Your cry falls on deaf ears.");
-		 		player.sendMessage(plugin.util.formatMessage(adminMsg));
-		 		event.setCancelled(true);
-		 	}
+			}
+			String result = config.getString("Chat.SwearCensor.Result");
+			if(valid && result != null){
+				if(result.equalsIgnoreCase("ban") || result.equalsIgnoreCase("kick") || result.equalsIgnoreCase("ipban") || result.equalsIgnoreCase("jail") || result.equalsIgnoreCase("warn")){
+					String fakecmd = null;
+					if(config.getBoolean("Chat.SwearCensor.Silent", false)){
+						fakecmd = result + " " + player.getName() + " " + "-s" + " " + " Ultrabans AutoMated: Language";
+					}else{
+						fakecmd = result + " " + player.getName() + " " + " Ultrabans AutoMated: Language";
+					}
+					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
+				}
+			}
+			
+		 }
+		 
 	}
 		 
 }

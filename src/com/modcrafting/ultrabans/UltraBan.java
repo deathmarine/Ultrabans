@@ -96,16 +96,33 @@ public class UltraBan extends JavaPlugin {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(playerListener, this);
 		pm.registerEvents(blockListener, this);
+		if(Config.getBoolean("serverSync.enable", false)) this.getServer().getScheduler().scheduleAsyncRepeatingTask(this,new Runnable(){
+			UltraBan plugin;
+			@Override
+			public void run() {
+				tempBans.clear();
+				tempJail.clear();
+				bannedPlayers.clear();
+				bannedIPs.clear();
+				jailed.clear();
+				muted.clear();
+				banEditors.clear();
+				db.initialize(plugin);
+				db.loadJailed();
+				System.out.println("UltraBans Sync is Enabled!");
+			}
+			
+		}, Config.getLong("serverSync.timing", 72000L), Config.getLong("serverSync.timing", 72000L));
+		//	(60 Seconds*60 Minutes)*convert20=72000L=1 Hour 		72000L/convert20/60 Seconds/60 Minutes = 1 Hour
 		log.log(Level.INFO,"[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " has been initialized!" );
 		
 	}
 	public boolean setupEconomy(){
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-			if (economyProvider != null) {
-				economy = economyProvider.getProvider();
-			}
-				return (economy != null);
-		}
+			if (economyProvider != null) economy = economyProvider.getProvider();
+			return (economy != null);
+	}
+	
 	public void loadCommands(){
 		getCommand("ban").setExecutor(new Ban(this));
 		getCommand("checkban").setExecutor(new Check(this));

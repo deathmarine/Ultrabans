@@ -35,11 +35,51 @@ defReason: 'not sure'
 lockdown: false
 #Enabling dupePolicy will disallow duplicate IP connections#
 dupePolicy: false
+
+serverSync:
+  #This will set the server to sync the database if multiple servers are in place.#
+  enable: false
+  #Timing is in Long format Example:#
+  #1 Hour = 60 Seconds * 60 Minutes * 20 ServerTickRatePerSec = 72000L
+  timing: 72000L
+
+#Chat#
 Chat:
-  #Checks Chat Messages for valid IP address#
-  IPCheck: true
+  #Checks Chat Messages for a valid IP address#
+  #If its not valid, trust me they can't connect to it#
+  IPCheck:
+    Enable: true
+    #Wildcards %scramble% will scramble the ip and %replace% will show your ip instead#
+    #If no wildcards are present the message entered will replace the ip#
+    #leave blank to erase#
+    Blocking: '{Block}'
+    #kick,jail,warn,ban,ipban, leave blank for no action#
+    Result: warn
+    Silent: false
+
+  #This will allow you to filter out messages containing any words that you define#
+  SwearCensor:
+    Enable: true
+    #Use your imagination these are not for me to decide#
+    Words: 'test testing tests'
+    #Wildcards %scramble% will scramble the ip and %replace% will show your ip instead#
+    #If no wildcards are present the message entered will replace the ip#
+    #leave blank to erase#
+    Blocking: '{Block}'
+    #kick,jail,warn,ban,ipban, leave blank for no action#
+    Result: warn
+    Silent: false
+
   #Checks if the message is duplicate and disables it#
-  SpamCheck: true
+  SpamCheck:
+    Enable: true
+    #The amount of messages to give a result#
+    Counter: 10
+    #kick,jail,warn,ban,ipban, leave blank for no action#
+    Result: kick
+    Silent: false
+
+
 #Messages#
 messages:
   banMsgFailed: '&4%victim% &7is already banned!'

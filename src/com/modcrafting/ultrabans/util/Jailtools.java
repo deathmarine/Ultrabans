@@ -24,7 +24,8 @@ public class Jailtools {
     public Location getJail(String label){
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
         Location setlp = new Location(
-                plugin.getServer().getWorld(config.getString("jail.world", plugin.getServer().getWorlds().get(0).getName())),
+                plugin.getServer().getWorld(
+                	config.getString(label+".world", plugin.getServer().getWorlds().get(0).getName())),
                 config.getInt(label+".x", 0),
                 config.getInt(label+".y", 0),
                 config.getInt(label+".z", 0));
