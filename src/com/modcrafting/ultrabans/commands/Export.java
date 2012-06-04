@@ -52,7 +52,7 @@ public class Export implements CommandExecutor{
 					}
 					catch(IOException e)          
 					{
-						UltraBan.log.log(Level.SEVERE,"UltraBan: Couldn't write to banned-players.txt");
+						plugin.log.log(Level.SEVERE,"UltraBan: Couldn't write to banned-players.txt");
 					}
 					sender.sendMessage("§2Exported banlist to banned-players.txt.");
 					sender.sendMessage("§2Exported iplist to banned-ips.txt.");

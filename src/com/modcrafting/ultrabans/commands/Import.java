@@ -47,8 +47,8 @@ public class Import implements CommandExecutor{
 			sender.sendMessage(ChatColor.GRAY + "[UltraBan] Be patient. Loading");
 			sender.sendMessage(ChatColor.GRAY + "[UltraBan] Depending on size of list may lag the server for a moment.");
 			}
-			UltraBan.log.log(Level.INFO, "[UltraBan] Be patient. Loading.");
-			UltraBan.log.log(Level.INFO, "[UltraBan] Depending on size of list may lag the server for a moment.");
+			plugin.log.log(Level.INFO, "[UltraBan] Be patient. Loading.");
+			plugin.log.log(Level.INFO, "[UltraBan] Depending on size of list may lag the server for a moment.");
 		try {
 			BufferedReader banlist = new BufferedReader(new FileReader("banned-players.txt"));
 			String p;
@@ -78,12 +78,12 @@ public class Import implements CommandExecutor{
 				  }
 			
 			sender.sendMessage(ChatColor.GREEN + "Banlist imported.");
-			UltraBan.log.log(Level.INFO,"[UltraBan] " + "system" + " imported the banlist to the database.");
+			plugin.log.log(Level.INFO,"[UltraBan] " + "system" + " imported the banlist to the database.");
 			
 			return;
 			
 		} catch (IOException e) {
-			UltraBan.log.log(Level.SEVERE, "[Ultrabans] could not import ban list.");
+			plugin.log.log(Level.SEVERE, "[Ultrabans] could not import ban list.");
 			sender.sendMessage(ChatColor.RED + "Could not import ban list.");
 		}
 			}
