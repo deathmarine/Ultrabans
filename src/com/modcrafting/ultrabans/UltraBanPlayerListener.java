@@ -96,7 +96,7 @@ public class UltraBanPlayerListener implements Listener{
 			if(player.hasPermission("ultraban.override.lockdown") || player.isOp()) auth = true;
 			
 			if (!auth) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
-			UltraBan.log.log(Level.INFO,"[UltraBan] " + player.getName() + " attempted to join during lockdown.");
+			plugin.log.log(Level.INFO,"[UltraBan] " + player.getName() + " attempted to join during lockdown.");
 		}
 	}
 
@@ -263,7 +263,6 @@ public class UltraBanPlayerListener implements Listener{
 					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
 				}
 			}
-			 
 		 }
 		 
 		 //Block Swearing

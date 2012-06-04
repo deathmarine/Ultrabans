@@ -51,10 +51,8 @@ import com.modcrafting.ultrabans.util.Formatting;
 import com.modcrafting.ultrabans.util.Jailtools;
 
 public class UltraBan extends JavaPlugin {
-
-	public final static Logger log = Logger.getLogger("Minecraft");
+	public final Logger log = Logger.getLogger("Minecraft");
 	public SQLDatabases db = new SQLDatabases();
-	//public IPScope ipscope = new IPScope(this);
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
 	public HashSet<String> jailed = new HashSet<String>();
@@ -107,6 +105,7 @@ public class UltraBan extends JavaPlugin {
 				jailed.clear();
 				muted.clear();
 				banEditors.clear();
+				
 				db.initialize(plugin);
 				db.loadJailed();
 				System.out.println("UltraBans Sync is Enabled!");
@@ -122,7 +121,6 @@ public class UltraBan extends JavaPlugin {
 			if (economyProvider != null) economy = economyProvider.getProvider();
 			return (economy != null);
 	}
-	
 	public void loadCommands(){
 		getCommand("ban").setExecutor(new Ban(this));
 		getCommand("checkban").setExecutor(new Check(this));
@@ -153,7 +151,6 @@ public class UltraBan extends JavaPlugin {
 		getCommand("pardon").setExecutor(new Pardon(this));
 	}
 }
-;
 		
 
 

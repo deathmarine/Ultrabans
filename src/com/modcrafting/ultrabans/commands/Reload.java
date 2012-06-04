@@ -37,7 +37,7 @@ public class Reload implements CommandExecutor{
 			plugin.bannedIPs.clear();
 			log.log(Level.INFO, "[UltraBan] Disabling Plugin.");
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
-			UltraBan.log.log(Level.SEVERE, "[UltraBan] Attempting Restart.");
+			plugin.log.log(Level.SEVERE, "[UltraBan] Attempting Restart.");
 			plugin.getServer().getPluginManager().enablePlugin(plugin);
 			log.log(Level.INFO, "[UltraBan] " + admin + " reloaded the plugin.");
 			sender.sendMessage("§2Reloaded plugin.");

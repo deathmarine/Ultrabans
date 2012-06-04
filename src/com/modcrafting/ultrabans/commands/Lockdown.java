@@ -43,7 +43,7 @@ public class Lockdown implements CommandExecutor {
 			if(!lock){ 
 				lockdownOn();
 				sender.sendMessage(ChatColor.GRAY + "Lockdown initiated.PlayerLogin disabled.");
-				UltraBan.log.log(Level.INFO, admin + " initiated lockdown.");
+				plugin.log.log(Level.INFO, admin + " initiated lockdown.");
 			}
 			if(lock) sender.sendMessage(ChatColor.GRAY + "Lockdown already initiated.PlayerLogin disabled.");
 			return true;
@@ -52,7 +52,7 @@ public class Lockdown implements CommandExecutor {
 			if(lock){
 				lockdownEnd();
 				sender.sendMessage(ChatColor.GRAY + "Lockdown ended.PlayerLogin reenabled.");
-				UltraBan.log.log(Level.INFO, admin + " disabled lockdown.");
+				plugin.log.log(Level.INFO, admin + " disabled lockdown.");
 			}
 			if(!lock) sender.sendMessage(ChatColor.GRAY + "Lockdown already ended / never initiated.");
 			return true;
