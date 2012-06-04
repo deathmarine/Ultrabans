@@ -297,11 +297,13 @@ public class SQLDatabases{
 		try {
 			conn = getSQLConnection();
 			if(dataHandler.equalsIgnoreCase("sqlite")){
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1)");
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE (name = ? AND (type = 0 OR type = 1)) AND time = (SELECT time FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1)");
+				ps.setString(1, player);
+				ps.setString(2, player);
 			}else{
 				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
+				ps.setString(1, player);
 			}
-			ps.setString(1, player);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
 			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
@@ -681,12 +683,16 @@ public class SQLDatabases{
 		try {
 			conn = getSQLConnection();
 			if(dataHandler.equalsIgnoreCase("sqlite")){
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ?");
+				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE (name = ? AND type = ? AND time = (SELECT time FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1)");
+				ps.setString(1, player);
+				ps.setInt(2, 6);
+				ps.setString(3, player);
+				ps.setInt(4, 6);
 			}else{
 				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
+				ps.setString(1, player);
+				ps.setInt(2, 6);
 			}
-			ps.setString(1, player);
-			ps.setInt(2, 6);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
 			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
