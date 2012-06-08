@@ -85,7 +85,7 @@ public class UltraBan extends JavaPlugin {
 		YamlConfiguration Config = (YamlConfiguration) getConfig();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		new File("plugins/UltraBan/").mkdir();
-		data.createDefaultConfiguration("config.yml"); //Swap for new setup
+		data.createDefaultConfiguration("config.yml");
 		this.autoComplete = Config.getBoolean("auto-complete", true);
 		loadCommands();
 		if (Config != null) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Configuration: config.yml Loaded!");
