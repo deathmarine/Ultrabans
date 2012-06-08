@@ -271,19 +271,19 @@ public class UltraBanPlayerListener implements Listener{
 			String mode = config.getString("Chat.SwearCensor.Blocking");
 			if(mode == null) mode = "";
 			boolean valid = false;
-			
 			for (int i=0; i<string.length; i++){
 				if(message.contains(string[i].trim())){
 					 if(mode.equalsIgnoreCase("%scramble%")){
-						event.setMessage(message.replaceAll(string[i].trim(), ChatColor.MAGIC + "AAAAA"));
+						message = message.replaceAll(string[i].trim(), ChatColor.MAGIC + "AAAAA");
 					 }else if(mode.equalsIgnoreCase("%replace%")){
-						event.setMessage(message.replaceAll(string[i].trim(), plugin.getServer().getIp()));
+						 message = message.replaceAll(string[i].trim(), plugin.getServer().getIp());
 					 }else{
-						 event.setMessage(message.replaceAll(string[i].trim(), mode));
+						 message = message.replaceAll(string[i].trim(), mode);
 					 }
 					 valid = true;
 				}
 			}
+			event.setMessage(message);
 			String result = config.getString("Chat.SwearCensor.Result");
 			if(valid && result != null){
 				if(result.equalsIgnoreCase("ban") || result.equalsIgnoreCase("kick") || result.equalsIgnoreCase("ipban") || result.equalsIgnoreCase("jail") || result.equalsIgnoreCase("warn")){
