@@ -31,16 +31,12 @@ public class Reload implements CommandExecutor{
 		}
 		
 		if (auth) {
-			log.log(Level.INFO, "[UltraBan] Unloading Ram.");
-			plugin.bannedPlayers.clear(); // Clear the HASHSET (RAM)
-			plugin.tempBans.clear();
-			plugin.bannedIPs.clear();
 			log.log(Level.INFO, "[UltraBan] Disabling Plugin.");
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			plugin.log.log(Level.SEVERE, "[UltraBan] Attempting Restart.");
 			plugin.getServer().getPluginManager().enablePlugin(plugin);
 			log.log(Level.INFO, "[UltraBan] " + admin + " reloaded the plugin.");
-			sender.sendMessage("§2Reloaded plugin.");
+			sender.sendMessage("§2[UltraBan] reloaded.");
 			plugin.reloadConfig();
 			return true;
 		}else{
