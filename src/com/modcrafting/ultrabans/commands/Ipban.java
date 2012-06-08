@@ -148,7 +148,7 @@ public class Ipban implements CommandExecutor{
 		plugin.bannedPlayers.add(p.toLowerCase());
 		plugin.bannedIPs.add(victimip);
 		plugin.db.addPlayer(p.toLowerCase(), reason, admin, 0, 1);
-		victim.kickPlayer(plugin.util.formatMessage(banMsgVictim));
+		if(victim != null && victim.isOnline()) victim.kickPlayer(plugin.util.formatMessage(banMsgVictim));
 		if(banMsgBroadcast != null){
 			if(broadcast){
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
