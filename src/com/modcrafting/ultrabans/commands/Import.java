@@ -10,8 +10,10 @@ package com.modcrafting.ultrabans.commands;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -22,8 +24,6 @@ import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Import implements CommandExecutor{
-
-	public static final Logger log = Logger.getLogger("Minecraft");
 	boolean server = false;
 	UltraBan plugin;
 	String permission = "ultraban.import";
@@ -51,22 +51,37 @@ public class Import implements CommandExecutor{
 			@Override
 			public void run() {
 			if(!server){
-			sender.sendMessage(ChatColor.GRAY + "[UltraBan] Be patient. Loading");
-			sender.sendMessage(ChatColor.GRAY + "[UltraBan] Depending on size of list may lag the server for a moment.");
+			sender.sendMessage(ChatColor.GRAY + "Be patient. Loading");
+			sender.sendMessage(ChatColor.GRAY + "Depending on size of list may lag the server for a moment.");
 			}
-			plugin.log.log(Level.INFO, "[UltraBan] Be patient. Loading.");
-			plugin.log.log(Level.INFO, "[UltraBan] Depending on size of list may lag the server for a moment.");
+			plugin.getLogger().log(Level.INFO, "Be patient. Loading.");
+			plugin.getLogger().log(Level.INFO, "Depending on size of list may lag the server for a moment.");
 		try {
 			BufferedReader banlist = new BufferedReader(new FileReader("banned-players.txt"));
 			String p;
-			
+			//I think Mojang took my ideas and improved on them.
 			while ((p = banlist.readLine()) != null){
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+				String[] arg = p.split("|");
+				if(arg.length>0){
+					Date date = format.parse(arg[1]);
+					int type = 0;
+					long temptime = 0;
+					if(!arg[3].trim().contains("Forever")){
+						temptime = format.parse(arg[3].trim()).getTime()/1000;
+						type = 1;
+					}
+				    long sec = date.getTime()/1000;
+					plugin.db.importPlayer(arg[0].trim(), arg[4].trim(), arg[2].trim(), temptime, sec, type);
+						
+				}else{
 					if(!plugin.bannedPlayers.contains(p.toLowerCase())){
 						plugin.db.addPlayer(p.toLowerCase(), "imported", "system", 0, 0);
 						plugin.bannedPlayers.add(p.toLowerCase());
-						
+							
 					}
-				  }
+				}
+			}
 			BufferedReader bannedIP = new BufferedReader(new FileReader("banned-ips.txt"));
 			String ip;
 			
@@ -85,13 +100,15 @@ public class Import implements CommandExecutor{
 				  }
 			
 			sender.sendMessage(ChatColor.GREEN + "Banlist imported.");
-			plugin.log.log(Level.INFO,"[UltraBan] " + "system" + " imported the banlist to the database.");
+			plugin.getLogger().log(Level.INFO,"System imported the banlist to the database.");
 			
 			return;
 			
 		} catch (IOException e) {
-			plugin.log.log(Level.SEVERE, "[Ultrabans] could not import ban list.");
+			plugin.getLogger().log(Level.SEVERE, "Could not import ban list.");
 			sender.sendMessage(ChatColor.RED + "Could not import ban list.");
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
 			}
 			});

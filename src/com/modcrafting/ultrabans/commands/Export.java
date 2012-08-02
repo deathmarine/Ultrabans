@@ -10,6 +10,8 @@ package com.modcrafting.ultrabans.commands;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +49,7 @@ public class Export implements CommandExecutor{
 						BufferedWriter banlist = new BufferedWriter(new FileWriter("banned-players.txt",true));
 						for(String p : plugin.bannedPlayers){
 							banlist.newLine();
-							banlist.write(p);
+							banlist.write(g(p));
 						}
 						banlist.close();
 						BufferedWriter iplist = new BufferedWriter(new FileWriter("banned-ips.txt",true));
@@ -73,5 +75,27 @@ public class Export implements CommandExecutor{
 			return true;
 		}
 	}
+	//Thanks jeb_
+	public String g(String player) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+		Date now = new Date();
+		now.setTime(System.currentTimeMillis());
+	    StringBuilder localStringBuilder = new StringBuilder();
 
+	    localStringBuilder.append(player);
+	    localStringBuilder.append("|");
+	    localStringBuilder.append(format.format(now));
+	    localStringBuilder.append("|");
+	    String admin = plugin.db.getAdmin(player);
+	    if(admin.equalsIgnoreCase("")) admin = "Ultrabans";
+	    localStringBuilder.append(admin);
+	    localStringBuilder.append("|");
+	    localStringBuilder.append("Forever");
+	    localStringBuilder.append("|");
+	    String reason = plugin.db.getBanReason(player);
+	    if(reason.equalsIgnoreCase("")) reason = "Exported from Ultrabans";
+	    localStringBuilder.append(reason);
+
+	    return localStringBuilder.toString();
+	  }
 }

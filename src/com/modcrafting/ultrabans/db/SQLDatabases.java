@@ -384,6 +384,33 @@ public class SQLDatabases{
 				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
+	}public void importPlayer(String player, String reason, String admin, long tempTime , long time, int type){
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		String mysqlTable = Config.getString("mysql-table");
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			conn = getSQLConnection();
+			ps = conn.prepareStatement("INSERT INTO " + mysqlTable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
+			ps.setLong(5, tempTime);
+			ps.setString(1, player);
+			ps.setString(2, reason);
+			ps.setString(3, admin);
+			ps.setLong(4, time);
+			ps.setLong(6, type);
+			ps.executeUpdate();
+		} catch (SQLException ex) {
+			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+		} finally {
+			try {
+				if (ps != null)
+					ps.close();
+				if (conn != null)
+					conn.close();
+			} catch (SQLException ex) {
+				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+			}
+		}
 	}
 	public String getBanReason(String player) {
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
@@ -411,7 +438,7 @@ public class SQLDatabases{
 				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
-		return null;
+		return "";
 	}
 
 	public boolean matchAddress(String player, String ip) {
