@@ -32,8 +32,10 @@ import com.modcrafting.ultrabans.UltraBan;
 import com.modcrafting.ultrabans.util.EditBan;
 
 public class SQLDatabases{
-	static UltraBan plugin;
-	
+	UltraBan plugin;
+	public SQLDatabases(UltraBan instance){
+		plugin = instance;
+	}
 	public Connection getSQLConnection() {
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		String dataHandler = Config.getString("Database");

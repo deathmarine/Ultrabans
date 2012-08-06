@@ -58,8 +58,8 @@ import com.modcrafting.ultrabans.util.Formatting;
 import com.modcrafting.ultrabans.util.Jailtools;
 
 public class UltraBan extends JavaPlugin {
-	public final Logger log = Logger.getLogger("Minecraft");
-	public SQLDatabases db = new SQLDatabases();
+	public Logger log = this.getLogger();
+	public SQLDatabases db = new SQLDatabases(this);
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
 	public HashSet<String> jailed = new HashSet<String>();
