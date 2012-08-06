@@ -55,7 +55,7 @@ public class Export implements CommandExecutor{
 						BufferedWriter iplist = new BufferedWriter(new FileWriter("banned-ips.txt",true));
 						for(String p : plugin.bannedIPs){
 							iplist.newLine();
-							iplist.write(p);
+							iplist.write(g(p));
 						}
 						iplist.close();
 					}
@@ -87,7 +87,7 @@ public class Export implements CommandExecutor{
 	    localStringBuilder.append(format.format(now));
 	    localStringBuilder.append("|");
 	    String admin = plugin.db.getAdmin(player);
-	    if(admin.equalsIgnoreCase("")) admin = "Ultrabans";
+	    if(admin==null||admin.equalsIgnoreCase("")) admin = "Ultrabans";
 	    localStringBuilder.append(admin);
 	    localStringBuilder.append("|");
 	    localStringBuilder.append("Forever");

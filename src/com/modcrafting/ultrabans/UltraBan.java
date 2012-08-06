@@ -58,7 +58,7 @@ import com.modcrafting.ultrabans.util.Formatting;
 import com.modcrafting.ultrabans.util.Jailtools;
 
 public class UltraBan extends JavaPlugin {
-	public Logger log = this.getLogger();
+	public Logger log = null;
 	public SQLDatabases db = new SQLDatabases(this);
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
@@ -89,6 +89,7 @@ public class UltraBan extends JavaPlugin {
 		System.out.println("UltraBan disabled.");
 	}
 	public void onEnable() {
+		log = this.getLogger();
 		YamlConfiguration Config = (YamlConfiguration) getConfig();
 		PluginDescriptionFile pdfFile = this.getDescription();
 		new File("plugins/UltraBan/").mkdir();
