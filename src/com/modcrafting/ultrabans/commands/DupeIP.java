@@ -21,7 +21,7 @@ import com.modcrafting.ultrabans.UltraBan;
 public class DupeIP implements CommandExecutor{
 	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
-	String permission = "ultraban.checkip";
+	String permission = "ultraban.dupeip";
 	public DupeIP(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	

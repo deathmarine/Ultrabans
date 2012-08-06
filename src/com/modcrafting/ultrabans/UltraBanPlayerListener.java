@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -109,7 +110,7 @@ public class UltraBanPlayerListener implements Listener{
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		String ip = player.getAddress().getAddress().getHostAddress();
 		plugin.db.setAddress(player.getName().toLowerCase(), ip);
 		System.out.println("[UltraBan] Logged " + player.getName() + " connecting from ip:" + ip);
@@ -124,6 +125,31 @@ public class UltraBanPlayerListener implements Listener{
 		if(!plugin.db.matchAddress(player.getName(), ip)){
 			plugin.db.updateAddress(player.getName(), ip);
 		}
+		if(player.hasPermission("ultraban.override.dupeip")||!config.getBoolean("enableLoginDupeCheck", true)) return;
+		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
+
+			@Override
+			public void run() {
+				for(Player admin:plugin.getServer().getOnlinePlayers()){
+					if(!admin.hasPermission("ultraban.dupeip")) return;
+					String ip = plugin.db.getAddress(player.getName());
+					if(ip == null){
+						admin.sendMessage(ChatColor.RED + "Unable to view ip for " + player.getName() + " !");
+						return;
+					}
+					String sip = null;
+					OfflinePlayer[] pl = plugin.getServer().getOfflinePlayers();
+					for (int i=0; i<pl.length; i++){
+						sip = plugin.db.getAddress(pl[i].getName());
+				        if (sip != null && sip.equalsIgnoreCase(ip)){
+				        	if (!pl[i].getName().equalsIgnoreCase(player.getName())){
+				        		admin.sendMessage(ChatColor.GRAY + "Player: " + pl[i].getName() + " duplicates player: " + player.getName() + "!");
+				        	}
+				        }
+					}
+				}
+			}
+		});
 	}
 
 	@EventHandler(priority = EventPriority.LOW)

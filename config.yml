@@ -35,7 +35,7 @@ defReason: 'not sure'
 lockdown: false
 #Enabling dupePolicy will disallow duplicate IP connections#
 dupePolicy: false
-
+enableLoginDupeCheck: true
 serverSync:
   #This will set the server to sync the database if multiple servers are in place.#
   enable: false

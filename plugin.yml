@@ -1,5 +1,5 @@
 name: UltraBan
-version: 1.0.1
+version: 1.0.2
 website: http://modcrafting.com
 author: Deathmarine
 description: >
@@ -105,6 +105,7 @@ permissions:
       ultraban.unban: true
       ultraban.check: true
       ultraban.checkip: true
+      ultraban.dupeip: true
       ultraban.kick: true
       ultraban.kick.all: true
       ultraban.warn: true
@@ -214,6 +215,9 @@ permissions:
   ultraban.version:
     default: true
     description: Allows the user to view the version
+  ultraban.dupeip:
+    default: op
+    description: Allows the user to view the duplicate information
   ultraban.import:
     description: Allows the user to import a banlist
   ultraban.export:
@@ -246,3 +250,5 @@ permissions:
     description: Allows the Administration to override warn
   ultraban.override.lockdown:
     description: Allows the Administration to override lockdowns
+  ultraban.override.dupeip:
+    description: Allows the Administration to override dupe login check
