@@ -35,6 +35,7 @@ import com.modcrafting.ultrabans.commands.Fine;
 import com.modcrafting.ultrabans.commands.Help;
 import com.modcrafting.ultrabans.commands.History;
 import com.modcrafting.ultrabans.commands.Import;
+import com.modcrafting.ultrabans.commands.Inventory;
 import com.modcrafting.ultrabans.commands.Ipban;
 import com.modcrafting.ultrabans.commands.Jail;
 import com.modcrafting.ultrabans.commands.Kick;
@@ -45,6 +46,7 @@ import com.modcrafting.ultrabans.commands.Perma;
 import com.modcrafting.ultrabans.commands.Reload;
 import com.modcrafting.ultrabans.commands.Spawn;
 import com.modcrafting.ultrabans.commands.Starve;
+import com.modcrafting.ultrabans.commands.Status;
 import com.modcrafting.ultrabans.commands.Tempban;
 import com.modcrafting.ultrabans.commands.Tempipban;
 import com.modcrafting.ultrabans.commands.Tempjail;
@@ -157,6 +159,8 @@ public class UltraBan extends JavaPlugin {
 		getCommand("umute").setExecutor(new Mute(this));
 		getCommand("history").setExecutor(new History(this));
 		getCommand("pardon").setExecutor(new Pardon(this));
+		getCommand("invof").setExecutor(new Inventory(this));
+		getCommand("ustatus").setExecutor(new Status(this));
 	}
 }
 		

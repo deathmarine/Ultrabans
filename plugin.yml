@@ -91,6 +91,13 @@ commands:
     description: Shows current Ultrabans Version
     usage: /<command>
     aliases: [uv,uver]
+  ustatus:
+    description: Shows current Ultrabans Version
+    usage: /<command>
+    aliases: [ustat]
+  invof:
+    description: Shows current Ultrabans Version
+    usage: /<command>  
 permissions:
   ultraban.*:
     description: Allows the Administration to Full Control
@@ -122,6 +129,8 @@ permissions:
       ultraban.version: true
       ultraban.export: true
       ultraban.import: true
+      ultraban.status: true
+      ultraban.inv: true
   ultraban.override.*:
     description: Allows the Administration to Override Commands
     children:
@@ -222,6 +231,12 @@ permissions:
     description: Allows the user to import a banlist
   ultraban.export:
     description: Allows the user to export a banlist
+  ultraban.status:
+    default: op
+    description: Allows the user to check the status of the plugin.
+  ultraban.inv:
+    default: op
+    description: Allows the user to check the inventory of a player.
   ultraban.override.ban:
     description: Allows the Administration to override bans
   ultraban.override.ipban:
