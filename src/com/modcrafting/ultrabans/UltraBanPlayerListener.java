@@ -238,11 +238,12 @@ public class UltraBanPlayerListener implements Listener{
 		 //Block IP
 		 if(config.getBoolean("Chat.IPCheck.Enable", true)){
 			//127.0.0.1
-			String[] content = {"/",",","-","_","+","="};
+			String mes = message;
+			String[] content = {",","-","_","+","="};
 			for (int ii=0;ii<content.length;ii++){
-				if(message.contains(content[ii])) message = message.replaceAll(content[ii], "."); 									
+				if(message.contains(content[ii])) mes = message.replaceAll(content[ii], "."); 									
 			}
-			String[] ipcheck = message.split(" ");
+			String[] ipcheck = mes.split(" ");
 			String mode = config.getString("Chat.IPCheck.Blocking");
 			if(mode == null) mode = "";
 			boolean valid = false;
