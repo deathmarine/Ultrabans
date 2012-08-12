@@ -27,7 +27,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 public class UltraBanPlayerListener implements Listener{
-	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	String spamcheck = null;
 	int spamCount = 0;
