@@ -7,9 +7,6 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +17,6 @@ import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Kick implements CommandExecutor{
-	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	String permission = "ultraban.kick";
 	public Kick(UltraBan ultraBan) {
@@ -28,19 +24,15 @@ public class Kick implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		boolean auth = false;
 		boolean broadcast = true;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		String reason = config.getString("defReason", "not sure");
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
-		}else{
-			auth = true;
 		}
-		if (!auth){
+		if (!sender.hasPermission(permission)){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
@@ -64,17 +56,17 @@ public class Kick implements CommandExecutor{
 		}
 
 		if(p.equals("*")){
-			if (sender instanceof Player)
-				if(player.hasPermission("ultrabans.kick.all") || player.isOp()) auth = true;
-			log.log(Level.INFO, "[UltraBan] " + admin + " kicked Everyone Reason: " + reason);
-			Player[] pl = plugin.getServer().getOnlinePlayers();
-			for (int i=0; i<pl.length; i++){
-				if (pl[i] != player || !pl[i].hasPermission("ultraban.override.kick.all")){
-				String adminMsg = config.getString("messages.kickAllMsg", "Everyone has been kicked by %admin%. Reason: %reason%");
-				if(adminMsg.contains(plugin.regexAdmin)) adminMsg = adminMsg.replaceAll(plugin.regexAdmin, admin);
-				if(adminMsg.contains(plugin.regexReason)) adminMsg = adminMsg.replaceAll(plugin.regexReason, reason);
-				pl[i].kickPlayer(plugin.util.formatMessage(adminMsg));
+			if(sender.hasPermission("ultrabans.kick.all")){
+				plugin.getLogger().info(" " + admin + " kicked Everyone Reason: " + reason);
+				for (Player players:plugin.getServer().getOnlinePlayers()){
+					if (!players.hasPermission("ultraban.override.kick.all")){
+					String adminMsg = config.getString("messages.kickAllMsg", "Everyone has been kicked by %admin%. Reason: %reason%");
+					if(adminMsg.contains(plugin.regexAdmin)) adminMsg = adminMsg.replaceAll(plugin.regexAdmin, admin);
+					if(adminMsg.contains(plugin.regexReason)) adminMsg = adminMsg.replaceAll(plugin.regexReason, reason);
+					players.kickPlayer(plugin.util.formatMessage(adminMsg));
+					}
 				}
+				
 			}
 			return true;
 		}
@@ -114,7 +106,7 @@ public class Kick implements CommandExecutor{
 		victim.kickPlayer(plugin.util.formatMessage(adminMsg));		
 		
 		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 3);
-		log.log(Level.INFO, "[UltraBan] " + admin + " kicked player " + victim.getName() + ". Reason: " + reason);
+		plugin.getLogger().info(" " + admin + " kicked player " + victim.getName() + ". Reason: " + reason);
 		return true;
 	}
 }
