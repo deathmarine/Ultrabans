@@ -18,19 +18,16 @@ import com.modcrafting.ultrabans.UltraBan;
 
 public class Starve implements CommandExecutor{
 	UltraBan plugin;
-	String permission = "ultraban.starve";
 	public Starve(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		Player player = null;
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
-			player = (Player)sender;
-			admin = player.getName();
+			admin = sender.getName();
 		}
-		if (!sender.hasPermission(permission)){
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
@@ -48,7 +45,7 @@ public class Starve implements CommandExecutor{
 			}
 			if(victim.hasPermission( "ultraban.override.starve")){
 				sender.sendMessage(ChatColor.RED + "Your starve attempt has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player: " + player.getName() + " Attempted to starve you!");
+				victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to starve you!");
 				return true;
 			}
 		}else{

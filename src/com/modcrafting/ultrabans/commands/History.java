@@ -22,11 +22,11 @@ public class History implements CommandExecutor{
 	public History(UltraBan ultraBan) {
 		this.plugin = ultraBan;	
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		if (!sender.hasPermission(permission)){
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
-		}else{
+		}
 		if (args.length < 1) return false;
 		String p = args[0];
 		List<EditBan> bans = plugin.db.listRecent(p);
@@ -42,6 +42,5 @@ public class History implements CommandExecutor{
 			sender.sendMessage(ChatColor.RED + plugin.util.banType(ban.type) + ": " + ban.name + ChatColor.GRAY + " by " + ban.admin + " on " + dateStr.substring(4, 19) + " for " + ban.reason);
 		}
 		return true;
-		}
 	}
 }

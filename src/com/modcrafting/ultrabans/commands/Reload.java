@@ -15,12 +15,11 @@ import com.modcrafting.ultrabans.UltraBan;
 
 public class Reload implements CommandExecutor{
 	UltraBan plugin;
-	String permission = "ultraban.reload";
 	public Reload(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		if (sender.hasPermission(permission)) {
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if (sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))) {
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			plugin.getServer().getPluginManager().enablePlugin(plugin);
 			sender.sendMessage("§2[UltraBan] reloaded.");

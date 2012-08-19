@@ -36,13 +36,12 @@ public class UltraBanPlayerListener implements Listener{
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
 		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
-			System.out.println("banned player joined");
 			String reason = plugin.db.getBanReason(player.getName());
 			String admin = plugin.db.getAdmin(player.getName());
 			String banMsgBroadcast = config.getString("messages.LoginBan", "%admin% banned you from this server! Reason: %reason%!");
 			banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexReason, reason);
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, banMsgBroadcast);
+			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, banMsgBroadcast);
 		}
 		if(plugin.tempBans.get(player.getName().toLowerCase()) != null){
 			long tempTime = plugin.tempBans.get(player.getName().toLowerCase());

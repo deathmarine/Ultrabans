@@ -25,17 +25,15 @@ public class Import implements CommandExecutor{
 	public Import(UltraBan ultraBan) {
 	this.plugin = ultraBan;
 	}
-	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, String[] args) {
-    	if (sender.hasPermission(permission)){
+	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
-		}else{
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
-
+		}
+		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
 			@Override
 			public void run() {
 				sender.sendMessage(ChatColor.GRAY + "Be patient. Loading");
-				sender.sendMessage(ChatColor.GRAY + "Depending on size of list may lag the server for a moment.");
 				try {
 					BufferedReader banlist = new BufferedReader(new FileReader("banned-players.txt"));
 					String p;
@@ -46,14 +44,12 @@ public class Import implements CommandExecutor{
 					}
 					BufferedReader bannedIP = new BufferedReader(new FileReader("banned-ips.txt"));
 					String ip;
-					
 					while ((ip = bannedIP.readLine()) != null){
 						if(ip!=null&&!ip.contains("#")&&ip.length()>0){
 						    String[] args = ip.split("\\|");
 						    String name = args[0].trim();
-						    
-								if(!plugin.bannedIPs.contains(name))
-									plugin.bannedIPs.add(name);
+							if(!plugin.bannedIPs.contains(name))
+								plugin.bannedIPs.add(name);
 								String cknullIP = plugin.db.getName(name);
 								if (cknullIP != null){
 									plugin.db.addPlayer(plugin.db.getName(name), "imported", args[2].trim(), 0, 1);
@@ -62,10 +58,8 @@ public class Import implements CommandExecutor{
 									
 									plugin.db.addPlayer("import", "imported", args[2].trim(), 0, 1);
 								}
-							  }
-							
+							}
 						}
-					
 						sender.sendMessage(ChatColor.GREEN + "Banlist imported.");
 						plugin.getLogger().info("System imported the banlist to the database.");
 						return;
@@ -73,11 +67,9 @@ public class Import implements CommandExecutor{
 						plugin.getLogger().log(Level.SEVERE, "Could not import ban list.");
 						sender.sendMessage(ChatColor.RED + "Could not import ban list.");
 					}
-					}
-			});
-
+				}
+			});	
 		return true;
-		}
 	}
 
 	public void g(String line) {
@@ -88,7 +80,6 @@ public class Import implements CommandExecutor{
 	    long temp = 0;
 	    int type = 0;
 	    try {
-			//Date conversion = format.parse(args[1].trim());
 		    if(!args[3].trim().equalsIgnoreCase("Forever")){
 		    	temp=format.parse(args[3].trim()).getTime();
 		    }

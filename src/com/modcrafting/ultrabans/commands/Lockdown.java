@@ -11,26 +11,25 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Lockdown implements CommandExecutor {
 	UltraBan plugin;
-	String permission = "ultraban.lockdown";
 	public Lockdown(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		FileConfiguration config = plugin.getConfig();
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
 			admin = player.getName();
 		}
-		if (!sender.hasPermission(permission)){
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}

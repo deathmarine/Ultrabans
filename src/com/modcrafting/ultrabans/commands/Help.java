@@ -25,7 +25,7 @@ public class Help implements CommandExecutor{
 			try{
 				page = Integer.parseInt(args[0]);
 			}catch(NumberFormatException nfe){
-				//Dumb
+				page = 1;
 			}
 		}
 		sender.sendMessage(ChatColor.GRAY + "Ultrabans " + ChatColor.BLUE + "Required Info {}" + ChatColor.GREEN + " Optional ()" + ChatColor.RED + " Silent -s");
@@ -35,7 +35,8 @@ public class Help implements CommandExecutor{
 				String usage = (String) plugin.getDescription().getCommands().get(cmd).get("usage");
 				if(usage.contains("<command>")) usage = usage.replace("<command>", cmd);
 				if(sender.hasPermission("ultraban."+cmd)){
-					sender.sendMessage(ChatColor.GOLD+usage+": "+ChatColor.GRAY+(String) plugin.getDescription().getCommands().get(cmd).get("description"));
+					sender.sendMessage(ChatColor.GOLD+usage);
+					sender.sendMessage(ChatColor.GRAY+(String) plugin.getDescription().getCommands().get(cmd).get("description"));
 				}
 			}
 		}

@@ -12,23 +12,16 @@ public class Status implements CommandExecutor {
 	public Status(UltraBan instance){
 		plugin = instance;
 	}
-	@Override
-	public boolean onCommand(CommandSender sender, Command arg1, String arg2, String[] arg3) {
-		if(sender.hasPermission("ultraban.status")){
-			sender.sendMessage(ChatColor.BLUE+"===Status===");
-			sender.sendMessage(ChatColor.GRAY+"Currently Caching: "+
-					ChatColor.AQUA+String.valueOf(plugin.bannedPlayers.size())+" Bans");
-
-			sender.sendMessage(ChatColor.GRAY+"Currently Caching: "+
-					ChatColor.AQUA+String.valueOf(plugin.bannedIPs.size())+" IPBans");
-
-			sender.sendMessage(ChatColor.GRAY+"Currently Caching: "+
-					ChatColor.AQUA+String.valueOf(plugin.jailed.size())+" Jailed");
-			
-			sender.sendMessage(ChatColor.GRAY+"Estimated Usage: "+
-					ChatColor.AQUA+String.valueOf(plugin.bannedIPs.toString().getBytes().length+plugin.bannedPlayers.toString().getBytes().length)+
-					" bytes.");
+	public boolean onCommand(CommandSender sender, Command arg1, String label, String[] arg3) {
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
+			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			return true;
 		}
-		return false;
+		sender.sendMessage(ChatColor.BLUE+"===Status===");
+		sender.sendMessage(ChatColor.GRAY+"Currently Caching: "+ChatColor.AQUA+String.valueOf(plugin.bannedPlayers.size())+" Bans");
+		sender.sendMessage(ChatColor.GRAY+"Currently Caching: "+ChatColor.AQUA+String.valueOf(plugin.bannedIPs.size())+" IPBans");
+		sender.sendMessage(ChatColor.GRAY+"Currently Caching: "+ChatColor.AQUA+String.valueOf(plugin.jailed.size())+" Jailed");
+		sender.sendMessage(ChatColor.GRAY+"Estimated Usage: "+ChatColor.AQUA+String.valueOf(plugin.bannedIPs.toString().getBytes().length+plugin.bannedPlayers.toString().getBytes().length)+" bytes.");
+		return true;
 	}
 }

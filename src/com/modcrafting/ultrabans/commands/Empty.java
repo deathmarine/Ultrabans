@@ -18,23 +18,16 @@ import com.modcrafting.ultrabans.UltraBan;
 
 public class Empty implements CommandExecutor{
 	UltraBan plugin;
-	String permission = "ultraban.empty";
 	public Empty(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-    	boolean auth = false;
-		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
-			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
-			admin = player.getName();
-		}else{
-			auth = true;
+			admin = sender.getName();
 		}
-		if(!auth){
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}

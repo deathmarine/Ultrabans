@@ -17,18 +17,17 @@ import com.modcrafting.ultrabans.UltraBan;
 
 public class Version implements CommandExecutor{
 	UltraBan plugin;
-	String permission = "ultraban.version";
 	public Version(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {		
-		if(sender.hasPermission(permission)){
-			PluginDescriptionFile pdfFile = plugin.getDescription();
-			sender.sendMessage(ChatColor.BLUE + "Thank you " + sender.getName() + " for using:");
-			sender.sendMessage(ChatColor.GRAY + pdfFile.getName() + " version " + pdfFile.getVersion() + " by " + pdfFile.getAuthors());
-		}else{
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			return true;
 		}
+		PluginDescriptionFile pdfFile = plugin.getDescription();
+		sender.sendMessage(ChatColor.BLUE + "Thank you " + sender.getName() + " for using:");
+		sender.sendMessage(ChatColor.GRAY + pdfFile.getName() + " version " + pdfFile.getVersion() + " by " + pdfFile.getAuthors());
 		return true;
 	}
 	

@@ -16,23 +16,20 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import com.modcrafting.ultrabans.UltraBan;
 import com.modcrafting.ultrabans.util.EditBan;
 
 public class Edit implements CommandExecutor{
 	UltraBan plugin;
-	String permission = "ultraban.editban";
 	public Edit(UltraBan ultraBan){
 		this.plugin = ultraBan;
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(sender instanceof Player)
-			if(!((Player) sender).hasPermission(permission) || !((Player) sender).isOp()){
-				return true;
-			}
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
+			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			return true;
+		}
 		if(args.length < 1)
 			return false;
 

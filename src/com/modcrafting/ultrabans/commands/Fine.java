@@ -17,24 +17,20 @@ import com.modcrafting.ultrabans.UltraBan;
 
 public class Fine implements CommandExecutor{
 	UltraBan plugin;
-	String permission = "ultraban.fine";
 	public Fine(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean broadcast = true;
-		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
-			player = (Player)sender;
-			admin = player.getName();
+			admin = sender.getName();
 		}
-		if (!sender.hasPermission(permission)){
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
-		
 		if (args.length < 1) return false;
 		String p = args[0];
 		if(plugin.autoComplete) p = plugin.util.expandName(p); 
@@ -68,7 +64,7 @@ public class Fine implements CommandExecutor{
 		}
 		if(victim.hasPermission( "ultraban.override.fine")){
 			sender.sendMessage(ChatColor.RED + "Your fine has been denied! Player Notified!");
-			victim.sendMessage(ChatColor.RED + "Player: " + player.getName() + " Attempted to fine you!");
+			victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to fine you!");
 			return true;
 		}
 		
@@ -119,7 +115,7 @@ public class Fine implements CommandExecutor{
 			if(fineMsgAll != null) plugin.getServer().broadcastMessage(plugin.util.formatMessage(fineMsgAll));
 			return true;
 		}
-		plugin.getLogger().info(" " + admin + " fined player " + idoit + " amount of " + amt + ".");
+		plugin.getLogger().info(admin + " fined player " + idoit + " amount of " + amt + ".");
 		plugin.db.addPlayer(idoit, amt, admin, 0, 4);
 		return true;
 		

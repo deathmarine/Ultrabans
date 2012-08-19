@@ -17,12 +17,11 @@ import com.modcrafting.ultrabans.UltraBan;
 
 public class Perma implements CommandExecutor{
 	UltraBan plugin;
-	String permission = "ultraban.permaban";
 	public Perma(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean broadcast = true;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
@@ -31,7 +30,7 @@ public class Perma implements CommandExecutor{
 			player = (Player)sender;
 			admin = player.getName();
 		}
-		if (!sender.hasPermission(permission)){
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}

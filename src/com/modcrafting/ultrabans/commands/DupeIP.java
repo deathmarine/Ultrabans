@@ -12,30 +12,18 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import com.modcrafting.ultrabans.UltraBan;
 
 public class DupeIP implements CommandExecutor{
 	UltraBan plugin;
-	String permission = "ultraban.dupeip";
 	public DupeIP(UltraBan ultraBan) {
 		this.plugin = ultraBan;
-	
 	}
-	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, final String[] args) {
-		boolean auth = false;
-		Player player = null;
-		if (sender instanceof Player){
-			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
-		}else{
-			auth = true;
-		}
-		if (!auth){
+	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
-		}else{
+		}
 		if (args.length < 1) return false;
 		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
 
@@ -64,6 +52,5 @@ public class DupeIP implements CommandExecutor{
 			}
 		});
 		return true;
-		}
 	}
 }

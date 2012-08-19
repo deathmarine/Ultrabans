@@ -15,28 +15,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-
 import com.modcrafting.ultrabans.UltraBan;
 
 public class CheckIP implements CommandExecutor{
-	String permission = "ultraban.checkip";
 	UltraBan plugin;
 	public CheckIP(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, final String[] args) {
-		final YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		boolean auth = false;
-		Player player = null;
-		if (sender instanceof Player){
-			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
-		}else{
-			auth = true; //if sender is not a player - Console
-		}
-		if (!auth){
+	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
@@ -59,7 +46,7 @@ public class CheckIP implements CommandExecutor{
 			sender.sendMessage(ChatColor.YELLOW + "Connection: " + InetP.getCanonicalHostName());
 			
 			try {
-				boolean ping = InetP.isReachable(config.getInt("HostTimeOut", 1800));
+				boolean ping = InetP.isReachable(1800);
 				if (ping){
 					sender.sendMessage(ChatColor.GREEN + "Ping Test Passed.");
 				}else{

@@ -19,25 +19,14 @@ import com.modcrafting.ultrabans.util.EditBan;
 
 public class Check implements CommandExecutor{
 	UltraBan plugin;
-	String permission = "ultraban.check";
-	
 	public Check(UltraBan ultraBan) {
 		this.plugin = ultraBan;
-	
 	}
-	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		boolean auth = false;
-		Player player = null;
-		if (sender instanceof Player){
-			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
-		}else{
-			auth = true;
-		}
-		if (!auth){
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
-		}else{
+		}
 		if (args.length < 1) return false;
 		String p = args[0];
 		
@@ -62,6 +51,6 @@ public class Check implements CommandExecutor{
 			sender.sendMessage(ChatColor.RED + plugin.util.banType(ban.type) + ChatColor.GRAY + ban.id + ": " + ChatColor.GREEN + ban.reason + ChatColor.AQUA +" by " + ban.admin);
 		}
 		return true;
-		}
 	}
+	
 }

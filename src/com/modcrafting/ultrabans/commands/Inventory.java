@@ -15,19 +15,19 @@ public class Inventory implements CommandExecutor{
 		plugin = instance;
 	}
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String lb, String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
+			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			return true;
+		}
 		if(sender instanceof Player){
-			if(sender.hasPermission("ultraban.inv")){
-				if(args.length<1)return false;
-				OfflinePlayer victim = plugin.getServer().getOfflinePlayer(args[0]);
-				if(victim==null){
-					sender.sendMessage(ChatColor.RED+"Unable to find player");
-					return true;
-				}
-				((Player)sender).openInventory(victim.getPlayer().getInventory());
-			}else{
-				sender.sendMessage(ChatColor.RED+"You do not have the nessecary permissions.");
+			if(args.length<1)return false;
+			OfflinePlayer victim = plugin.getServer().getOfflinePlayer(args[0]);
+			if(victim==null){
+				sender.sendMessage(ChatColor.RED+"Unable to find player");
+				return true;
 			}
+			((Player)sender).openInventory(victim.getPlayer().getInventory());			
 		}else{
 			sender.sendMessage("This command must be executed by a player.");
 		}
