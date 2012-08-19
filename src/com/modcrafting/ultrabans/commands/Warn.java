@@ -7,9 +7,6 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +17,6 @@ import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Warn implements CommandExecutor{
-	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	String permission = "ultraban.warn";
 	public Warn(UltraBan ultraBan) {
@@ -112,7 +108,7 @@ public class Warn implements CommandExecutor{
 			}
 			
 			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 2);
-			log.log(Level.INFO, "[UltraBan] " + admin + " warned player " + victim.getName() + ".");
+			plugin.getLogger().info(admin + " warned player " + victim.getName() + ".");
 			String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
 			warnMsgBroadcast = warnMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			warnMsgBroadcast = warnMsgBroadcast.replaceAll(plugin.regexReason, reason);
@@ -145,7 +141,7 @@ public class Warn implements CommandExecutor{
 				}
 			}
 			plugin.db.addPlayer(p, reason, admin, 0, 2);
-			log.log(Level.INFO, "[UltraBan] " + admin + " warned player " + p + ".");
+			plugin.getLogger().info(admin + " warned player " + p + ".");
 			if(broadcast){ 
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(warnMsgBroadcast));
 				return true;

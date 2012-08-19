@@ -11,8 +11,6 @@ package com.modcrafting.ultrabans.commands;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,13 +21,10 @@ import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 
 public class CheckIP implements CommandExecutor{
-	public static final Logger log = Logger.getLogger("Minecraft");
 	String permission = "ultraban.checkip";
 	UltraBan plugin;
-	
 	public CheckIP(UltraBan ultraBan) {
 		this.plugin = ultraBan;
-	
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String commandLabel, final String[] args) {
 		final YamlConfiguration config = (YamlConfiguration) plugin.getConfig();

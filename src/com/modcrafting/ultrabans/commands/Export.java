@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,7 +22,6 @@ import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Export implements CommandExecutor{
-	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	String permission = "ultraban.export";
 	public Export(UltraBan ultraBan) {
@@ -61,7 +58,7 @@ public class Export implements CommandExecutor{
 					}
 					catch(IOException e)          
 					{
-						plugin.log.log(Level.SEVERE,"UltraBan: Couldn't write to banned-players.txt");
+						plugin.getLogger().log(Level.SEVERE,"UltraBan: Couldn't write to banned-players.txt");
 					}
 					sender.sendMessage("§2Exported banlist to banned-players.txt.");
 					sender.sendMessage("§2Exported iplist to banned-ips.txt.");

@@ -14,13 +14,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -60,8 +56,6 @@ import com.modcrafting.ultrabans.util.Formatting;
 import com.modcrafting.ultrabans.util.Jailtools;
 
 public class UltraBan extends JavaPlugin {
-	public Logger log = null;
-	public SQLDatabases db = new SQLDatabases(this);
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
 	public HashSet<String> jailed = new HashSet<String>();
@@ -69,11 +63,12 @@ public class UltraBan extends JavaPlugin {
 	public Map<String, Long> tempBans = new HashMap<String, Long>();
 	public Map<String, Long> tempJail = new HashMap<String, Long>();
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
-	private final UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
-	private final UltraBanBlockListener blockListener = new UltraBanBlockListener(this);
+	private UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
+	private UltraBanBlockListener blockListener = new UltraBanBlockListener(this);
 	public DataHandler data = new DataHandler(this);
 	public Formatting util = new Formatting(this);
 	public Jailtools jail = new Jailtools(this);
+	public SQLDatabases db = new SQLDatabases(this);
 	public net.milkbowl.vault.economy.Economy economy = null;
 	public boolean autoComplete;
 	public String regexAdmin = "%admin%";
@@ -88,17 +83,13 @@ public class UltraBan extends JavaPlugin {
 		jailed.clear();
 		muted.clear();
 		banEditors.clear();
-		System.out.println("UltraBan disabled.");
 	}
 	public void onEnable() {
-		log = this.getLogger();
 		YamlConfiguration Config = (YamlConfiguration) getConfig();
-		PluginDescriptionFile pdfFile = this.getDescription();
 		new File("plugins/UltraBan/").mkdir();
 		data.createDefaultConfiguration("config.yml");
 		this.autoComplete = Config.getBoolean("auto-complete", true);
-		loadCommands();
-		if (Config != null) log.log(Level.INFO, "[" + pdfFile.getName() + "]" + " Configuration: config.yml Loaded!");
+		if (Config != null) this.getLogger().info("Configuration: config.yml Loaded!");
 		db.initialize(this);
 		db.loadJailed();
 		PluginManager pm = getServer().getPluginManager();
@@ -121,10 +112,8 @@ public class UltraBan extends JavaPlugin {
 				System.out.println("UltraBans Sync is Enabled!");
 			}
 			
-		}, Config.getLong("serverSync.timing", 72000L), Config.getLong("serverSync.timing", 72000L));
-		//	(60 Seconds*60 Minutes)*convert20=72000L=1 Hour 		72000L/convert20/60 Seconds/60 Minutes = 1 Hour
-		log.log(Level.INFO,"[" + pdfFile.getName() + "]" + " version " + pdfFile.getVersion() + " has been initialized!" );
-		
+		}, Config.getLong("serverSync.timing", 72000L), Config.getLong("serverSync.timing", 72000L));	
+		loadCommands();	
 	}
 	public boolean setupEconomy(){
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);

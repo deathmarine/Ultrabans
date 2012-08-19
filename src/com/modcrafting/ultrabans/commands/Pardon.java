@@ -25,17 +25,13 @@ public class Pardon implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		boolean auth = false;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
-		}else{
-			auth = true; //if sender is not a player - Console
 		}
-		if(!auth){
+		if (!sender.hasPermission(permission)){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}

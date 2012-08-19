@@ -7,8 +7,6 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -20,7 +18,6 @@ import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Unban implements CommandExecutor{
-	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	String permission = "ultraban.unban";
 	public Unban(UltraBan ultraBan) {
@@ -28,18 +25,11 @@ public class Unban implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		boolean auth = false;
-		Player player = null;
 		String admin = config.getString("defAdminName", "server");
-		
 		if (sender instanceof Player){
-			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
-			admin = player.getName();
-		}else{
-			auth = true; //if sender is not a player - Console
+			admin = sender.getName();
 		}
-		if (!auth){
+		if (!sender.hasPermission(permission)){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
@@ -55,7 +45,7 @@ public class Unban implements CommandExecutor{
 				String reason = plugin.db.getBanReason(plugin.getServer().getOfflinePlayer(pname).getName());
 				plugin.db.removeFromBanlist(plugin.getServer().getOfflinePlayer(pname).getName());
 				plugin.db.addPlayer(plugin.getServer().getOfflinePlayer(p).getName(), "Unbanned: " + reason, admin, 0, 5);
-				log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");				
+				plugin.getLogger().info(admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");				
 			}else{
 				plugin.db.removeFromBanlist(pname);			
 			}
@@ -68,7 +58,7 @@ public class Unban implements CommandExecutor{
 		
 		if(plugin.db.permaBan(p.toLowerCase())){
 			sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is PermaBanned.");
-			log.log(Level.INFO, "[UltraBan] " + p + " is PermaBanned.");
+			plugin.getLogger().info(p + " is PermaBanned.");
 			return true;
 		}
 
@@ -84,7 +74,7 @@ public class Unban implements CommandExecutor{
 				System.out.println("Also removed the IP ban!");
 			}
 			plugin.db.addPlayer(plugin.getServer().getOfflinePlayer(p).getName(), "Unbanned: " + reason, admin, 0, 5);
-			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");
+			plugin.getLogger().info(admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexVictim, plugin.getServer().getOfflinePlayer(p).getName());
@@ -102,7 +92,7 @@ public class Unban implements CommandExecutor{
 				System.out.println("Also removed the IP ban!");
 			}
 			plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
-			log.log(Level.INFO, "[UltraBan] " + admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");
+			plugin.getLogger().info(admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");
 			String unbanMsgBroadcast = config.getString("messages.unbanMsgBroadcast", "%victim% was unbanned by %admin%!");
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			unbanMsgBroadcast = unbanMsgBroadcast.replaceAll(plugin.regexVictim, plugin.getServer().getOfflinePlayer(p).getName());

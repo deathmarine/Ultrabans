@@ -8,7 +8,6 @@
 package com.modcrafting.ultrabans;
 
 import java.util.Date;
-import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -100,7 +99,7 @@ public class UltraBanPlayerListener implements Listener{
 			if(player.hasPermission("ultraban.override.lockdown") || player.isOp()) auth = true;
 			
 			if (!auth) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
-			plugin.log.log(Level.INFO,"[UltraBan] " + player.getName() + " attempted to join during lockdown.");
+			plugin.getLogger().info(player.getName() + " attempted to join during lockdown.");
 		}
 	}
 
@@ -110,11 +109,11 @@ public class UltraBanPlayerListener implements Listener{
 		final Player player = event.getPlayer();
 		String ip = player.getAddress().getAddress().getHostAddress();
 		plugin.db.setAddress(player.getName().toLowerCase(), ip);
-		System.out.println("[UltraBan] Logged " + player.getName() + " connecting from ip:" + ip);
+		plugin.getLogger().info("Logged " + player.getName() + " connecting from ip:" + ip);
 		
 		
 		if(plugin.bannedIPs.contains(ip)){
-			System.out.println("[UltraBan] Banned player attempted Login!");
+			plugin.getLogger().info("Banned player attempted Login!");
 			event.setJoinMessage(null);
 			String adminMsg = config.getString("messages.LoginIPBan", "Your IP is banned!");
 			player.kickPlayer(adminMsg);

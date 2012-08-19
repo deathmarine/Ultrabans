@@ -20,11 +20,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 public class UltraBanBlockListener implements Listener {
-	public static UltraBan plugin;
+	UltraBan plugin;
 	public UltraBanBlockListener(UltraBan instance) {
-	plugin = instance;
+		plugin = instance;
 	}
-
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBlockPlace(BlockPlaceEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();

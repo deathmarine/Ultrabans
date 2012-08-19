@@ -7,38 +7,30 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Lockdown implements CommandExecutor {
-	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	String permission = "ultraban.lockdown";
 	public Lockdown(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		boolean auth = false;
+		FileConfiguration config = plugin.getConfig();
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
-		}else{
-			auth = true; //if sender is not a player - Console
 		}
-		if (!auth){
+		if (!sender.hasPermission(permission)){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
@@ -50,7 +42,7 @@ public class Lockdown implements CommandExecutor {
 			if(!lock){ 
 				lockdownOn();
 				sender.sendMessage(ChatColor.GRAY + "Lockdown initiated.PlayerLogin disabled.");
-				plugin.log.log(Level.INFO, admin + " initiated lockdown.");
+				plugin.getLogger().info(admin + " initiated lockdown.");
 			}
 			if(lock) sender.sendMessage(ChatColor.GRAY + "Lockdown already initiated.PlayerLogin disabled.");
 			return true;
@@ -59,7 +51,7 @@ public class Lockdown implements CommandExecutor {
 			if(lock){
 				lockdownEnd();
 				sender.sendMessage(ChatColor.GRAY + "Lockdown ended.PlayerLogin reenabled.");
-				plugin.log.log(Level.INFO, admin + " disabled lockdown.");
+				plugin.getLogger().info(admin + " disabled lockdown.");
 			}
 			if(!lock) sender.sendMessage(ChatColor.GRAY + "Lockdown already ended / never initiated.");
 			return true;
@@ -72,15 +64,13 @@ public class Lockdown implements CommandExecutor {
 		
 		return false;
 	}
-	public void lockdownOn() {
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-        config.set("lockdown", (boolean) true);
+	public void lockdownOn(){
+		plugin.getConfig().set("lockdown", (boolean) true);
         plugin.saveConfig();
 
     }
-	public void lockdownEnd() {
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-        config.set("lockdown", (boolean) false);
+	public void lockdownEnd(){
+		plugin.getConfig().set("lockdown",false);
         plugin.saveConfig();
 
     }

@@ -14,7 +14,6 @@ public class Inventory implements CommandExecutor{
 	public Inventory(UltraBan instance){
 		plugin = instance;
 	}
-	//Attempting to condense more.
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String lb, String[] args) {
 		if(sender instanceof Player){
@@ -26,13 +25,13 @@ public class Inventory implements CommandExecutor{
 					return true;
 				}
 				((Player)sender).openInventory(victim.getPlayer().getInventory());
-				return true;
 			}else{
 				sender.sendMessage(ChatColor.RED+"You do not have the nessecary permissions.");
-				return true;
 			}
+		}else{
+			sender.sendMessage("This command must be executed by a player.");
 		}
-		return false;
+		return true;
 	}
 
 }

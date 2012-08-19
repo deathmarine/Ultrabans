@@ -7,8 +7,6 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -21,8 +19,6 @@ import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Jail implements CommandExecutor{
-
-	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	String permission = "ultraban.jail";
 	public World world;
@@ -38,19 +34,19 @@ public class Jail implements CommandExecutor{
 		}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		boolean auth = false;
+		boolean broadcast = true;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		String reason = config.getString("defReason", "not sure");
-		boolean broadcast = true;
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
-		}else{
-			auth = true;
 		}
-		if(auth){
+		if (!sender.hasPermission(permission)){
+			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			return true;
+		}
+		if(player.hasPermission(permission)){
 			if (args.length < 1) return false;
 			if(args[0].equalsIgnoreCase("setjail")){
 				this.setlp = player.getLocation();
@@ -132,7 +128,7 @@ public class Jail implements CommandExecutor{
 				return true;
 			}
 		}
-		return false;
+		return true;
 	}
 
 }

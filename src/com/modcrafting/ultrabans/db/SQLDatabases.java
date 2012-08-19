@@ -47,8 +47,7 @@ public class SQLDatabases{
 
 				return DriverManager.getConnection(mysqlDatabase + "?autoReconnect=true&user=" + mysqlUser + "&password=" + mysqlPassword);
 			} catch (SQLException ex) {
-			
-				plugin.log.log(Level.SEVERE, "Unable to retreive connection", ex);
+				plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
 			}
 			return null;
 		}
@@ -60,29 +59,22 @@ public class SQLDatabases{
 			if (!dataFolder.exists()){
 				try {
 					dataFolder.createNewFile();
-					Class.forName("org.sqlite.JDBC");
-		            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
-		            Statement st = conn.createStatement();
-	        		st.execute(this.SQLiteCreateBansTable);
-	        		st.execute(this.SQLiteCreateBanipTable);
-	        		return conn;
 				} catch (IOException ex) {
-					plugin.log.log(Level.SEVERE, "File write error: " + dbname);
-				} catch (SQLException ex) {
-			            plugin.log.log(Level.SEVERE,"SQLite exception on initialize", ex);
-			    } catch (ClassNotFoundException ex) {
-			        	plugin.log.log(Level.SEVERE, "You need the SQLite JBDC library. Google it. Put it in /lib folder.");
-			    }
+					plugin.getLogger().log(Level.SEVERE, "File write error: " + dbname);
+				} 
 			}
 			try {
 	            Class.forName("org.sqlite.JDBC");
 	            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
-	            return conn;
+	            Statement st = conn.createStatement();
+        		st.execute(this.SQLiteCreateBansTable);
+        		st.execute(this.SQLiteCreateBanipTable);
+        		return conn;
         		
 	        } catch (SQLException ex) {
-	            plugin.log.log(Level.SEVERE,"SQLite exception on initialize", ex);
+	            plugin.getLogger().log(Level.SEVERE,"SQLite exception on initialize", ex);
 	        } catch (ClassNotFoundException ex) {
-	        	plugin.log.log(Level.SEVERE, "You need the SQLite library.", ex);
+	        	plugin.getLogger().log(Level.SEVERE, "You need the SQLite library.", ex);
 	        }
 	    }
 		return null;
@@ -126,8 +118,8 @@ public class SQLDatabases{
 		
 		
 		if (conn == null) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Could not establish SQL connection. Disabling UltraBan");
-			plugin.log.log(Level.SEVERE, "[UltraBan] Adjust Settings in Config or set MySql: False");
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Could not establish SQL connection. Disabling UltraBan");
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Adjust Settings in Config or set MySql: False");
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			return;
 		} else {
@@ -148,13 +140,13 @@ public class SQLDatabases{
 		            		st.execute(this.SQLCreateBansTable);
 		            		st.execute(this.SQLCreateBanipTable);
 		            		conn.commit();
-		            		plugin.log.log(Level.INFO, "[UltraBan]: Table " + mysqlTable + " created.");
-		            		plugin.log.log(Level.INFO, "[UltraBan]: Table " + logip + " created.");
+		            		plugin.getLogger().log(Level.INFO, "[UltraBan]: Table " + mysqlTable + " created.");
+		            		plugin.getLogger().log(Level.INFO, "[UltraBan]: Table " + logip + " created.");
 		            	}
 		            	rs = ps.executeQuery();
 							            
 				} catch (SQLException ex) {
-					plugin.log.log(Level.SEVERE, "[UltraBan] Database Error: No Table Found");
+					plugin.getLogger().log(Level.SEVERE, "[UltraBan] Database Error: No Table Found");
                 }
 				
 				try {
@@ -172,14 +164,14 @@ public class SQLDatabases{
 						}
 					}
 				}catch (NullPointerException ex){
-					plugin.log.log(Level.SEVERE, "[UltraBan] Detected Major issues with database.");
+					plugin.getLogger().log(Level.SEVERE, "[UltraBan] Detected Major issues with database.");
 					plugin.getServer().getPluginManager().disablePlugin(plugin);
-					plugin.log.log(Level.SEVERE, "[UltraBan] Attempting Restart.");
+					plugin.getLogger().log(Level.SEVERE, "[UltraBan] Attempting Restart.");
 					plugin.getServer().getPluginManager().enablePlugin(plugin);
 					return;
 				}
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 				return;
 			} finally {
 				try {
@@ -190,7 +182,7 @@ public class SQLDatabases{
 					if (conn != null)
 						conn.close();
 				} catch (SQLException ex) {
-					plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+					plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 				}
 			}	
 
@@ -199,7 +191,7 @@ public class SQLDatabases{
 					return;
 				}
 				conn.close();
-				plugin.log.log(Level.INFO, "[UltraBan] Initialized db connection" );
+				plugin.getLogger().log(Level.INFO, "[UltraBan] Initialized db connection" );
 			} catch (SQLException e) {
 				e.printStackTrace();
 				plugin.getServer().getPluginManager().disablePlugin(plugin);
@@ -220,7 +212,7 @@ public class SQLDatabases{
 			ps.setString(2, logIp);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -228,7 +220,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 	}
@@ -248,7 +240,7 @@ public class SQLDatabases{
 				return ip;
 			}
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -258,7 +250,7 @@ public class SQLDatabases{
 				if (rs != null)
 					rs.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return null;
@@ -279,7 +271,7 @@ public class SQLDatabases{
 				return name;
 			}
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't find player.");
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't find player.");
 		} finally {
 			try {
 				if (ps != null)
@@ -289,7 +281,7 @@ public class SQLDatabases{
 				if (rs != null)
 					rs.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return null;
@@ -314,7 +306,7 @@ public class SQLDatabases{
 			}
 			ps.executeUpdate();
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 			return false;
 		} finally {
 			try {
@@ -323,7 +315,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return true;
@@ -344,7 +336,7 @@ public class SQLDatabases{
 				}
 			}
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 			return false;
 		} finally {
 			try {
@@ -353,7 +345,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 				return false;
 			}
 		}
@@ -375,7 +367,7 @@ public class SQLDatabases{
 			ps.setLong(6, type);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -383,7 +375,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 	}public void importPlayer(String player, String reason, String admin, long tempTime , long time, int type){
@@ -402,7 +394,7 @@ public class SQLDatabases{
 			ps.setLong(6, type);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -410,7 +402,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 	}
@@ -429,7 +421,7 @@ public class SQLDatabases{
 				return reason;
 			}
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -437,7 +429,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return "";
@@ -459,7 +451,7 @@ public class SQLDatabases{
 				return true;
 			}
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -469,7 +461,7 @@ public class SQLDatabases{
 				if (rs != null)
 					rs.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return false;
@@ -487,7 +479,7 @@ public class SQLDatabases{
 			ps.setString(2, p);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -495,7 +487,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 	}
@@ -514,7 +506,7 @@ public class SQLDatabases{
 			}
 			return bans;
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -524,7 +516,7 @@ public class SQLDatabases{
 				if (rs != null)
 					rs.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return null;
@@ -545,7 +537,7 @@ public class SQLDatabases{
 			}
 			return bans;
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -555,7 +547,7 @@ public class SQLDatabases{
 				if (rs != null)
 					rs.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return null;
@@ -573,7 +565,7 @@ public class SQLDatabases{
 				return new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
 			}
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -583,7 +575,7 @@ public class SQLDatabases{
 				if (rs != null)
 					rs.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return null;
@@ -604,7 +596,7 @@ public class SQLDatabases{
 			}
 			return bans;
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -614,7 +606,7 @@ public class SQLDatabases{
 				if (rs != null)
 					rs.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return null;
@@ -632,7 +624,7 @@ public class SQLDatabases{
 				return new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
 			}
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -642,7 +634,7 @@ public class SQLDatabases{
 				if (rs != null)
 					rs.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return null;
@@ -665,7 +657,7 @@ public class SQLDatabases{
 			ps.setInt(7, ban.id);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -673,7 +665,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 	}
@@ -730,7 +722,7 @@ public class SQLDatabases{
 			}
 			ps.executeUpdate();
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 			return false;
 		} finally {
 			try {
@@ -739,7 +731,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return true;
@@ -760,7 +752,7 @@ public class SQLDatabases{
 				return reason;
 			}
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -768,7 +760,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return null;
@@ -792,7 +784,7 @@ public class SQLDatabases{
 				}
 			}
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -800,7 +792,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 	}
@@ -820,7 +812,7 @@ public class SQLDatabases{
 				return admin;
 			}
 		} catch (SQLException ex) {
-			plugin.log.log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
 		} finally {
 			try {
 				if (ps != null)
@@ -828,7 +820,7 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.log.log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
 		return null;

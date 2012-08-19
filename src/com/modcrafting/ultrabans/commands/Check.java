@@ -8,8 +8,6 @@
 package com.modcrafting.ultrabans.commands;
 
 import java.util.List;
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +18,6 @@ import com.modcrafting.ultrabans.UltraBan;
 import com.modcrafting.ultrabans.util.EditBan;
 
 public class Check implements CommandExecutor{
-	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	String permission = "ultraban.check";
 	

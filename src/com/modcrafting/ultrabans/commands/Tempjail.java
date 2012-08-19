@@ -7,9 +7,6 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +17,6 @@ import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Tempjail implements CommandExecutor{
-	public static final Logger log = Logger.getLogger("Minecraft");
 	UltraBan plugin;
 	String permission = "ultraban.tempjail";
 	public Tempjail(UltraBan ultraBan) {
@@ -28,25 +24,19 @@ public class Tempjail implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		boolean auth = false;
 		boolean broadcast = true;
-		Player player = null;
-		String reason = config.getString("defReason", "not sure");
 		String admin = config.getString("defAdminName", "server");
+		String reason = config.getString("defReason", "not sure");
 		if (sender instanceof Player){
-			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
-			admin = player.getName();
-		}else{
-			auth = true; //if sender is not a player - Console
+			admin = sender.getName();
 		}
-		if (!auth){
+		if (!sender.hasPermission(permission)){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
 		if (args.length < 3) return false;
 
-		String p = args[0]; // Get the victim's potential name
+		String p = args[0];
 		
 		if(plugin.autoComplete) p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
@@ -67,8 +57,7 @@ public class Tempjail implements CommandExecutor{
 			}
 		}
 		if(tempTime == 0) return false;
-		long temp = System.currentTimeMillis()/1000+tempTime; //epoch time
-		//Separate for Online-Offline
+		long temp = System.currentTimeMillis()/1000+tempTime;
 		if(victim != null){
 			if(victim.getName() == admin){
 				sender.sendMessage(ChatColor.RED + "You cannot tempjail yourself!");
@@ -87,7 +76,7 @@ public class Tempjail implements CommandExecutor{
 			plugin.db.addPlayer(victim.getName(), reason, admin, temp, 6);
 			plugin.jailed.add(p.toLowerCase());
 			
-			log.log(Level.INFO, "[UltraBan] " + admin + " tempjailed player " + victim.getName() + ".");
+			plugin.getLogger().info(admin + " tempjailed player " + victim.getName() + ".");
 			String tempjailMsgVictim = config.getString("messages.tempjailMsgVictim", "You have been temp. jailed by %admin%. Reason: %reason%!");
 			if(tempjailMsgVictim.contains(plugin.regexAdmin)) tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexAdmin, admin);
 			if(tempjailMsgVictim.contains(plugin.regexReason)) tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexReason, reason);
@@ -107,7 +96,7 @@ public class Tempjail implements CommandExecutor{
 				}
 			}
 			victim.teleport(plugin.jail.getJail("jail"));
-			log.log(Level.INFO, "[UltraBan] " + admin + " temp jailed player " + p + ".");
+			plugin.getLogger().info(admin+ " temp jailed player " + p + ".");
 			return true;
 		}else{
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
@@ -137,7 +126,7 @@ public class Tempjail implements CommandExecutor{
 				}
 			}
 
-			log.log(Level.INFO, "[UltraBan] " + admin + " temp jailed player " + p + ".");
+			plugin.getLogger().info(admin + " temp jailed player " + p + ".");
 			return true;
 		}
 	}

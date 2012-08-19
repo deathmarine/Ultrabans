@@ -28,8 +28,6 @@ public class Status implements CommandExecutor {
 			sender.sendMessage(ChatColor.GRAY+"Estimated Usage: "+
 					ChatColor.AQUA+String.valueOf(plugin.bannedIPs.toString().getBytes().length+plugin.bannedPlayers.toString().getBytes().length)+
 					" bytes.");
-			
-			
 		}
 		return false;
 	}

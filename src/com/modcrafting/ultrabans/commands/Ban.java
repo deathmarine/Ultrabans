@@ -23,19 +23,15 @@ public class Ban implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		boolean auth = false;
 		boolean broadcast = true;
 		Player player = null;
 		String admin = config.getString("defAdminName", "server");
 		String reason = config.getString("defReason", "not sure");
 		if (sender instanceof Player){
 			player = (Player)sender;
-			if(player.hasPermission(permission) || player.isOp()) auth = true;
 			admin = player.getName();
-		}else{
-			auth = true;
 		}
-		if (!auth){
+		if (!sender.hasPermission(permission)){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
@@ -92,7 +88,7 @@ public class Ban implements CommandExecutor{
 			if(banMsgBroadcast.contains(plugin.regexVictim)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexVictim, p.toLowerCase());
 			plugin.bannedPlayers.add(p.toLowerCase());
 			plugin.db.addPlayer(p.toLowerCase(), reason, admin, 0, 0);
-			plugin.getLogger().info("[UltraBan] " + admin + " banned player " + p + ".");
+			plugin.getLogger().info(" " + admin + " banned player " + p + ".");
 			if(broadcast){
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
 			}else{
@@ -135,7 +131,7 @@ public class Ban implements CommandExecutor{
 		}else{
 			sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(banMsgBroadcast));
 		}
-		plugin.getLogger().info("[UltraBan] " + admin + " banned player " + victim.getName() + ".");
+		plugin.getLogger().info(" " + admin + " banned player " + victim.getName() + ".");
 		return true;
 	}
 }
