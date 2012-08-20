@@ -29,11 +29,10 @@ public class Lockdown implements CommandExecutor {
 			player = (Player)sender;
 			admin = player.getName();
 		}
-		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label.toLowerCase()).get("permission"))){
+		if(!sender.hasPermission(command.getPermission())){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
-		// Using the config considering the server may restart.
 		boolean lock = config.getBoolean("lockdown", false);
 		if (args.length < 1) return false;
 		String toggle = args[0];

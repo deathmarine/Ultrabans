@@ -14,7 +14,7 @@ public class Clean implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
-		if(sender.hasPermission((String) plugin.getDescription().getCommands().get(label.toLowerCase()).get("permission"))){
+		if(sender.hasPermission(command.getPermission())){
 			final long time = System.currentTimeMillis();
 
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable(){

@@ -15,7 +15,7 @@ public class Ping implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
-		if(sender.hasPermission((String) plugin.getDescription().getCommands().get(label.toLowerCase()).get("permission"))){
+		if(sender.hasPermission(command.getPermission())){
 			if(args.length>0){
 				Player p = plugin.getServer().getPlayer(args[0]);
 				if(p!=null){
