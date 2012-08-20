@@ -75,6 +75,7 @@ public class UltraBan extends JavaPlugin {
 	public String regexVictim = "%victim%";
 	public String regexAmt = "%amt%";
 	public void onDisable() {
+		this.getServer().getScheduler().cancelTasks(this);
 		tempBans.clear();
 		tempJail.clear();
 		bannedPlayers.clear();
@@ -89,6 +90,7 @@ public class UltraBan extends JavaPlugin {
 		FileConfiguration config = getConfig();
 		autoComplete = config.getBoolean("auto-complete", true);
 		long l = config.getLong("serverSync.timing", 72000L); 
+		long time = System.currentTimeMillis();
 		if(this.getConfig().getString("Database").equalsIgnoreCase("mysql")){
 			db = new SQL(this);
 		}else{
@@ -96,6 +98,7 @@ public class UltraBan extends JavaPlugin {
 		}
 		db.load();
 		db.loadJailed();
+		
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new UltraBanPlayerListener(this), this);
 		pm.registerEvents(new UltraBanBlockListener(this), this);
@@ -109,7 +112,9 @@ public class UltraBan extends JavaPlugin {
 			}
 			
 		},l,l);	
-		loadCommands();	
+		loadCommands();
+		long diff = System.currentTimeMillis()-time;
+		this.getLogger().info(" Loaded. "+diff+"ms");
 	}
 	public boolean setupEconomy(){
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
