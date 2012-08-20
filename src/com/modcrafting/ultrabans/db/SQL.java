@@ -12,7 +12,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,54 +23,37 @@ import com.modcrafting.ultrabans.util.EditBan;
 
 public class SQL implements Database{
 	UltraBan plugin;
+	public String mysqlTable = "banlist";
+	public String logip = "banlistip";
 	public SQL(UltraBan instance){
 		plugin = instance;
 	}
-	public String mysqlTable = plugin.getConfig().getString("mysql-table","banlist");
-	public String logip = plugin.getConfig().getString("mysql-table-ip","banlistip");
-	public String SQLCreateBansTable = "CREATE TABLE IF NOT EXISTS `"+mysqlTable+"` (" +
-			"`name` varchar(32) NOT NULL," +
-			"`reason` text NOT NULL," + 
-			"`admin` varchar(32) NOT NULL," + 
-			"`time` bigint(20) NOT NULL," + 
-			"`temptime` bigint(20) NOT NULL," + 
-			"`id` int(11) NOT NULL AUTO_INCREMENT," + 
-			"`type` int(1) NOT NULL DEFAULT '0'," + 
-			"PRIMARY KEY (`id`) USING BTREE" + 
-			") ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
-	public String SQLCreateBanipTable = "CREATE TABLE IF NOT EXISTS `"+logip+"` (" +
-			"`name` varchar(32) NOT NULL," + 
-			"`lastip` tinytext NOT NULL," + 
-			"PRIMARY KEY (`name`)" + 
-			") ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
-	public Connection getSQLConnection() {
+	public void setTables(){
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String dataHandler = Config.getString("Database");
+		mysqlTable = Config.getString("mysql-table","banlist");
+		logip = Config.getString("mysql-table-ip","banlistip");
+	}
+	public Connection getSQLConnection() {
+		setTables();
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		String mysqlDatabase = Config.getString("mysql-database","jdbc:mysql://localhost:3306/minecraft");
 		String mysqlUser = Config.getString("mysql-user","root");
 		String mysqlPassword = Config.getString("mysql-password","root");
-		if(dataHandler.equalsIgnoreCase("mysql")){
-			try {
-				return DriverManager.getConnection(mysqlDatabase + "?autoReconnect=true&user=" + mysqlUser + "&password=" + mysqlPassword);
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
-			}
-			return null;
+		try {
+			return DriverManager.getConnection(mysqlDatabase + "?autoReconnect=true&user=" + mysqlUser + "&password=" + mysqlPassword);
+		} catch (SQLException ex) {
+			plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
 		}
-		return null;
+		return null;	
 	}
 	public void initialize(){
 		Connection conn = getSQLConnection();
 		if(conn != null){
 			PreparedStatement ps = null;
-			ResultSet rs = null;
 			try{
-				Statement s = conn.createStatement();
-				s.executeUpdate(SQLCreateBansTable);
-				s.executeUpdate(SQLCreateBanipTable);
 				ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0 OR type = 1 OR type = 9) AND (temptime > ? OR temptime = 0)");
 				ps.setLong(1, System.currentTimeMillis()/1000);
-	            rs = ps.executeQuery();
+				ResultSet rs = ps.executeQuery();
 				while (rs.next()){
 					String pName = rs.getString("name").toLowerCase();
 					long pTime = rs.getLong("temptime");
@@ -82,7 +64,6 @@ public class SQL implements Database{
 					if(rs.getInt("type") == 1){
 						String ip = getAddress(pName);
 						plugin.bannedIPs.add(ip);
-			
 					}
 				}
 				try {
@@ -102,8 +83,40 @@ public class SQL implements Database{
 			plugin.getLogger().log(Level.SEVERE, "SQLite:Unable to retreive database connection: ");
 		}
 	}
+	public String SQLCreateBansTable = "CREATE TABLE IF NOT EXISTS %table% (" +
+			"`name` varchar(32) NOT NULL," +
+			"`reason` text NOT NULL," + 
+			"`admin` varchar(32) NOT NULL," + 
+			"`time` bigint(20) NOT NULL," + 
+			"`temptime` bigint(20) NOT NULL," + 
+			"`id` int(11) NOT NULL AUTO_INCREMENT," + 
+			"`type` int(1) NOT NULL DEFAULT '0'," + 
+			"PRIMARY KEY (`id`) USING BTREE" + 
+			") ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
+	public String SQLCreateBanipTable = "CREATE TABLE IF NOT EXISTS %table% (" +
+			"`name` varchar(32) NOT NULL," + 
+			"`lastip` tinytext NOT NULL," + 
+			"PRIMARY KEY (`name`)" + 
+			") ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
 	@Override
 	public void load() {
+
+		String tloc = plugin.getConfig().getString("mysql-table","banlist");
+		String lloc = plugin.getConfig().getString("mysql-table-ip","banlistip");
+		Connection conn = getSQLConnection();
+		PreparedStatement s;
+		String str;
+		try {
+			str=SQLCreateBansTable;
+			s = conn.prepareStatement(str.replaceAll("%table%",tloc));
+			s.execute();
+			str=SQLCreateBanipTable;
+			s = conn.prepareStatement(str.replaceAll("%table%",lloc));
+			s.execute();
+			s.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		initialize();
 	}
 	@Override
@@ -143,7 +156,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("REPLACE INTO " + logip + " (name,lastip) VALUES(?,?)");
+			ps = conn.prepareStatement("REPLACE INTO " + logip+ " (name,lastip) VALUES(?,?)");
 			ps.setString(1, pName);
 			ps.setString(2, logIp);
 			ps.executeUpdate();
@@ -167,7 +180,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + logip+ " WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -197,7 +210,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE lastip = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + logip+ " WHERE lastip = ?");
 			ps.setString(1, ip);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -365,7 +378,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT lastip FROM " + logip + " WHERE name = ? AND lastip = ?");
+			ps = conn.prepareStatement("SELECT lastip FROM " + logip+ " WHERE name = ? AND lastip = ?");
 			ps.setString(1, player);
 			ps.setString(2, ip);
 			rs = ps.executeQuery();
@@ -394,7 +407,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("UPDATE " + logip + " SET lastip = ? WHERE name = ?");
+			ps = conn.prepareStatement("UPDATE " + logip+ " SET lastip = ? WHERE name = ?");
 			ps.setString(1, ip);
 			ps.setString(2, p);
 			ps.executeUpdate();

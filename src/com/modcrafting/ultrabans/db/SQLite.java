@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import com.modcrafting.ultrabans.UltraBan;
 import com.modcrafting.ultrabans.util.EditBan;
 
@@ -29,9 +28,7 @@ public class SQLite implements Database{
 	public SQLite(UltraBan instance){
 		plugin = instance;
 	}
-	public String mysqlTable = plugin.getConfig().getString("mysql-table","banlist");
-	public String logip = plugin.getConfig().getString("mysql-table-ip","banlistip");
-	public String SQLiteCreateBansTable = "CREATE TABLE IF NOT EXISTS `"+mysqlTable+"` (" +
+	public String SQLiteCreateBansTable = "CREATE TABLE IF NOT EXISTS banlist (" +
 			"`name` TEXT," +
 			"`reason` TEXT," + 
 			"`admin` TEXT," + 
@@ -40,7 +37,7 @@ public class SQLite implements Database{
 			"`id` INTEGER PRIMARY KEY," + 
 			"`type` INTEGER DEFAULT '0'" + 
 			");";
-	public String SQLiteCreateBanipTable = "CREATE TABLE IF NOT EXISTS `"+logip+"` (" +
+	public String SQLiteCreateBanipTable = "CREATE TABLE IF NOT EXISTS banlistip (" +
 			"`name` TEXT," + 
 			"`lastip` TEXT," + 
 			"PRIMARY KEY (`name`)" + 
@@ -72,10 +69,7 @@ public class SQLite implements Database{
 			PreparedStatement ps = null;
 			ResultSet rs = null;
 			try{
-				Statement s = conn.createStatement();
-				s.executeUpdate(SQLiteCreateBansTable);
-				s.executeUpdate(SQLiteCreateBanipTable);
-				ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0 OR type = 1 OR type = 9) AND (temptime > ? OR temptime = 0)");
+				ps = conn.prepareStatement("SELECT * FROM banlist WHERE (type = 0 OR type = 1 OR type = 9) AND (temptime > ? OR temptime = 0)");
 				ps.setLong(1, System.currentTimeMillis()/1000);
 	            rs = ps.executeQuery();
 				while (rs.next()){
@@ -110,6 +104,16 @@ public class SQLite implements Database{
 	}
 	@Override
 	public void load() {
+		Connection conn = getSQLConnection();
+		Statement s;
+		try {
+			s = conn.createStatement();
+			s.executeUpdate(SQLiteCreateBansTable);
+			s.executeUpdate(SQLiteCreateBanipTable);
+			s.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		initialize();
 	}
 	@Override
@@ -119,7 +123,7 @@ public class SQLite implements Database{
 			PreparedStatement ps = null;
 			ResultSet rs = null;
 			try {
-				ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0)");
+				ps = conn.prepareStatement("SELECT * FROM banlist WHERE (type = 0)");
 				rs = ps.executeQuery();
 				List<String> list = new ArrayList<String>();
 				while (rs.next()){
@@ -149,7 +153,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("REPLACE INTO " + logip + " (name,lastip) VALUES(?,?)");
+			ps = conn.prepareStatement("REPLACE INTO banlistip (name,lastip) VALUES(?,?)");
 			ps.setString(1, pName);
 			ps.setString(2, logIp);
 			ps.executeUpdate();
@@ -173,7 +177,7 @@ public class SQLite implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM banlistip WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -203,7 +207,7 @@ public class SQLite implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE lastip = ?");
+			ps = conn.prepareStatement("SELECT * FROM banlistip WHERE lastip = ?");
 			ps.setString(1, ip);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -232,7 +236,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("DELETE FROMvWHERE (name = ? AND (type = 0 OR type = 1)) AND time = (SELECT time FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1)");
+			ps = conn.prepareStatement("DELETE FROMvWHERE (name = ? AND (type = 0 OR type = 1)) AND time = (SELECT time FROM banlist WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1)");
 			ps.setString(1, player);
 			ps.setString(2, player);
 			ps.executeUpdate();
@@ -259,7 +263,7 @@ public class SQLite implements Database{
 		ResultSet rs = null;
 		try{
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ?");
 			ps.setString(1, bname);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -289,7 +293,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("INSERT INTO " + mysqlTable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
+			ps = conn.prepareStatement("INSERT INTO banlist (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
 			ps.setLong(5, tempTime);
 			ps.setString(1, player);
 			ps.setString(2, reason);
@@ -316,7 +320,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("INSERT INTO " + mysqlTable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
+			ps = conn.prepareStatement("INSERT INTO banlist (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
 			ps.setLong(5, tempTime);
 			ps.setString(1, player);
 			ps.setString(2, reason);
@@ -343,7 +347,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -371,7 +375,7 @@ public class SQLite implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT lastip FROM " + logip + " WHERE name = ? AND lastip = ?");
+			ps = conn.prepareStatement("SELECT lastip FROM banlistip WHERE name = ? AND lastip = ?");
 			ps.setString(1, player);
 			ps.setString(2, ip);
 			rs = ps.executeQuery();
@@ -400,7 +404,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("UPDATE " + logip + " SET lastip = ? WHERE name = ?");
+			ps = conn.prepareStatement("UPDATE banlistip SET lastip = ? WHERE name = ?");
 			ps.setString(1, ip);
 			ps.setString(2, p);
 			ps.executeUpdate();
@@ -424,7 +428,7 @@ public class SQLite implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ?");
 			ps.setString(1, name);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
@@ -456,7 +460,7 @@ public class SQLite implements Database{
 		Integer num = Integer.parseInt(number.trim());
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " ORDER BY time DESC LIMIT ?");
+			ps = conn.prepareStatement("SELECT * FROM banlist ORDER BY time DESC LIMIT ?");
 			ps.setInt(1, num);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
@@ -487,7 +491,7 @@ public class SQLite implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -516,7 +520,7 @@ public class SQLite implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND type = ?");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? AND type = ?");
 			ps.setString(1, Name);
 			ps.setInt(2, 2);
 			rs = ps.executeQuery();
@@ -548,7 +552,7 @@ public class SQLite implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE id = ?");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE id = ?");
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -572,14 +576,11 @@ public class SQLite implements Database{
 	}
 	@Override
 	public void saveFullRecord(EditBan ban){
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String mysqlTable = Config.getString("mysql-table");
-
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("UPDATE " + mysqlTable + " SET name = ?, reason = ?, admin = ?, time = ?, temptime = ?, type = ? WHERE id = ?");
+			ps = conn.prepareStatement("UPDATE banlist SET name = ?, reason = ?, admin = ?, time = ?, temptime = ?, type = ? WHERE id = ?");
 			ps.setLong(5, ban.endTime);
 			ps.setString(1, ban.name);
 			ps.setString(2, ban.reason);
@@ -607,7 +608,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE (name = ? AND type = ? AND time = (SELECT time FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1)");
+			ps = conn.prepareStatement("DELETE FROM banlist WHERE (name = ? AND type = ? AND time = (SELECT time FROM banlist WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1)");
 			ps.setString(1, player);
 			ps.setInt(2, 6);
 			ps.setString(3, player);
@@ -635,7 +636,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND type = 6 ORDER BY time DESC LIMIT 1");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? AND type = 6 ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -662,7 +663,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try{
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE type = 6 AND (temptime > ? OR temptime = 0)");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE type = 6 AND (temptime > ? OR temptime = 0)");
 			ps.setLong(1, System.currentTimeMillis()/1000);
         	rs = ps.executeQuery();
 			while (rs.next()){
@@ -692,7 +693,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
 			while (rs.next()){

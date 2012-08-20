@@ -20,10 +20,10 @@ public class Reload implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(sender.hasPermission((String) plugin.getDescription().getCommands().get(label.toLowerCase()).get("permission"))){
+			plugin.reloadConfig();
 			plugin.getServer().getPluginManager().disablePlugin(plugin);
 			plugin.getServer().getPluginManager().enablePlugin(plugin);
 			sender.sendMessage("§2[UltraBan] reloaded.");
-			plugin.reloadConfig();
 			return true;
 		}else{
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
