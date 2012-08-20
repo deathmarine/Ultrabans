@@ -13,7 +13,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -33,7 +35,7 @@ public class UltraBanPlayerListener implements Listener{
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerLogin(PlayerLoginEvent event){
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+		FileConfiguration config = plugin.getConfig();
 		Player player = event.getPlayer();
 		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
 			String reason = plugin.db.getBanReason(player.getName());
@@ -45,8 +47,7 @@ public class UltraBanPlayerListener implements Listener{
 		}
 		if(plugin.tempBans.get(player.getName().toLowerCase()) != null){
 			long tempTime = plugin.tempBans.get(player.getName().toLowerCase());
-			long now = System.currentTimeMillis()/1000;
-			long diff = tempTime - now;
+			long diff = tempTime - (System.currentTimeMillis()/1000);
 			if(diff <= 0){
 				String ip = plugin.db.getAddress(player.getName());
 				if(plugin.bannedIPs.contains(ip)){
@@ -71,9 +72,7 @@ public class UltraBanPlayerListener implements Listener{
 			return;
 		}
 		if(plugin.tempJail.get(player.getName().toLowerCase()) != null){
-			long tempTime = plugin.tempJail.get(player.getName().toLowerCase());
-			long now = System.currentTimeMillis()/1000;
-			long diff = tempTime - now;
+			long diff = plugin.tempJail.get(player.getName().toLowerCase())-(System.currentTimeMillis()/1000);
 			if(diff <= 0){
 				plugin.tempJail.remove(player.getName().toLowerCase());
 				plugin.jailed.remove(player.getName().toLowerCase());
@@ -91,13 +90,9 @@ public class UltraBanPlayerListener implements Listener{
 			}
 			return;
 		}
-		boolean lock = config.getBoolean("lockdown", false);
-		if(lock){
-			boolean auth = false;
+		if(config.getBoolean("lockdown", false)){
 			String lockMsgLogin = config.getString("messages.lockMsgLogin", "Server is under a lockdown, Try again later!");
-			if(player.hasPermission("ultraban.override.lockdown") || player.isOp()) auth = true;
-			
-			if (!auth) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
+			if(player.hasPermission("ultraban.override.lockdown") || player.isOp()) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
 			plugin.getLogger().info(player.getName() + " attempted to join during lockdown.");
 		}
 	}
@@ -126,21 +121,32 @@ public class UltraBanPlayerListener implements Listener{
 			@Override
 			public void run() {
 				for(Player admin:plugin.getServer().getOnlinePlayers()){
-					if(!admin.hasPermission("ultraban.dupeip")) return;
-					String ip = plugin.db.getAddress(player.getName());
-					if(ip == null){
-						admin.sendMessage(ChatColor.RED + "Unable to view ip for " + player.getName() + " !");
-						return;
+					if(admin.hasPermission("ultraban.dupeip")){
+						String ip = plugin.db.getAddress(player.getName());
+						if(ip == null){
+							admin.sendMessage(ChatColor.RED + "Unable to view ip for " + player.getName() + " !");
+							return;
+						}
+						String sip = null;
+						OfflinePlayer[] pl = plugin.getServer().getOfflinePlayers();
+						for (int i=0; i<pl.length; i++){
+							sip = plugin.db.getAddress(pl[i].getName());
+					        if (sip != null && sip.equalsIgnoreCase(ip)){
+					        	if (!pl[i].getName().equalsIgnoreCase(player.getName())){
+					        		admin.sendMessage(ChatColor.GRAY + "Player: " + pl[i].getName() + " duplicates player: " + player.getName() + "!");
+					        	}
+					        }
+					    }
+						
 					}
-					String sip = null;
-					OfflinePlayer[] pl = plugin.getServer().getOfflinePlayers();
-					for (int i=0; i<pl.length; i++){
-						sip = plugin.db.getAddress(pl[i].getName());
-				        if (sip != null && sip.equalsIgnoreCase(ip)){
-				        	if (!pl[i].getName().equalsIgnoreCase(player.getName())){
-				        		admin.sendMessage(ChatColor.GRAY + "Player: " + pl[i].getName() + " duplicates player: " + player.getName() + "!");
-				        	}
-				        }
+					if(admin.hasPermission("ultraban.ping")){
+						if(checkPlayerPing(player)){
+							admin.sendMessage(ChatColor.GRAY + "Player: " + player.getName() + " was kicked for High Ping!");
+						}else{
+							int ping = ((CraftPlayer) player).getHandle().ping;
+							admin.sendMessage(ChatColor.GRAY + "Player: " + player.getName() + " Ping: "+String.valueOf(ping)+"ms");						
+						}
+						
 					}
 				}
 			}
@@ -293,38 +299,46 @@ public class UltraBanPlayerListener implements Listener{
 		 
 		 //Block Swearing
 		 if(config.getBoolean("Chat.SwearCensor.Enable", true)){
-			String[] string = config.getString("Chat.SwearCensor.Words").split(" ");
-			String mode = config.getString("Chat.SwearCensor.Blocking");
-			if(mode == null) mode = "";
-			boolean valid = false;
-			for (int i=0; i<string.length; i++){
-				if(message.contains(string[i].trim())){
-					 if(mode.equalsIgnoreCase("%scramble%")){
-						message = message.replaceAll(string[i].trim(), ChatColor.MAGIC + "AAAAA");
-					 }else if(mode.equalsIgnoreCase("%replace%")){
-						 message = message.replaceAll(string[i].trim(), plugin.getServer().getIp());
-					 }else{
-						 message = message.replaceAll(string[i].trim(), mode);
-					 }
-					 valid = true;
-				}
-			}
-			event.setMessage(message);
-			String result = config.getString("Chat.SwearCensor.Result");
-			if(valid && result != null){
-				if(result.equalsIgnoreCase("ban") || result.equalsIgnoreCase("kick") || result.equalsIgnoreCase("ipban") || result.equalsIgnoreCase("jail") || result.equalsIgnoreCase("warn")){
-					String fakecmd = null;
-					if(config.getBoolean("Chat.SwearCensor.Silent", false)){
-						fakecmd = result + " " + player.getName() + " " + "-s" + " " + " Ultrabans AutoMated: Language";
-					}else{
-						fakecmd = result + " " + player.getName() + " " + " Ultrabans AutoMated: Language";
+				String[] string = config.getString("Chat.SwearCensor.Words").split(" ");
+				String mode = config.getString("Chat.SwearCensor.Blocking");
+				if(mode == null) mode = "";
+				boolean valid = false;
+				for (int i=0; i<string.length; i++){
+					if(message.contains(string[i].trim())){
+						 if(mode.equalsIgnoreCase("%scramble%")){
+							message = message.replaceAll(string[i].trim(), ChatColor.MAGIC + "AAAAA");
+						 }else if(mode.equalsIgnoreCase("%replace%")){
+							 message = message.replaceAll(string[i].trim(), plugin.getServer().getIp());
+						 }else{
+							 message = message.replaceAll(string[i].trim(), mode);
+						 }
+						 valid = true;
 					}
-					plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
 				}
-			}
-			
-		 }
+				event.setMessage(message);
+				String result = config.getString("Chat.SwearCensor.Result");
+				if(valid && result != null){
+					if(result.equalsIgnoreCase("ban") || result.equalsIgnoreCase("kick") || result.equalsIgnoreCase("ipban") || result.equalsIgnoreCase("jail") || result.equalsIgnoreCase("warn")){
+						String fakecmd = null;
+						if(config.getBoolean("Chat.SwearCensor.Silent", false)){
+							fakecmd = result + " " + player.getName() + " " + "-s" + " " + " Ultrabans AutoMated: Language";
+						}else{
+							fakecmd = result + " " + player.getName() + " " + " Ultrabans AutoMated: Language";
+						}
+						plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
+					}
+				}
+				
+			 }
 		 
 	}
-		 
+	public boolean checkPlayerPing(Player player){
+		boolean pingout = ((CraftPlayer) player).getHandle().ping>plugin.getConfig().getInt("MaxPing",200);
+		if(pingout&&!player.hasPermission("ultraban.override.pingcheck")){
+			player.kickPlayer(plugin.getConfig().getString("kickMsgVictim","You have been kicked by %admin%. Reason: %reason%!").replaceAll("%admin%", "Ultrabans").replaceAll("%reason%", "High Ping Rate"));
+			return true;
+		}
+		//pass
+		return false;
+	}
 }

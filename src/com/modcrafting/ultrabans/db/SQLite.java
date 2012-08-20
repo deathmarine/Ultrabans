@@ -7,16 +7,9 @@
  */
 package com.modcrafting.ultrabans.db;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,56 +24,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.modcrafting.ultrabans.UltraBan;
 import com.modcrafting.ultrabans.util.EditBan;
 
-public class SQLDatabases{
+public class SQLite implements Database{
 	UltraBan plugin;
-	public SQLDatabases(UltraBan instance){
+	public SQLite(UltraBan instance){
 		plugin = instance;
 	}
-	public Connection getSQLConnection() {
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String dataHandler = Config.getString("Database");
-		String mysqlDatabase = Config.getString("mysql-database","jdbc:mysql://localhost:3306/minecraft");
-		String mysqlUser = Config.getString("mysql-user","root");
-		String mysqlPassword = Config.getString("mysql-password","root");
-		if(dataHandler.equalsIgnoreCase("mysql")){
-			try {
-
-				return DriverManager.getConnection(mysqlDatabase + "?autoReconnect=true&user=" + mysqlUser + "&password=" + mysqlPassword);
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
-			}
-			return null;
-		}
-		if(dataHandler.equalsIgnoreCase("sqlite")){
-
-			String dbname = Config.getString("sqlite-dbname", "banlist");
-			String maindir = "plugins/UltraBan/";
-			File dataFolder = new File(maindir, dbname + ".db");
-			if (!dataFolder.exists()){
-				try {
-					dataFolder.createNewFile();
-				} catch (IOException ex) {
-					plugin.getLogger().log(Level.SEVERE, "File write error: " + dbname);
-				} 
-			}
-			try {
-	            Class.forName("org.sqlite.JDBC");
-	            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
-	            Statement st = conn.createStatement();
-        		st.execute(this.SQLiteCreateBansTable);
-        		st.execute(this.SQLiteCreateBanipTable);
-        		return conn;
-        		
-	        } catch (SQLException ex) {
-	            plugin.getLogger().log(Level.SEVERE,"SQLite exception on initialize", ex);
-	        } catch (ClassNotFoundException ex) {
-	        	plugin.getLogger().log(Level.SEVERE, "You need the SQLite library.", ex);
-	        }
-	    }
-		return null;
-	}
-
-	protected String SQLiteCreateBansTable = "CREATE TABLE IF NOT EXISTS `banlist` (" +
+	public String mysqlTable = plugin.getConfig().getString("mysql-table","banlist");
+	public String logip = plugin.getConfig().getString("mysql-table-ip","banlistip");
+	public String SQLiteCreateBansTable = "CREATE TABLE IF NOT EXISTS `"+mysqlTable+"` (" +
 			"`name` TEXT," +
 			"`reason` TEXT," + 
 			"`admin` TEXT," + 
@@ -89,91 +40,57 @@ public class SQLDatabases{
 			"`id` INTEGER PRIMARY KEY," + 
 			"`type` INTEGER DEFAULT '0'" + 
 			");";
-	protected String SQLiteCreateBanipTable = "CREATE TABLE IF NOT EXISTS `banlistip` (" +
+	public String SQLiteCreateBanipTable = "CREATE TABLE IF NOT EXISTS `"+logip+"` (" +
 			"`name` TEXT," + 
 			"`lastip` TEXT," + 
 			"PRIMARY KEY (`name`)" + 
 			");";
-	protected String SQLCreateBansTable = "CREATE TABLE IF NOT EXISTS `banlist` (" +
-			"`name` varchar(32) NOT NULL," +
-			"`reason` text NOT NULL," + 
-			"`admin` varchar(32) NOT NULL," + 
-			"`time` bigint(20) NOT NULL," + 
-			"`temptime` bigint(20) NOT NULL," + 
-			"`id` int(11) NOT NULL AUTO_INCREMENT," + 
-			"`type` int(1) NOT NULL DEFAULT '0'," + 
-			"PRIMARY KEY (`id`) USING BTREE" + 
-			") ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
-	protected String SQLCreateBanipTable = "CREATE TABLE IF NOT EXISTS `banlistip` (" +
-			"`name` varchar(32) NOT NULL," + 
-			"`lastip` tinytext NOT NULL," + 
-			"PRIMARY KEY (`name`)" + 
-			") ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
-	
+	public Connection getSQLConnection() {
+		String dbname = plugin.getConfig().getString("sqlite-dbname", "banlist");
+		File dataFolder = new File(plugin.getDataFolder(), dbname+".db");
+		if (!dataFolder.exists()){
+			try {
+				dataFolder.createNewFile();
+			} catch (IOException e) {
+				plugin.getLogger().log(Level.SEVERE, "File write error: "+dbname+".db");
+			}
+		}
+		try {
+			Class.forName("org.sqlite.JDBC");
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
+    		return conn;
+		} catch (SQLException ex) {
+			plugin.getLogger().log(Level.SEVERE,"SQLite exception on initialize", ex);
+	    } catch (ClassNotFoundException ex) {
+	    	plugin.getLogger().log(Level.SEVERE, "You need the SQLite JBDC library. Google it. Put it in /lib folder.");
+	    }
+		return null;
+    }
 	public void initialize(){
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String mysqlTable = Config.getString("mysql-table");
-		String logip = Config.getString("mysql-table-ip");
 		Connection conn = getSQLConnection();
-		
-		
-		if (conn == null) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Could not establish SQL connection. Disabling UltraBan");
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Adjust Settings in Config or set MySql: False");
-			plugin.getServer().getPluginManager().disablePlugin(plugin);
-			return;
-		} else {
+		if(conn != null){
 			PreparedStatement ps = null;
 			ResultSet rs = null;
-			Statement st = null;
-			
-			try {
+			try{
+				Statement s = conn.createStatement();
+				s.executeUpdate(SQLiteCreateBansTable);
+				s.executeUpdate(SQLiteCreateBanipTable);
 				ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0 OR type = 1 OR type = 9) AND (temptime > ? OR temptime = 0)");
 				ps.setLong(1, System.currentTimeMillis()/1000);
-				try{
-					
-					DatabaseMetaData dbm = conn.getMetaData();
-					rs = dbm.getTables(null, null, "banlist", null);
-		            	if (!rs.next()){
-		            		conn.setAutoCommit(false);
-		            		st = conn.createStatement();
-		            		st.execute(this.SQLCreateBansTable);
-		            		st.execute(this.SQLCreateBanipTable);
-		            		conn.commit();
-		            		plugin.getLogger().log(Level.INFO, "[UltraBan]: Table " + mysqlTable + " created.");
-		            		plugin.getLogger().log(Level.INFO, "[UltraBan]: Table " + logip + " created.");
-		            	}
-		            	rs = ps.executeQuery();
-							            
-				} catch (SQLException ex) {
-					plugin.getLogger().log(Level.SEVERE, "[UltraBan] Database Error: No Table Found");
-                }
-				
-				try {
-					while (rs.next()){
+	            rs = ps.executeQuery();
+				while (rs.next()){
 					String pName = rs.getString("name").toLowerCase();
 					long pTime = rs.getLong("temptime");
 					plugin.bannedPlayers.add(pName);
-						if(pTime != 0){
-							plugin.tempBans.put(pName,pTime);
-						}
-						if(rs.getInt("type") == 1){
-							String ip = getAddress(pName);
-							plugin.bannedIPs.add(ip);
-				
-						}
+					if(pTime != 0){
+						plugin.tempBans.put(pName,pTime);
 					}
-				}catch (NullPointerException ex){
-					plugin.getLogger().log(Level.SEVERE, "[UltraBan] Detected Major issues with database.");
-					plugin.getServer().getPluginManager().disablePlugin(plugin);
-					plugin.getLogger().log(Level.SEVERE, "[UltraBan] Attempting Restart.");
-					plugin.getServer().getPluginManager().enablePlugin(plugin);
-					return;
+					if(rs.getInt("type") == 1){
+						String ip = getAddress(pName);
+						plugin.bannedIPs.add(ip);
+			
+					}
 				}
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-				return;
-			} finally {
 				try {
 					if (ps != null)
 						ps.close();
@@ -182,26 +99,21 @@ public class SQLDatabases{
 					if (conn != null)
 						conn.close();
 				} catch (SQLException ex) {
-					plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+					plugin.getLogger().log(Level.SEVERE, "SQLite:Failed to close MySQL connection: ", ex);
 				}
-			}	
-
-			try {
-				if (!plugin.isEnabled()){
-					return;
-				}
-				conn.close();
-				plugin.getLogger().log(Level.INFO, "[UltraBan] Initialized db connection" );
-			} catch (SQLException e) {
-				e.printStackTrace();
-				plugin.getServer().getPluginManager().disablePlugin(plugin);
-			}
+			} catch (SQLException ex) {
+				plugin.getLogger().log(Level.SEVERE, "SQLite:Unable to retreive database connection: ", ex);
+            }
+		}else{
+			plugin.getLogger().log(Level.SEVERE, "SQLite:Unable to retreive database connection: ");
 		}
-		
 	}
+	@Override
+	public void load() {
+		initialize();
+	}
+	@Override
 	public List<String> getBans(){
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String mysqlTable = Config.getString("mysql-table");
 		Connection conn = getSQLConnection();
 		if (conn != null) {
 			PreparedStatement ps = null;
@@ -231,9 +143,8 @@ public class SQLDatabases{
 		}
 		return null;		
 	}
+	@Override
 	public void setAddress(String pName, String logIp){
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String logip = Config.getString("mysql-table-ip");
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -255,12 +166,11 @@ public class SQLDatabases{
 			}
 		}
 	}
+	@Override
 	public String getAddress(String pName) {
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String logip = Config.getString("mysql-table-ip");
 		try {
 			conn = getSQLConnection();
 			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE name = ?");
@@ -286,12 +196,11 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	@Override
 	public String getName(String ip) {
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String logip = Config.getString("mysql-table-ip");
 		try {
 			conn = getSQLConnection();
 			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE lastip = ?");
@@ -317,27 +226,18 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	@Override
 	public boolean removeFromBanlist(String player) {
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String dataHandler = Config.getString("Database");
-
-		String mysqlTable = Config.getString("mysql-table");
-
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			if(dataHandler.equalsIgnoreCase("sqlite")){
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE (name = ? AND (type = 0 OR type = 1)) AND time = (SELECT time FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1)");
-				ps.setString(1, player);
-				ps.setString(2, player);
-			}else{
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
-				ps.setString(1, player);
-			}
+			ps = conn.prepareStatement("DELETE FROMvWHERE (name = ? AND (type = 0 OR type = 1)) AND time = (SELECT time FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1)");
+			ps.setString(1, player);
+			ps.setString(2, player);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			plugin.getLogger().log(Level.SEVERE, "Couldn't execute MySQL statement: ", ex);
 			return false;
 		} finally {
 			try {
@@ -346,19 +246,20 @@ public class SQLDatabases{
 				if (conn != null)
 					conn.close();
 			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
+				plugin.getLogger().log(Level.SEVERE, "Failed to close MySQL connection: ", ex);
 			}
 		}
 		return true;
 
 	}
+	@Override
 	public boolean permaBan(String bname){
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try{
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
 			ps.setString(1, bname);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -382,9 +283,8 @@ public class SQLDatabases{
 		}
 		return false;
 	}
+	@Override
 	public void addPlayer(String player, String reason, String admin, long tempTime , int type){
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String mysqlTable = Config.getString("mysql-table");
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -409,9 +309,9 @@ public class SQLDatabases{
 				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
 			}
 		}
-	}public void importPlayer(String player, String reason, String admin, long tempTime , long time, int type){
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String mysqlTable = Config.getString("mysql-table");
+	}
+	@Override
+	public void importPlayer(String player, String reason, String admin, long tempTime , long time, int type){
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -437,12 +337,11 @@ public class SQLDatabases{
 			}
 		}
 	}
+	@Override
 	public String getBanReason(String player) {
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = getSQLConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String mysqlTable = Config.getString("mysql-table");
 		try {
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
@@ -465,13 +364,11 @@ public class SQLDatabases{
 		}
 		return "";
 	}
-
+	@Override
 	public boolean matchAddress(String player, String ip) {
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String logip = Config.getString("mysql-table-ip");
 		try {
 			conn = getSQLConnection();
 			ps = conn.prepareStatement("SELECT lastip FROM " + logip + " WHERE name = ? AND lastip = ?");
@@ -497,13 +394,11 @@ public class SQLDatabases{
 		}
 		return false;
 	}
+	@Override
 	public void updateAddress(String p, String ip) {
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String logip = Config.getString("mysql-table-ip");
 		try {
-			System.out.println("trying to update address.");
 			conn = getSQLConnection();
 			ps = conn.prepareStatement("UPDATE " + logip + " SET lastip = ? WHERE name = ?");
 			ps.setString(1, ip);
@@ -522,13 +417,14 @@ public class SQLDatabases{
 			}
 		}
 	}
+	@Override
 	public List<EditBan> listRecords(String name, CommandSender sender) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
 			ps.setString(1, name);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
@@ -552,6 +448,7 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	@Override
 	public List<EditBan> listRecent(String number){
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -559,7 +456,7 @@ public class SQLDatabases{
 		Integer num = Integer.parseInt(number.trim());
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlist ORDER BY time DESC LIMIT ?");
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " ORDER BY time DESC LIMIT ?");
 			ps.setInt(1, num);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
@@ -583,13 +480,14 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	@Override
 	public EditBan loadFullRecord(String pName) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -611,13 +509,14 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	@Override
 	public List<EditBan> maxWarns(String Name) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? AND type = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND type = ?");
 			ps.setString(1, Name);
 			ps.setInt(2, 2);
 			rs = ps.executeQuery();
@@ -642,13 +541,14 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	@Override
 	public EditBan loadFullRecordFromId(int id) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlist WHERE id = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE id = ?");
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
 			while (rs.next()){
@@ -670,6 +570,7 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	@Override
 	public void saveFullRecord(EditBan ban){
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		String mysqlTable = Config.getString("mysql-table");
@@ -700,57 +601,17 @@ public class SQLDatabases{
 			}
 		}
 	}
-	public static String resourceToString(String name) {
-        InputStream input = UltraBan.class.getResourceAsStream(name);
-        Writer writer = new StringWriter();
-        char[] buffer = new char[1024];
-
-        if(input != null) {
-            try {
-                int n;
-                Reader reader = new BufferedReader(new InputStreamReader(input));
-                while ((n = reader.read(buffer)) != -1)
-                    writer.write(buffer, 0, n);
-            } catch (IOException e) {
-                try {
-                    input.close();
-                } catch (IOException ex) { }
-                return null;
-            } finally {
-                try {
-                    input.close();
-                } catch (IOException e) { }
-            }
-        } else {
-            return null;
-        }
-
-        String text = writer.toString().trim();
-        text = text.replace("\r\n", " ").replace("\n", " ");
-        return text.trim();
-    }
-
+	@Override
 	public boolean removeFromJaillist(String player) {
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String dataHandler = Config.getString("Database");
-		
-		String mysqlTable = Config.getString("mysql-table");
-
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			if(dataHandler.equalsIgnoreCase("sqlite")){
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE (name = ? AND type = ? AND time = (SELECT time FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1)");
-				ps.setString(1, player);
-				ps.setInt(2, 6);
-				ps.setString(3, player);
-				ps.setInt(4, 6);
-			}else{
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
-				ps.setString(1, player);
-				ps.setInt(2, 6);
-			}
+			ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE (name = ? AND type = ? AND time = (SELECT time FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1)");
+			ps.setString(1, player);
+			ps.setInt(2, 6);
+			ps.setString(3, player);
+			ps.setInt(4, 6);
 			ps.executeUpdate();
 		} catch (SQLException ex) {
 			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
@@ -768,12 +629,11 @@ public class SQLDatabases{
 		return true;
 		
 	}
+	@Override
 	public String getjailReason(String player) {
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = getSQLConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String mysqlTable = Config.getString("mysql-table");
 		try {
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND type = 6 ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
@@ -796,12 +656,11 @@ public class SQLDatabases{
 		}
 		return null;
 	}
+	@Override
 	public void loadJailed(){
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = getSQLConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String mysqlTable = Config.getString("mysql-table");
 		try{
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE type = 6 AND (temptime > ? OR temptime = 0)");
 			ps.setLong(1, System.currentTimeMillis()/1000);
@@ -827,13 +686,11 @@ public class SQLDatabases{
 			}
 		}
 	}
-
+	@Override
 	public String getAdmin(String player) {
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		Connection conn = getSQLConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		String mysqlTable = Config.getString("mysql-table");
 		try {
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
@@ -857,4 +714,3 @@ public class SQLDatabases{
 		return null;
 	}
 }
-

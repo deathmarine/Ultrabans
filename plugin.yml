@@ -126,6 +126,10 @@ commands:
     description: Shows the current inventory of a player
     usage: /<command> {player}
     permission: ultraban.inv
+  uping:
+    description: Shows the current ping of a player
+    usage: /<command> {player}
+    permission: ultraban.ping
   uhelp:
     description: Shows Help
     usage: /<command>
@@ -165,6 +169,9 @@ permissions:
       ultraban.ipban: true
       ultraban.tempipban: true
       ultraban.clean: true
+      ultraban.ping: true
+  ultraban.ping:
+    description: Allows the user to check ping
   ultraban.clean:
     description: Allows the user to delete Player dat files for banned players 
   ultraban.ban:
@@ -252,6 +259,7 @@ permissions:
       ultraban.override.tempjail: true
       ultraban.override.warn: true
       ultraban.override.lockdown: true
+      ultraban.override.pingcheck: true
   ultraban.override.ban:
     description: Allows the Administration to override bans
   ultraban.override.ipban:
@@ -282,3 +290,6 @@ permissions:
     description: Allows the Administration to override lockdowns
   ultraban.override.dupeip:
     description: Allows the Administration to override dupe login check
+  ultraban.override.pingcheck:
+    default: op
+    description: Allows the Administration to override ping check

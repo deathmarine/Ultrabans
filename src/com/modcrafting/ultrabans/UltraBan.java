@@ -6,20 +6,17 @@
  * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
  */
 package com.modcrafting.ultrabans;
-/**
- * Wickity Wickity Wooh
- * Got to love the magic!
- */
-import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+
 import net.milkbowl.vault.economy.Economy;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import com.modcrafting.ultrabans.commands.Ban;
 import com.modcrafting.ultrabans.commands.Check;
 import com.modcrafting.ultrabans.commands.CheckIP;
@@ -40,6 +37,7 @@ import com.modcrafting.ultrabans.commands.Lockdown;
 import com.modcrafting.ultrabans.commands.Mute;
 import com.modcrafting.ultrabans.commands.Pardon;
 import com.modcrafting.ultrabans.commands.Perma;
+import com.modcrafting.ultrabans.commands.Ping;
 import com.modcrafting.ultrabans.commands.Reload;
 import com.modcrafting.ultrabans.commands.Spawn;
 import com.modcrafting.ultrabans.commands.Starve;
@@ -50,7 +48,9 @@ import com.modcrafting.ultrabans.commands.Tempjail;
 import com.modcrafting.ultrabans.commands.Unban;
 import com.modcrafting.ultrabans.commands.Version;
 import com.modcrafting.ultrabans.commands.Warn;
-import com.modcrafting.ultrabans.db.SQLDatabases;
+import com.modcrafting.ultrabans.db.Database;
+import com.modcrafting.ultrabans.db.SQL;
+import com.modcrafting.ultrabans.db.SQLite;
 import com.modcrafting.ultrabans.util.DataHandler;
 import com.modcrafting.ultrabans.util.EditBan;
 import com.modcrafting.ultrabans.util.Formatting;
@@ -64,12 +64,10 @@ public class UltraBan extends JavaPlugin {
 	public Map<String, Long> tempBans = new HashMap<String, Long>();
 	public Map<String, Long> tempJail = new HashMap<String, Long>();
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
-	private UltraBanPlayerListener playerListener = new UltraBanPlayerListener(this);
-	private UltraBanBlockListener blockListener = new UltraBanBlockListener(this);
 	public DataHandler data = new DataHandler(this);
 	public Formatting util = new Formatting(this);
 	public Jailtools jail = new Jailtools(this);
-	public SQLDatabases db = new SQLDatabases(this);
+	public Database db;
 	public net.milkbowl.vault.economy.Economy economy = null;
 	public boolean autoComplete;
 	public String regexAdmin = "%admin%";
@@ -86,33 +84,31 @@ public class UltraBan extends JavaPlugin {
 		banEditors.clear();
 	}
 	public void onEnable() {
-		YamlConfiguration Config = (YamlConfiguration) getConfig();
-		new File("plugins/UltraBan/").mkdir();
+		FileConfiguration config = getConfig();
+		this.getDataFolder().mkdir();
 		data.createDefaultConfiguration("config.yml");
-		this.autoComplete = Config.getBoolean("auto-complete", true);
-		if (Config != null) this.getLogger().info("Configuration: config.yml Loaded!");
-		db.initialize();
+		autoComplete = config.getBoolean("auto-complete", true);
+		long l = config.getLong("serverSync.timing", 72000L); 
+		if(this.getConfig().getString("Database").equalsIgnoreCase("mysql")){
+			db = new SQL(this);
+		}else{
+			db = new SQLite(this);
+		}
+		db.load();
 		db.loadJailed();
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(playerListener, this);
-		pm.registerEvents(blockListener, this);
-		if(Config.getBoolean("serverSync.enable", false)) this.getServer().getScheduler().scheduleAsyncRepeatingTask(this,new Runnable(){
+		pm.registerEvents(new UltraBanPlayerListener(this), this);
+		pm.registerEvents(new UltraBanBlockListener(this), this);
+		if(config.getBoolean("serverSync.enable", false)) this.getServer().getScheduler().scheduleAsyncRepeatingTask(this,new Runnable(){
 			@Override
 			public void run() {
-				tempBans.clear();
-				tempJail.clear();
-				bannedPlayers.clear();
-				bannedIPs.clear();
-				jailed.clear();
-				muted.clear();
-				banEditors.clear();
-				
-				db.initialize();
+				onDisable();
+				db.load();
 				db.loadJailed();
 				System.out.println("UltraBans Sync is Enabled!");
 			}
 			
-		}, Config.getLong("serverSync.timing", 72000L), Config.getLong("serverSync.timing", 72000L));	
+		},l,l);	
 		loadCommands();	
 	}
 	public boolean setupEconomy(){
@@ -151,6 +147,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("invof").setExecutor(new Inventory(this));
 		getCommand("ustatus").setExecutor(new Status(this));
 		getCommand("uclean").setExecutor(new Clean(this));
+		getCommand("uping").setExecutor(new Ping(this));
 	}
 }
 		
