@@ -23,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.modcrafting.ultrabans.commands.Ban;
 import com.modcrafting.ultrabans.commands.Check;
 import com.modcrafting.ultrabans.commands.CheckIP;
+import com.modcrafting.ultrabans.commands.Clean;
 import com.modcrafting.ultrabans.commands.DupeIP;
 import com.modcrafting.ultrabans.commands.Edit;
 import com.modcrafting.ultrabans.commands.Empty;
@@ -90,13 +91,12 @@ public class UltraBan extends JavaPlugin {
 		data.createDefaultConfiguration("config.yml");
 		this.autoComplete = Config.getBoolean("auto-complete", true);
 		if (Config != null) this.getLogger().info("Configuration: config.yml Loaded!");
-		db.initialize(this);
+		db.initialize();
 		db.loadJailed();
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(playerListener, this);
 		pm.registerEvents(blockListener, this);
 		if(Config.getBoolean("serverSync.enable", false)) this.getServer().getScheduler().scheduleAsyncRepeatingTask(this,new Runnable(){
-			UltraBan plugin;
 			@Override
 			public void run() {
 				tempBans.clear();
@@ -107,7 +107,7 @@ public class UltraBan extends JavaPlugin {
 				muted.clear();
 				banEditors.clear();
 				
-				db.initialize(plugin);
+				db.initialize();
 				db.loadJailed();
 				System.out.println("UltraBans Sync is Enabled!");
 			}
@@ -150,6 +150,7 @@ public class UltraBan extends JavaPlugin {
 		getCommand("pardon").setExecutor(new Pardon(this));
 		getCommand("invof").setExecutor(new Inventory(this));
 		getCommand("ustatus").setExecutor(new Status(this));
+		getCommand("uclean").setExecutor(new Clean(this));
 	}
 }
 		

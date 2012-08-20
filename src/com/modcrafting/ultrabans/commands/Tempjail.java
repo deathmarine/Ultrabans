@@ -31,7 +31,7 @@ public class Tempjail implements CommandExecutor{
 			player = (Player)sender;
 			admin = player.getName();
 		}
-		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label.toLowerCase()).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}

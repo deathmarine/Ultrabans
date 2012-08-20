@@ -47,12 +47,10 @@ commands:
     description: Temporarily Jails a player to a location
     usage: /<command> {player} (-s/-a) {amt} {sec/min/hour/day} {Reason}
     permission: ultraban.tempjail
-    aliases: [tjail]
   pardon:
     description: Release a Player
     usage: /<command> {player}
     permission: ultraban.pardon
-    aliases: [unjail]
   lockdown:
     description: Lockdown the Server
     usage: /<command> <on/off/status> 
@@ -75,26 +73,26 @@ commands:
     usage: /<command> {amt}
     permission: ultraban.history
 #Management#
+  uclean:
+    description: Deletes Player dat files for banned players
+    usage: /<command>
+    permission: ultraban.clean
   uversion:
     description: Shows current Ultrabans Version
     usage: /<command>
     permission: ultraban.version
-    aliases: [uv,uver]
   ustatus:
     description: Shows current Ultrabans status
     usage: /<command>
     permission: ultraban.status
-    aliases: [ustat]
   ureload:
     description: Reload the banlist
     usage: /<command>
     permission: ultraban.reload
-    aliases: [ur]
   editban:
     description: Edit a ban
     usage: /<command> <list/load/id/save/view/reason/time/cancel/help>
     permission: ultraban.editban
-    aliases: [eb,eban]
   exportbans:
     description: Export bans to default text files
     usage: /<command>
@@ -124,7 +122,6 @@ commands:
     description: Mute player
     usage: /<command> {player}
     permission: ultraban.mute
-    aliases: [mute]
   invof:
     description: Shows the current inventory of a player
     usage: /<command> {player}
@@ -167,6 +164,9 @@ permissions:
       ultraban.tempban: true
       ultraban.ipban: true
       ultraban.tempipban: true
+      ultraban.clean: true
+  ultraban.clean:
+    description: Allows the user to delete Player dat files for banned players 
   ultraban.ban:
     description: Allows the Administration to ban a player
   ultraban.tempban:

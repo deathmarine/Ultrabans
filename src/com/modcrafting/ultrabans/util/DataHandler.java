@@ -54,4 +54,10 @@ public class DataHandler {
 			}
 		}
 	}
+	public boolean deletePlyrdat(String name){
+		if(plugin.getServer().getOfflinePlayer(name)!=null&&!plugin.getServer().getOfflinePlayer(name).isOnline()){
+			 return new File(plugin.getServer().getWorlds().get(0).getName()+"/players/",name+".dat").delete();
+		}
+		return false;
+	}
 }

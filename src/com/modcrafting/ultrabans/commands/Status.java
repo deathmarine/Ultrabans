@@ -13,7 +13,7 @@ public class Status implements CommandExecutor {
 		plugin = instance;
 	}
 	public boolean onCommand(CommandSender sender, Command arg1, String label, String[] arg3) {
-		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label.toLowerCase()).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}

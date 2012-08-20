@@ -28,7 +28,7 @@ public class Ban implements CommandExecutor{
 		if (sender instanceof Player){
 			admin = sender.getName();
 		}
-		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label.toLowerCase()).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
@@ -79,12 +79,14 @@ public class Ban implements CommandExecutor{
 					return true;
 				}
 			}
+
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			if(banMsgBroadcast.contains(plugin.regexAdmin)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			if(banMsgBroadcast.contains(plugin.regexReason)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexReason, reason);
 			if(banMsgBroadcast.contains(plugin.regexVictim)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexVictim, p.toLowerCase());
-			plugin.bannedPlayers.add(p.toLowerCase());
-			plugin.db.addPlayer(p.toLowerCase(), reason, admin, 0, 0);
+			plugin.bannedPlayers.add(victim.getName().toLowerCase());
+			if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(victim.getName());
+			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
 			plugin.getLogger().info(" " + admin + " banned player " + p + ".");
 			if(broadcast){
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
@@ -93,11 +95,6 @@ public class Ban implements CommandExecutor{
 			}
 			return true;			
 		}
-		/*
-		 * End of Offline
-		 */
-		
-		//Emo-Command
 		if(victim.getName().equalsIgnoreCase(admin)){
 			sender.sendMessage(ChatColor.RED + "You cannot ban yourself!");
 			return true;
@@ -123,12 +120,13 @@ public class Ban implements CommandExecutor{
 		if(banMsgBroadcast.contains(plugin.regexReason)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexReason, reason);
 		if(banMsgBroadcast.contains(plugin.regexVictim)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexVictim, p.toLowerCase());
 		victim.kickPlayer(plugin.util.formatMessage(banMsgVictim));
+		if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(victim.getName());
 		if(broadcast){
 			plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
 		}else{
 			sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(banMsgBroadcast));
 		}
-		plugin.getLogger().info(" " + admin + " banned player " + victim.getName() + ".");
+		plugin.getLogger().info(admin + " banned player " + victim.getName() + ".");
 		return true;
 	}
 }

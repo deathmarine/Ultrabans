@@ -30,7 +30,7 @@ public class Perma implements CommandExecutor{
 			player = (Player)sender;
 			admin = player.getName();
 		}
-		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label).get("permission"))){
+		if(!sender.hasPermission((String) plugin.getDescription().getCommands().get(label.toLowerCase()).get("permission"))){
 			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
 			return true;
 		}
@@ -91,7 +91,8 @@ public class Perma implements CommandExecutor{
 		if(adminMsg.contains(plugin.regexAdmin)) adminMsg = adminMsg.replaceAll(plugin.regexAdmin, admin);
 		if(adminMsg.contains(plugin.regexReason)) adminMsg = adminMsg.replaceAll(plugin.regexReason, reason);
 		victim.kickPlayer(plugin.util.formatMessage(adminMsg));
-		
+
+		if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(victim.getName());
 		String permbanMsgBroadcast = config.getString("messages.permbanMsgBroadcast", "%victim% has been permabanned by %admin%. Reason: %reason%");
 		if(permbanMsgBroadcast.contains(plugin.regexAdmin)) permbanMsgBroadcast = permbanMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 		if(permbanMsgBroadcast.contains(plugin.regexReason)) permbanMsgBroadcast = permbanMsgBroadcast.replaceAll(plugin.regexReason, reason);

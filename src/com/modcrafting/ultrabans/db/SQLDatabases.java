@@ -110,7 +110,7 @@ public class SQLDatabases{
 			"PRIMARY KEY (`name`)" + 
 			") ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
 	
-	public void initialize(UltraBan plugin){
+	public void initialize(){
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		String mysqlTable = Config.getString("mysql-table");
 		String logip = Config.getString("mysql-table-ip");
@@ -199,7 +199,38 @@ public class SQLDatabases{
 		}
 		
 	}
-	
+	public List<String> getBans(){
+		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
+		String mysqlTable = Config.getString("mysql-table");
+		Connection conn = getSQLConnection();
+		if (conn != null) {
+			PreparedStatement ps = null;
+			ResultSet rs = null;
+			try {
+				ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0)");
+				rs = ps.executeQuery();
+				List<String> list = new ArrayList<String>();
+				while (rs.next()){
+					list.add(rs.getString("name"));
+				}
+				return list;
+			} catch (SQLException ex) {
+				plugin.getLogger().log(Level.SEVERE, "Couldn't execute MySQL statement: ", ex);
+			} finally {
+				try {
+					if (ps != null)
+						ps.close();
+					if (rs != null)
+						rs.close();
+					if (conn != null)
+						conn.close();
+				} catch (SQLException ex) {
+					plugin.getLogger().log(Level.SEVERE, "Failed to close MySQL connection: ", ex);
+				}
+			}	
+		}
+		return null;		
+	}
 	public void setAddress(String pName, String logIp){
 		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
 		String logip = Config.getString("mysql-table-ip");

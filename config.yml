@@ -12,6 +12,7 @@ mysql-table-ip: banlistip
 sqlite-dbname: banlist
 #parameters#
 auto-complete: true
+CleanOnBan: true
 #Max allowable fine#
 #If Zero then no max will be placed#
 maxFineAmt: 0
