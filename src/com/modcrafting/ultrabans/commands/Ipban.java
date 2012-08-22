@@ -109,13 +109,10 @@ public class Ipban implements CommandExecutor{
 			}
 			victimip = plugin.db.getAddress(victim.getName().toLowerCase());
 		}
-		
-		
 		if(plugin.bannedIPs.contains(victimip)){
-			sender.sendMessage(ChatColor.BLUE + victim.getName() +  ChatColor.GRAY + " is already banned for " + plugin.db.getBanReason(p.toLowerCase()));
+			sender.sendMessage(ChatColor.BLUE + p +  ChatColor.GRAY + " is already banned for " + plugin.db.getBanReason(p.toLowerCase()));
 			return true;
 		}
-		
 		if(victimip == null){
 			sender.sendMessage(ChatColor.GRAY + "IP address not found by Ultrabans for " + p.toLowerCase());
 			sender.sendMessage(ChatColor.GRAY + "Processed as a normal ban for " + p.toLowerCase());
