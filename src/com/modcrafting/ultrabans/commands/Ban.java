@@ -88,7 +88,7 @@ public class Ban implements CommandExecutor{
 			if(banMsgBroadcast.contains(plugin.regexVictim)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexVictim, p.toLowerCase());
 			plugin.bannedPlayers.add(name.toLowerCase());
 			if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(name);
-			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
+			plugin.db.addPlayer(name, reason, admin, 0, 0);
 			plugin.getLogger().info(" " + admin + " banned player " + p + ".");
 			if(broadcast){
 				plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
