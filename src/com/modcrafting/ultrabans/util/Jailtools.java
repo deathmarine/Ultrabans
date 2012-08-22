@@ -17,14 +17,13 @@ public class Jailtools {
     public Jailtools(UltraBan ultraBan) {
 		this.plugin = ultraBan;
 	}
-    public Location setlp;
 
 	public void setJail(Location location, String label) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-        config.set(label+".x", (int) setlp.getX());
-        config.set(label+".y", (int) setlp.getY());
-        config.set(label+".z", (int) setlp.getZ());
-        config.set(label+".world", setlp.getWorld().getName());
+        config.set(label+".x", (int) location.getX());
+        config.set(label+".y", (int) location.getY());
+        config.set(label+".z", (int) location.getZ());
+        config.set(label+".world", location.getWorld().getName());
         plugin.saveConfig();
 
     }
