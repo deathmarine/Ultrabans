@@ -240,7 +240,7 @@ public class UltraBanPlayerListener implements Listener{
 		 if(config.getBoolean("Chat.IPCheck.Enable", true)){
 			//127.0.0.1
 			String mes = message;
-			String[] content = {",","-","_","+","="};
+			String[] content = {"\\,","\\-","\\_","\\="};
 			for (int ii=0;ii<content.length;ii++){
 				if(message.contains(content[ii])) mes = message.replaceAll(content[ii], "."); 									
 			}
