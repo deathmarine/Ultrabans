@@ -72,20 +72,22 @@ public class Ban implements CommandExecutor{
 		 * Offline Ban
 		 */
 		if(victim == null){
+			//Fix Player not found NPE.
+			String name = p;
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim != null){
 				if(victim.hasPermission( "ultraban.override.ban")){
 					sender.sendMessage(ChatColor.RED + "Your ban has been denied!");
 					return true;
 				}
+				name = victim.getName();
 			}
-
 			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
 			if(banMsgBroadcast.contains(plugin.regexAdmin)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			if(banMsgBroadcast.contains(plugin.regexReason)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexReason, reason);
 			if(banMsgBroadcast.contains(plugin.regexVictim)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexVictim, p.toLowerCase());
-			plugin.bannedPlayers.add(victim.getName().toLowerCase());
-			if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(victim.getName());
+			plugin.bannedPlayers.add(name.toLowerCase());
+			if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(name);
 			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
 			plugin.getLogger().info(" " + admin + " banned player " + p + ".");
 			if(broadcast){
