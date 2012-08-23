@@ -23,7 +23,7 @@ public class Inventory implements CommandExecutor{
 		if(sender instanceof Player){
 			if(args.length<1)return false;
 			OfflinePlayer victim = plugin.getServer().getOfflinePlayer(args[0]);
-			if(victim==null){
+			if(victim==null||!victim.isOnline()){
 				sender.sendMessage(ChatColor.RED+"Unable to find player");
 				return true;
 			}
