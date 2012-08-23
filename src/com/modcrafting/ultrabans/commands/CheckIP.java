@@ -15,6 +15,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import com.modcrafting.ultrabans.UltraBan;
 
 public class CheckIP implements CommandExecutor{
@@ -36,7 +38,13 @@ public class CheckIP implements CommandExecutor{
 		String ip = plugin.db.getAddress(p.toLowerCase());
 		InetAddress InetP;
 		if(ip == null){
-			plugin.db.setAddress(plugin.getServer().getPlayer(p).getName().toLowerCase(), plugin.getServer().getPlayer(p).getAddress().getAddress().getHostAddress());
+			Player n = plugin.getServer().getPlayer(p);
+			if(n!=null){
+				plugin.db.setAddress(n.getName().toLowerCase(), plugin.getServer().getPlayer(p).getAddress().getAddress().getHostAddress());
+			}else{
+				sender.sendMessage(ChatColor.GRAY + "Player not found!");
+				return;
+			}
 		}
 		try {
 			InetP = InetAddress.getByName(ip);
