@@ -22,8 +22,7 @@ public class DataHandler {
 		File actual = new File(plugin.getDataFolder(), name);
 		if (!actual.exists()) {
 
-			InputStream input =
-				this.getClass().getResourceAsStream("/" + name);
+			InputStream input =	this.getClass().getResourceAsStream("/" + name);
 			if (input != null) {
 				FileOutputStream output = null;
 

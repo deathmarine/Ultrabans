@@ -5,13 +5,14 @@
  * A full copy of this license can be found at
  * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
  */
-package com.modcrafting.ultrabans;
+package com.modcrafting.ultrabans.listeners;
 
 import java.util.Date;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -24,6 +25,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+
+import com.modcrafting.ultrabans.UltraBan;
 
 public class UltraBanPlayerListener implements Listener{
 	UltraBan plugin;
@@ -120,37 +123,30 @@ public class UltraBanPlayerListener implements Listener{
 
 			@Override
 			public void run() {
+				String ip = plugin.db.getAddress(player.getName());
+				List<String> list = plugin.db.listPlayers(ip);
+				int ping = ((CraftPlayer) player).getHandle().ping;
 				for(Player admin:plugin.getServer().getOnlinePlayers()){
 					if(admin.hasPermission("ultraban.dupeip")){
-						String ip = plugin.db.getAddress(player.getName());
 						if(ip == null){
 							admin.sendMessage(ChatColor.RED + "Unable to view ip for " + player.getName() + " !");
 							return;
 						}
-						String sip = null;
-						OfflinePlayer[] pl = plugin.getServer().getOfflinePlayers();
-						for (int i=0; i<pl.length; i++){
-							sip = plugin.db.getAddress(pl[i].getName());
-					        if (sip != null && sip.equalsIgnoreCase(ip)){
-					        	if (!pl[i].getName().equalsIgnoreCase(player.getName())){
-					        		admin.sendMessage(ChatColor.GRAY + "Player: " + pl[i].getName() + " duplicates player: " + player.getName() + "!");
-					        	}
-					        }
-					    }
-						
+						for(String name:list){
+							if(!name.equalsIgnoreCase(player.getName())) admin.sendMessage(ChatColor.GRAY + "Player: " + name + " duplicates player: " + player.getName() + "!");
+						}
 					}
 					if(admin.hasPermission("ultraban.ping")){
 						if(checkPlayerPing(player)){
 							admin.sendMessage(ChatColor.GRAY + "Player: " + player.getName() + " was kicked for High Ping!");
 						}else{
-							int ping = ((CraftPlayer) player).getHandle().ping;
 							admin.sendMessage(ChatColor.GRAY + "Player: " + player.getName() + " Ping: "+String.valueOf(ping)+"ms");						
 						}
 						
 					}
 				}
 			}
-		});
+		},20L);
 	}
 
 	@EventHandler(priority = EventPriority.LOW)

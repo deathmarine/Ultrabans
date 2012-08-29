@@ -5,7 +5,7 @@
  * A full copy of this license can be found at
  * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
  */
-package com.modcrafting.ultrabans;
+package com.modcrafting.ultrabans.listeners;
 
 import java.util.Date;
 
@@ -18,6 +18,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+
+import com.modcrafting.ultrabans.UltraBan;
 
 public class UltraBanBlockListener implements Listener {
 	UltraBan plugin;

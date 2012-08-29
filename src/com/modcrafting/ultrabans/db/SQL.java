@@ -66,21 +66,12 @@ public class SQL implements Database{
 						plugin.bannedIPs.add(ip);
 					}
 				}
-				try {
-					if (ps != null)
-						ps.close();
-					if (rs != null)
-						rs.close();
-					if (conn != null)
-						conn.close();
-				} catch (SQLException ex) {
-					plugin.getLogger().log(Level.SEVERE, "SQLite:Failed to close MySQL connection: ", ex);
-				}
+				close(conn,ps,rs);
 			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "SQLite:Unable to retreive database connection: ", ex);
-            }
+				plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+			}
 		}else{
-			plugin.getLogger().log(Level.SEVERE, "SQLite:Unable to retreive database connection: ");
+			plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection");
 		}
 	}
 	public String SQLCreateBansTable = "CREATE TABLE IF NOT EXISTS %table% (" +
@@ -121,32 +112,21 @@ public class SQL implements Database{
 	}
 	@Override
 	public List<String> getBans(){
-		Connection conn = getSQLConnection();
-		if (conn != null) {
-			PreparedStatement ps = null;
-			ResultSet rs = null;
-			try {
-				ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0)");
-				rs = ps.executeQuery();
-				List<String> list = new ArrayList<String>();
-				while (rs.next()){
-					list.add(rs.getString("name"));
-				}
-				return list;
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "Couldn't execute MySQL statement: ", ex);
-			} finally {
-				try {
-					if (ps != null)
-						ps.close();
-					if (rs != null)
-						rs.close();
-					if (conn != null)
-						conn.close();
-				} catch (SQLException ex) {
-					plugin.getLogger().log(Level.SEVERE, "Failed to close MySQL connection: ", ex);
-				}
-			}	
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getSQLConnection();
+			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0)");
+			rs = ps.executeQuery();
+			List<String> list = new ArrayList<String>();
+			while (rs.next()){
+				list.add(rs.getString("name"));
+			}
+			close(conn,ps,rs);
+			return list;
+		} catch (SQLException ex) {
+			Error.execute(plugin, ex);
 		}
 		return null;		
 	}
@@ -160,18 +140,11 @@ public class SQL implements Database{
 			ps.setString(1, pName);
 			ps.setString(2, logIp);
 			ps.executeUpdate();
+			close(conn,ps,null);
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
+		return;
 	}
 	@Override
 	public String getAddress(String pName) {
@@ -183,23 +156,14 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + logip+ " WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
+			String ip = null;
 			while (rs.next()){
-				String ip = rs.getString("lastip");
-				return ip;
+				ip = rs.getString("lastip");
 			}
+			close(conn,ps,rs);
+			return ip;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-				if (rs != null)
-					rs.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return null;
 	}
@@ -213,23 +177,14 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + logip+ " WHERE lastip = ?");
 			ps.setString(1, ip);
 			rs = ps.executeQuery();
+			String name = null;
 			while (rs.next()){
-				String name = rs.getString("name");
-				return name;
+				name = rs.getString("name");
 			}
+			close(conn,ps,rs);
+			return name;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't find player.");
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-				if (rs != null)
-					rs.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return null;
 	}
@@ -239,22 +194,13 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
-				ps.setString(1, player);
-			
+			ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
+			ps.setString(1, player);
 			ps.executeUpdate();
+			close(conn,ps,null);
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			Error.execute(plugin, ex);
 			return false;
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
 		}
 		return true;
 
@@ -269,24 +215,14 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
 			ps.setString(1, bname);
 			rs = ps.executeQuery();
-			while (rs.next()){
-				if(rs.getInt("type") == 9){
-				return true;
-				}
+			boolean set = false;
+			while(rs.next()){
+				if(rs.getInt("type") == 9)	set = true;
 			}
+			close(conn,ps,rs);
+			return set;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-			return false;
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-				return false;
-			}
+			Error.execute(plugin, ex);
 		}
 		return false;
 	}
@@ -304,17 +240,9 @@ public class SQL implements Database{
 			ps.setLong(4, System.currentTimeMillis()/1000);
 			ps.setLong(6, type);
 			ps.executeUpdate();
+			close(conn,ps,null);
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 	}
 	@Override
@@ -331,17 +259,9 @@ public class SQL implements Database{
 			ps.setLong(4, time);
 			ps.setLong(6, type);
 			ps.executeUpdate();
+			close(conn,ps,null);
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 	}
 	@Override
@@ -353,21 +273,14 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
+			String reason = "";
 			while (rs.next()){
-				String reason = rs.getString("reason");
-				return reason;
+				reason = rs.getString("reason");
 			}
+			close(conn,ps,rs);
+			return reason;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return "";
 	}
@@ -382,22 +295,14 @@ public class SQL implements Database{
 			ps.setString(1, player);
 			ps.setString(2, ip);
 			rs = ps.executeQuery();
+			boolean set = false;
 			while(rs.next()){
-				return true;
+				set = true;
 			}
+			close(conn,ps,rs);
+			return set;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-				if (rs != null)
-					rs.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return false;
 	}
@@ -411,17 +316,9 @@ public class SQL implements Database{
 			ps.setString(1, ip);
 			ps.setString(2, p);
 			ps.executeUpdate();
+			close(conn,ps,null);
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 	}
 	@Override
@@ -435,23 +332,13 @@ public class SQL implements Database{
 			ps.setString(1, name);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
-			while(rs.next()){
+			while (rs.next()){
 				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
+			close(conn,ps,rs);
 			return bans;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-				if (rs != null)
-					rs.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return null;
 	}
@@ -467,23 +354,13 @@ public class SQL implements Database{
 			ps.setInt(1, num);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
-			while(rs.next()){
+			while (rs.next()){
 				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
+			close(conn,ps,rs);
 			return bans;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-				if (rs != null)
-					rs.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return null;
 	}
@@ -497,22 +374,14 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
+			EditBan eb = null;
 			while (rs.next()){
-				return new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
+				eb = new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
 			}
+			close(conn,ps,rs);
+			return eb;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-				if (rs != null)
-					rs.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return null;
 	}
@@ -531,20 +400,10 @@ public class SQL implements Database{
 			while (rs.next()){
 				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
+			close(conn,ps,rs);
 			return bans;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-				if (rs != null)
-					rs.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return null;
 	}
@@ -558,22 +417,14 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE id = ?");
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
+			EditBan eb = null;
 			while (rs.next()){
-				return new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
+				eb = new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
 			}
+			close(conn,ps,rs);
+			return eb;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-				if (rs != null)
-					rs.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return null;
 	}
@@ -592,17 +443,9 @@ public class SQL implements Database{
 			ps.setLong(6, ban.type);
 			ps.setInt(7, ban.id);
 			ps.executeUpdate();
+			close(conn,ps,null);
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 	}
 	@Override
@@ -616,18 +459,10 @@ public class SQL implements Database{
 				ps.setInt(2, 6);
 			
 			ps.executeUpdate();
+			close(conn,ps,null);
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
+			Error.execute(plugin, ex);
 			return false;
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
 		}
 		return true;
 		
@@ -641,21 +476,14 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND type = 6 ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
+			String reason = null;
 			while (rs.next()){
-				String reason = rs.getString("reason");
-				return reason;
+				reason = rs.getString("reason");
 			}
+			close(conn,ps,rs);
+			return reason;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return null;
 	}
@@ -676,17 +504,9 @@ public class SQL implements Database{
 					plugin.tempJail.put(pName,pTime);
 				}
 			}
+			close(conn,ps,rs);
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 	}
 	@Override
@@ -698,23 +518,49 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
+			String admin = null;
 			while (rs.next()){
-				String admin = rs.getString("admin");
-				return admin;
+				admin = rs.getString("admin");
 			}
+			close(conn,ps,rs);
+			return admin;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "[UltraBan] Couldn't execute MySQL statement: ", ex);
-		} finally {
-			try {
-				if (ps != null)
-					ps.close();
-				if (conn != null)
-					conn.close();
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "[UltraBan] Failed to close MySQL connection: ", ex);
-			}
+			Error.execute(plugin, ex);
 		}
 		return null;
 	}		
 
+	@Override
+	public List<String> listPlayers(String ip){
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			conn = getSQLConnection();
+			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE ip = ?");
+			ps.setString(1, ip);
+			rs = ps.executeQuery();
+			List<String> bans = new ArrayList<String>();
+			while(rs.next()){
+				bans.add(rs.getString("name"));
+			}
+			close(conn,ps,rs);
+			return bans;
+		} catch (SQLException ex) {
+			Error.execute(plugin, ex);
+		}
+		return null;
+	}
+	public void close(Connection conn,PreparedStatement ps,ResultSet rs){
+		try {
+			if (ps != null)
+				ps.close();
+			if (conn != null)
+				conn.close();
+			if (rs != null)
+				rs.close();
+		} catch (SQLException ex) {
+			Error.close(plugin, ex);
+		}
+	}
 }

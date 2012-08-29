@@ -7,8 +7,9 @@
  */
 package com.modcrafting.ultrabans.commands;
 
+import java.util.List;
+
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -26,27 +27,20 @@ public class DupeIP implements CommandExecutor{
 		}
 		if (args.length < 1) return false;
 		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
-
 			@Override
 			public void run() {
 				String p = args[0];
-
+				
 				p = plugin.util.expandName(p); 
 				String ip = plugin.db.getAddress(p);
 				if(ip == null){
 					sender.sendMessage(ChatColor.RED + "Unable to view ip for " + p + " !");
 					return;
 				}
-				String sip = null;
-				OfflinePlayer[] pl = plugin.getServer().getOfflinePlayers();
+				List<String> list = plugin.db.listPlayers(ip);
 				sender.sendMessage(ChatColor.AQUA + "Scanning Current IP of " + p + ": " + ip + " !");
-				for (int i=0; i<pl.length; i++){
-					sip = plugin.db.getAddress(pl[i].getName());
-			        if (sip != null && sip.equalsIgnoreCase(ip)){
-			        	if (!pl[i].getName().equalsIgnoreCase(p)){
-				        	sender.sendMessage(ChatColor.GRAY + "Player: " + pl[i].getName() + " duplicates player: " + p + "!");
-			        	}
-			        }
+				for(String name:list){
+					if(!name.equalsIgnoreCase(p)) sender.sendMessage(ChatColor.GRAY + "Player: " + name + " duplicates player: " + p + "!");
 				}
 				sender.sendMessage(ChatColor.GREEN + "Scanning Complete!");
 			}
