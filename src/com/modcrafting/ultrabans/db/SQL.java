@@ -537,7 +537,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE ip = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE lastip = ?");
 			ps.setString(1, ip);
 			rs = ps.executeQuery();
 			List<String> bans = new ArrayList<String>();

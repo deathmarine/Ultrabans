@@ -536,7 +536,7 @@ public class SQLite implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM banlistip WHERE ip = ?");
+			ps = conn.prepareStatement("SELECT * FROM banlistip WHERE lastip = ?");
 			ps.setString(1, ip);
 			rs = ps.executeQuery();
 			List<String> bans = new ArrayList<String>();
