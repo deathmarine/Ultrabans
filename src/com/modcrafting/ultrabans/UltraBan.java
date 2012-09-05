@@ -87,17 +87,18 @@ public class UltraBan extends JavaPlugin {
 		banEditors.clear();
 	}
 	public void onEnable() {
+		long time = System.currentTimeMillis();
 		this.getDataFolder().mkdir();
 		data.createDefaultConfiguration("config.yml");
 		FileConfiguration config = getConfig();
 		autoComplete = config.getBoolean("auto-complete", true);
 		long l = config.getLong("serverSync.timing", 72000L); 
-		long time = System.currentTimeMillis();
 		if(this.getConfig().getString("Database").equalsIgnoreCase("mysql")){
 			db = new SQL(this);
 		}else{
 			db = new SQLite(this);
 		}
+		
 		db.load();
 		db.loadJailed();
 		
