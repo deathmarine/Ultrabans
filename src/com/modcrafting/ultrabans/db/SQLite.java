@@ -191,7 +191,7 @@ public class SQLite implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("DELETE FROMvWHERE (name = ? AND (type = 0 OR type = 1)) AND time = (SELECT time FROM banlist WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1)");
+			ps = conn.prepareStatement("DELETE FROM WHERE (name = ? AND (type = 0 OR type = 1)) AND time = (SELECT time FROM banlist WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1)");
 			ps.setString(1, player);
 			ps.setString(2, player);
 			ps.executeUpdate();
