@@ -42,33 +42,33 @@ public class Import implements CommandExecutor{
 							g(p);
 						}
 					}
+					banlist.close();
 					BufferedReader bannedIP = new BufferedReader(new FileReader("banned-ips.txt"));
 					String ip;
 					while ((ip = bannedIP.readLine()) != null){
 						if(ip!=null&&!ip.contains("#")&&ip.length()>0){
 						    String[] args = ip.split("\\|");
 						    String name = args[0].trim();
-							if(!plugin.bannedIPs.contains(name))
-								plugin.bannedIPs.add(name);
-								String cknullIP = plugin.db.getName(name);
-								if (cknullIP != null){
-									plugin.db.addPlayer(plugin.db.getName(name), "imported", args[2].trim(), 0, 1);
-								}else{
-									plugin.db.setAddress("import", name);
-									
-									plugin.db.addPlayer("import", "imported", args[2].trim(), 0, 1);
-								}
+							if(!plugin.bannedIPs.contains(name)) plugin.bannedIPs.add(name);
+							String cknullIP = plugin.db.getName(name);
+							if (cknullIP != null){
+								plugin.db.addPlayer(plugin.db.getName(name), "imported", args[2].trim(), 0, 1);
+							}else{
+								plugin.db.setAddress("import", name);
+								plugin.db.addPlayer("import", "imported", args[2].trim(), 0, 1);
 							}
 						}
-						sender.sendMessage(ChatColor.GREEN + "Banlist imported.");
-						plugin.getLogger().info("System imported the banlist to the database.");
-						return;
-					} catch (IOException e) {
-						plugin.getLogger().log(Level.SEVERE, "Could not import ban list.");
-						sender.sendMessage(ChatColor.RED + "Could not import ban list.");
 					}
+					bannedIP.close();
+					sender.sendMessage(ChatColor.GREEN + "Banlist imported.");
+					plugin.getLogger().info("System imported the banlist to the database.");
+					return;
+				} catch (IOException e) {
+					plugin.getLogger().log(Level.SEVERE, "Could not import ban list.");
+					sender.sendMessage(ChatColor.RED + "Could not import ban list.");
 				}
-			});	
+			}
+		});	
 		return true;
 	}
 
