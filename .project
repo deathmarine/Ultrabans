@@ -2,7 +2,7 @@
 <projectDescription>
 
     <name>
-UltraBan
+UltraBan
     </name>
 
     <comment>
@@ -16,7 +16,7 @@ UltraBan
         <buildCommand>
 
             <name>
-org.eclipse.mylyn.wikitext.ui.wikiTextValidationBuilder
+org.eclipse.mylyn.wikitext.ui.wikiTextValidationBuilder
             </name>
 
             <arguments>
@@ -26,7 +26,7 @@ org.eclipse.mylyn.wikitext.ui.wikiTextValidationBuilder
         <buildCommand>
 
             <name>
-org.eclipse.jdt.core.javabuilder
+org.eclipse.jdt.core.javabuilder
             </name>
 
             <arguments>
@@ -37,11 +37,11 @@ org.eclipse.jdt.core.javabuilder
     <natures>
 
         <nature>
-org.eclipse.jdt.core.javanature
+org.eclipse.jdt.core.javanature
         </nature>
 
         <nature>
-org.eclipse.mylyn.wikitext.ui.wikiTextNature
+org.eclipse.mylyn.wikitext.ui.wikiTextNature
         </nature>
     </natures>
 
