@@ -83,12 +83,12 @@ public class SQL implements Database{
 			"`id` int(11) NOT NULL AUTO_INCREMENT," + 
 			"`type` int(1) NOT NULL DEFAULT '0'," + 
 			"PRIMARY KEY (`id`) USING BTREE" + 
-			") ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
+			") ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8_general_ci ROW_FORMAT=DYNAMIC;";
 	public String SQLCreateBanipTable = "CREATE TABLE IF NOT EXISTS %table% (" +
 			"`name` varchar(32) NOT NULL," + 
 			"`lastip` tinytext NOT NULL," + 
 			"PRIMARY KEY (`name`)" + 
-			") ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
+			") ENGINE=InnoDB DEFAULT CHARSET=utf8_general_ci ROW_FORMAT=DYNAMIC;";
 	@Override
 	public void load() {
 
