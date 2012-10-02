@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import net.h31ix.updater.Updater;
+import net.h31ix.updater.Updater.UpdateResult;
+import net.h31ix.updater.Updater.UpdateType;
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -87,6 +90,10 @@ public class UltraBan extends JavaPlugin {
 		banEditors.clear();
 	}
 	public void onEnable() {
+		Updater up = new Updater(this, "ultrabans", this.getFile(), UpdateType.DEFAULT, true);
+		if(!up.getResult().equals(UpdateResult.SUCCESS)||up.pluginFile(this.getFile().getName())){
+			this.getLogger().info("Error checking dev.bukkit.org for updates.");
+		}
 		long time = System.currentTimeMillis();
 		this.getDataFolder().mkdir();
 		data.createDefaultConfiguration("config.yml");
