@@ -8,6 +8,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.net.Socket;
+
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,6 +19,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
@@ -36,9 +41,13 @@ public class Frame{
 	JFrame frame;
 	int frameX;
 	int frameY;
-	JLabel statsBar;
+	public JLabel statsBar;
+	public JTextArea playerlist;
+	public JTextArea actionlist;
+	public JTextArea console;
 	final UndoManager undo = new UndoManager();
 	Connection connection;
+	Socket sock;
 	public Frame(){
 		frame = new JFrame("Ultrabans Live");
 		new Thread(new Splash(frame)).start();
@@ -62,6 +71,7 @@ public class Frame{
 		lower.setPreferredSize(new Dimension(frame.getWidth(), 64));
 		inputText(lower);
 		statusBar(lower);
+		mainArea();
 		frame.getContentPane().add(lower, BorderLayout.SOUTH);
 		frame.addWindowListener(new WinListener(this));
 	}
@@ -78,7 +88,17 @@ public class Frame{
 					showError("It appears you are already connected.");
 					return;
 				}else{
-					connection= new Connection();
+					String ip = showInput("Connect","Type the ip of the server you would like to connect to. \nExample: xxx.xxx.xx.xxx:port ");
+					if(ip!=null){
+						String[] array = ip.split(":");
+						int port;
+						try{
+							port = Integer.parseInt(array[1]);							
+						}catch(NumberFormatException nfe){
+							port = 123456;
+						}
+						connection= new Connection(array[0],getFrameClass(),port);						
+					}
 				}
 			}
 		});
@@ -172,6 +192,45 @@ public class Frame{
 		});
 		
 	}
+	private void mainArea(){
+		JPanel p = new JPanel();
+		JLabel label = new JLabel("Online Players");
+		playerlist = new JTextArea();
+		playerlist.setEditable(false);
+		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+		p.add(label);
+		p.add(new JScrollPane(playerlist));
+		
+		JPanel p2 = new JPanel();
+		JLabel label1 = new JLabel("Action Players");
+		actionlist = new JTextArea();
+		actionlist.setEditable(false);
+		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
+		p2.add(label1);
+		p2.add(new JScrollPane(actionlist));
+		
+		JSplitPane r = new JSplitPane(JSplitPane.VERTICAL_SPLIT,p,p2);
+		r.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		r.setDividerSize(10);
+        r.setOneTouchExpandable(true);
+        r.setResizeWeight(0.5);
+		
+		JPanel p3 = new JPanel();
+		JLabel label2 = new JLabel("Console");
+		console = new JTextArea();
+		console.setEditable(false);
+		p3.setLayout(new BoxLayout(p3, BoxLayout.Y_AXIS));
+		p3.add(label2);
+		p3.add(new JScrollPane(console));
+		
+		JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,p3,r);
+		sp.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		sp.setDividerSize(10);
+        sp.setOneTouchExpandable(true);
+        sp.setResizeWeight(0.5);
+        sp.setDividerLocation(450);
+		frame.getContentPane().add(sp,BorderLayout.CENTER);
+	}
 	public void showError(String message){
 		JOptionPane.showMessageDialog(null, message, "Error", 1);
 	}
@@ -180,10 +239,13 @@ public class Frame{
 	}
 	public void die(){
 		if(connection!=null){
-			connection.disconnect();
+			//connection.disconnect();
 		}
 		visiblity(false);
 		frame.dispose();
 		System.exit(0);		
+	}
+	public Frame getFrameClass(){
+		return this;
 	}
 }
