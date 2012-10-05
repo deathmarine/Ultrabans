@@ -25,7 +25,7 @@ public class WinListener implements WindowListener {
 
 	@Override
 	public void windowClosing(WindowEvent arg0) {
-		// TODO Auto-generated method stub
+		frame.die();
 
 	}
 

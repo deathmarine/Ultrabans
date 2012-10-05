@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.lang.Thread.State;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -16,15 +15,20 @@ public class Connection {
 	Socket sock;
 	Frame frame;
 	BufferedReader in;
-	PrintWriter out;
+	public PrintWriter out;
 	ClientWorker cw;
+	boolean alive;
+	Thread cwc;
 	public Connection(String ip, Frame f, int port){
 		frame=f;
 		try {
 			InetAddress address = InetAddress.getByName(ip);
 			sock=new Socket(address, port);
+			sock.setKeepAlive(true);
+			f.sock=sock;
 			cw =new ClientWorker(sock,frame.statsBar);
-			cw.start();
+			cwc=new Thread(cw);
+			cwc.start();
 		} catch (UnknownHostException e) {
 			frame.showError("Unable to find Host");
 		} catch (IOException e) {
@@ -34,28 +38,23 @@ public class Connection {
 	
 	public void disconnect() {
 		try {
-			if(cw!=null)cw.alive=false;
-			if(!cw.getState().equals(State.TERMINATED)||cw.isAlive()){
-				cw.interrupt();
-			}
+			if(cw!=null)alive=false;
 			sock.close();
+			frame.statsBar.setText("Disconnected");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 	}
-	class ClientWorker extends Thread implements Runnable {
+	class ClientWorker implements Runnable {
 		  private Socket client;
 		  private JLabel textArea;
 		  public String input;
-		  boolean alive;
 		  ClientWorker(Socket client, JLabel statsBar) {
 		    this.client = client;
 		    this.textArea = statsBar;
 		  }
 		  public void run(){
-		    BufferedReader in = null;
-		    PrintWriter out = null;
 		    try{
 		      in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		      out = new PrintWriter(client.getOutputStream(), true);
@@ -63,19 +62,36 @@ public class Connection {
 		    	
 		    }
 		    alive=true;
+		    textArea.setText("Connected");
+		    out.println("pl");
+			out.flush();
 		    while(alive){
 		      try{
 		    	  input = in.readLine();
 		        if(input!=null){
-		        	//incoming from server
-		        	input=null;
+		        	if(input.startsWith("pl")){
+		        		updatePlayers(input);
+		        	}else{
+				        frame.console.append(input+"\n");		        		
+		        	}
 		        }
-		        out.println("");
 		       }catch (IOException e) {
-					frame.showError("Unable to open connection");
-					alive=false;
+					disconnect();
 		       }
 		    }
 		  }
 		}
+	public void sendtoServer(String command){
+		if(alive){
+			out.println(command);
+			out.flush();
+		}else{
+			frame.showError("Client is not connected.");
+		}
+	}
+	public void updatePlayers(String input){
+		for(String s:input.substring(2).split(" ")){
+			frame.playerlist.append(s+"\n");
+		}
+	}
 }

@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.net.Socket;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -45,15 +46,15 @@ public class Frame{
 	public JTextArea playerlist;
 	public JTextArea actionlist;
 	public JTextArea console;
+	JTextField input;
 	final UndoManager undo = new UndoManager();
 	Connection connection;
-	Socket sock;
+	public Socket sock;
 	public Frame(){
 		frame = new JFrame("Ultrabans Live");
 		new Thread(new Splash(frame)).start();
 		buildFrame();
 		createMenu();
-		//Do stuff
 		visiblity(true);
 	}
 
@@ -84,7 +85,7 @@ public class Frame{
 		menuItem.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if(connection!=null){
+				if(sock!=null&&!sock.isClosed()){
 					showError("It appears you are already connected.");
 					return;
 				}else{
@@ -99,6 +100,21 @@ public class Frame{
 						}
 						connection= new Connection(array[0],getFrameClass(),port);						
 					}
+				}
+			}
+		});
+		menu.add(menuItem);
+		menuItem = new JMenuItem("Disconnect");
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Allows you to disconnect from Ultrabans Live.");
+		menuItem.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if(sock!=null&&!sock.isClosed()){
+					connection.disconnect();
+				}else{
+					showError("It appears you are not connected.");
+					return;
 				}
 			}
 		});
@@ -166,21 +182,30 @@ public class Frame{
 		p.setPreferredSize(new Dimension(frame.getWidth(), 18));
 		statsBar = new JLabel();
 		statsBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
-		statsBar.setPreferredSize(new Dimension(frame.getWidth(), 20));
+		statsBar.setPreferredSize(new Dimension(frame.getWidth()/2, 20));
 		statsBar.setHorizontalAlignment(SwingConstants.RIGHT);
+		statsBar.setText("Disconnected");
 		p.add(statsBar);
 		c.add(p);
 	}
 	private void inputText(Container c) {
 		JPanel p = new JPanel();
 		p.setPreferredSize(new Dimension(frame.getWidth(), 32));
-		JTextField input = new JTextField(16);
+		input = new JTextField(16);
         JButton button = new JButton("Send");
 		input.setBackground(Color.white);
 		input.setForeground(Color.black);
 		input.setEditable(true);
 		input.setVisible(true);
 		input.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		button.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+					connection.out.println("a"+input.getText());
+					input.setText("");
+			}
+			
+		});
 		p.add(input);
         p.add(button);
 		c.add(p);
@@ -194,19 +219,17 @@ public class Frame{
 	}
 	private void mainArea(){
 		JPanel p = new JPanel();
-		JLabel label = new JLabel("Online Players");
 		playerlist = new JTextArea();
 		playerlist.setEditable(false);
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		p.add(label);
+		p.setBorder(BorderFactory.createTitledBorder("Online Players"));
 		p.add(new JScrollPane(playerlist));
 		
 		JPanel p2 = new JPanel();
-		JLabel label1 = new JLabel("Action Players");
 		actionlist = new JTextArea();
 		actionlist.setEditable(false);
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
-		p2.add(label1);
+		p2.setBorder(BorderFactory.createTitledBorder("Action Players"));
 		p2.add(new JScrollPane(actionlist));
 		
 		JSplitPane r = new JSplitPane(JSplitPane.VERTICAL_SPLIT,p,p2);
@@ -216,11 +239,10 @@ public class Frame{
         r.setResizeWeight(0.5);
 		
 		JPanel p3 = new JPanel();
-		JLabel label2 = new JLabel("Console");
 		console = new JTextArea();
 		console.setEditable(false);
 		p3.setLayout(new BoxLayout(p3, BoxLayout.Y_AXIS));
-		p3.add(label2);
+		p3.setBorder(BorderFactory.createTitledBorder("Console"));
 		p3.add(new JScrollPane(console));
 		
 		JSplitPane sp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,p3,r);
@@ -239,7 +261,7 @@ public class Frame{
 	}
 	public void die(){
 		if(connection!=null){
-			//connection.disconnect();
+			connection.disconnect();
 		}
 		visiblity(false);
 		frame.dispose();

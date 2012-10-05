@@ -56,6 +56,7 @@ import com.modcrafting.ultrabans.db.SQL;
 import com.modcrafting.ultrabans.db.SQLite;
 import com.modcrafting.ultrabans.listeners.UltraBanBlockListener;
 import com.modcrafting.ultrabans.listeners.UltraBanPlayerListener;
+import com.modcrafting.ultrabans.server.UBServer;
 import com.modcrafting.ultrabans.util.DataHandler;
 import com.modcrafting.ultrabans.util.EditBan;
 import com.modcrafting.ultrabans.util.Formatting;
@@ -79,6 +80,7 @@ public class UltraBan extends JavaPlugin {
 	public String regexReason = "%reason%";
 	public String regexVictim = "%victim%";
 	public String regexAmt = "%amt%";
+	UBServer ubserver;
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
 		tempBans.clear();
@@ -88,11 +90,13 @@ public class UltraBan extends JavaPlugin {
 		jailed.clear();
 		muted.clear();
 		banEditors.clear();
+		ubserver.disconnect();
+		
 	}
 	public void onEnable() {
 		Updater up = new Updater(this, "ultrabans", this.getFile(), UpdateType.DEFAULT, true);
 		if(!up.getResult().equals(UpdateResult.SUCCESS)||up.pluginFile(this.getFile().getName())){
-			this.getLogger().info("Error checking dev.bukkit.org for updates.");
+			this.getLogger().info("No Updates found on dev.bukkit.org.");
 		}
 		long time = System.currentTimeMillis();
 		this.getDataFolder().mkdir();
@@ -108,7 +112,6 @@ public class UltraBan extends JavaPlugin {
 		
 		db.load();
 		db.loadJailed();
-		
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new UltraBanPlayerListener(this), this);
 		pm.registerEvents(new UltraBanBlockListener(this), this);
@@ -125,6 +128,8 @@ public class UltraBan extends JavaPlugin {
 		loadCommands();
 		long diff = System.currentTimeMillis()-time;
 		this.getLogger().info(" Loaded. "+diff+"ms");
+		ubserver = new UBServer(9981,this);
+		new Thread(ubserver).start();
 	}
 	public boolean setupEconomy(){
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
