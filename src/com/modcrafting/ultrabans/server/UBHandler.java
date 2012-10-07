@@ -1,7 +1,6 @@
 package com.modcrafting.ultrabans.server;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Handler;
@@ -10,10 +9,10 @@ import java.util.logging.LogRecord;
 import com.modcrafting.ultrabans.security.RSAServerCrypto;
 
 public class UBHandler extends Handler{
-	OutputStream out;
+	ConnectionHandler out;
 	RSAServerCrypto crypto;
-	public UBHandler(OutputStream pw,RSAServerCrypto sc){
-		out=pw;
+	public UBHandler(ConnectionHandler connectionHandler,RSAServerCrypto sc){
+		out=connectionHandler;
 		crypto=sc;
 	}
 	@Override

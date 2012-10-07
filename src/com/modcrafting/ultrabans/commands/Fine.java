@@ -7,12 +7,9 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.UltraBan;
 
 public class Fine implements CommandExecutor{
@@ -21,6 +18,7 @@ public class Fine implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		/*
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean broadcast = true;
 		String admin = config.getString("defAdminName", "server");
@@ -117,6 +115,8 @@ public class Fine implements CommandExecutor{
 		}
 		plugin.getLogger().info(admin + " fined player " + idoit + " amount of " + amt + ".");
 		plugin.db.addPlayer(idoit, amt, admin, 0, 4);
+		
+		*/
 		return true;
 		
 	}

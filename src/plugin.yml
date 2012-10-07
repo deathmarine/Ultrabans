@@ -102,10 +102,6 @@ commands:
     usage: /<command>
     permission: ultraban.import
 #Tools#
-  fine:
-    description: Fine a player
-    usage: /<command> {player} {amt}
-    permission: ultraban.fine
   empty:
     description: Empty player inventory.
     usage: /<command> {player}
@@ -145,7 +141,6 @@ permissions:
       ultraban.starve: true
       ultraban.spawn: true
       ultraban.empty: true
-      ultraban.fine: true
       ultraban.import: true
       ultraban.export: true
       ultraban.editban: true
@@ -227,8 +222,6 @@ permissions:
     description: Allows the user to import a banlist
   ultraban.export:
     description: Allows the user to export a banlist
-  ultraban.fine:
-    description: Allows the user to fine a player money
   ultraban.empty:
     description: Allows the user to empty a players inventory
   ultraban.spawn:
@@ -270,8 +263,6 @@ permissions:
     description: Allows the Administration to override kick
   ultraban.override.kick.all:
     description: Allows the Administration to override kickall
-  ultraban.override.fine:
-    description: Allows the Administration to override fine
   ultraban.override.mute:
     description: Allows the Administration to override mute
   ultraban.override.permaban:

@@ -25,8 +25,10 @@ import com.modcrafting.ultrabans.util.EditBan;
 
 public class SQLite implements Database{
 	UltraBan plugin;
+	String dbname;
 	public SQLite(UltraBan instance){
 		plugin = instance;
+		dbname = plugin.getConfig().getString("SQLite.Filename", "banlist");
 	}
 	public String SQLiteCreateBansTable = "CREATE TABLE IF NOT EXISTS banlist (" +
 			"`name` TEXT," +
@@ -43,7 +45,6 @@ public class SQLite implements Database{
 			"PRIMARY KEY (`name`)" + 
 			");";
 	public Connection getSQLConnection() {
-		String dbname = plugin.getConfig().getString("sqlite-dbname", "banlist");
 		File dataFolder = new File(plugin.getDataFolder(), dbname+".db");
 		if (!dataFolder.exists()){
 			try {

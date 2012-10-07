@@ -125,7 +125,11 @@ public class UltraBanPlayerListener implements Listener{
 			public void run() {
 				String ip = plugin.db.getAddress(player.getName());
 				List<String> list = plugin.db.listPlayers(ip);
+				boolean p=false;
 				int ping = ((CraftPlayer) player).getHandle().ping;
+				if(plugin.getConfig().getBoolean("KickMaxPing")){
+					p = checkPlayerPing(player, ping);
+				}
 				for(Player admin:plugin.getServer().getOnlinePlayers()){
 					if(admin.hasPermission("ultraban.dupeip")){
 						if(ip == null){
@@ -137,7 +141,7 @@ public class UltraBanPlayerListener implements Listener{
 						}
 					}
 					if(admin.hasPermission("ultraban.ping")){
-						if(checkPlayerPing(player)){
+						if(p){
 							admin.sendMessage(ChatColor.GRAY + "Player: " + player.getName() + " was kicked for High Ping!");
 						}else{
 							admin.sendMessage(ChatColor.GRAY + "Player: " + player.getName() + " Ping: "+String.valueOf(ping)+"ms");						
@@ -328,9 +332,9 @@ public class UltraBanPlayerListener implements Listener{
 			 }
 		 
 	}
-	public boolean checkPlayerPing(Player player){
-		boolean pingout = ((CraftPlayer) player).getHandle().ping>plugin.getConfig().getInt("MaxPing",200);
-		if(pingout&&!player.hasPermission("ultraban.override.pingcheck")){
+	public boolean checkPlayerPing(Player player,int ping){
+		int pingout =plugin.getConfig().getInt("MaxPing",200);
+		if(ping>pingout&&!player.hasPermission("ultraban.override.pingcheck")){
 			player.kickPlayer(plugin.getConfig().getString("kickMsgVictim","You have been kicked by %admin%. Reason: %reason%!").replaceAll("%admin%", "Ultrabans").replaceAll("%reason%", "High Ping Rate"));
 			return true;
 		}

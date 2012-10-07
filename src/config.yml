@@ -1,40 +1,40 @@
 #Change to MySQL for mysql support#
 #Change to SQLite for sqlite support#
 Database: SQLite
-mysql-database: 'jdbc:mysql://localhost:3306/minecraft'
-mysql-user: 'root'
-mysql-password: 'root'
-#Change these if you want to load or create different databases#
-#First load will create these databases#
-mysql-table: banlist
-mysql-table-ip: banlistip
+#MySQL Information#
+MySQL:
+  Address: 'jdbc:mysql://localhost:3306/minecraft'
+  User: 'root'
+  Password: 'root'
+  Table: banlist
+  IPTable: banlistip
 #SQLite Information#
-sqlite-dbname: banlist
-#parameters#
-auto-complete: true
+SQLite:
+  Filename: banlist
 #delete dat on ban#
 CleanOnBan: true
 #kick on max ping#
 KickMaxPing: true
 MaxPing: 200
-#Max allowable fine#
-#If Zero then no max will be placed#
-maxFineAmt: 0
 #Disable command usage on muted#
 muteVanilla: true
 #Max Warnings#
-enableMaxWarn: false#
-maxWarnings: 5
-#ban,kick,ipban,perma,tempban,tempipban#
-maxWarnResult: ban
-#Used with Temporary actions#
-maxWarnResulttime:
-  amt: 5
+MaxWarning:
+  Enable: false#
+  Amt: 5
+  #ban,kick,ipban,perma,tempban,tempipban#
+  Result: ban
+  Silent: true
+  Message: 'Max Warnings'
+  #Used with Temporary actions#
+  Temp:
+    Amt: 5
   #sec,min,hour,day,week,month#
-  mode: day
+    Mode: day
 #Default labels#
-defAdminName: 'server'
-defReason: 'not sure'
+Label:
+  Console: 'Server'
+  Reason: 'Unsure'
 #change to true or false to enable lockdown#
 #also can be done ingame /lockdown#
 lockdown: false
@@ -115,8 +115,6 @@ messages:
   jailMsgVictim: '&7You have been jailed by &3%admin%&7. Reason: &4%reason%!'
   jailMsgRelease: '&4%victim% &7was released from jail by &3%admin%&7!'
   jailMsgBroadcast: '&4%victim% &7was jailed by &3%admin%&7. Reason: &4%reason%!'
-  warnMsgVictim: '&7You have been warned by &3%admin%&7. Reason: &4%reason%!'
-  warnMsgBroadcast: '&4%victim% &7was warned by &3%admin%&7. Reason: &4%reason%!'
   lockMsgLogin: 'Server is under a lockdown, Try again later! Sorry.'
   DupeIPKick: 'Duplicate IP addresses disabled.'
   jailCmdMsg: 'You cannot use commands while jailed!'
@@ -124,13 +122,30 @@ messages:
   jailPlaceMsg: 'You cannot place blocks while you are jailed!'
   jailBreakMsg: 'You cannot break blocks while you are jailed!'
   tempjailMsgVictim: 'You have been temp. jailed by %admin%. Reason: %reason%!'
-  tempjailMsgBroadcast: '&4%victim% &7was temp. jailed by &3%admin%&7. Reason: &4%reason%!'
+  tempjailMsgBroadcast: 
   tempipbanMsgVictim: 'You have been temp. ipbanned by %admin%. Reason: %reason%!'
   tempipbanMsgBroadcast: '&4%victim% &7was temp. ipbanned by &3%admin%&7. Reason: &4%reason%!'
   muteChatMsg: 'You have been muted!'
   muteMsg: 'You have muted %victim%.'
   unmuteMsgVictim: 'You have been unmuted.'
   unmuteMsg: 'You have unmuted %victim%.'
+Messages:
+  TempJail:
+    MsgToVictim: 'You have been tempjailed by %admin% for %amt% %mode%s. Reason: %reason%!'
+    MsgToBroadcast: '%victim% was tempjailed by %admin% for %amt% %mode%s. Reason: %reason%!'
+    Failed: '%victim% is already jailed!'
+  Unban:
+    MsgToBroadcast: '%victim% was unbanned by %admin%!'
+    PermaBanned: 'Unable to unban, %Victim% was Permabanned.'
+    Failed: '%victim% is already unbanned!'
+  Warn:
+    MsgToVictim: 'You have been warned by %admin%. Reason: %reason%'
+    MsgToBroadcast: '%victim% was warned by %admin%. Reason: %reason%'
+    Denied: 'Your warning has been denied!'
+    Emo: 'You cannot warn yourself!'
+  MaxWarn:
+    MsgToBroadcast: '%cmd% performed by Ultrabans on %victim%. Reason: Reached Max Warnings'
+  Permission: 'You do not have the required permissions.'
 #Do Not Change Values Below#
 jail:
   x: 0

@@ -2,6 +2,8 @@ package com.modcrafting.ultrabans.gui.listeners;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+
 import javax.swing.JFileChooser;
 import com.modcrafting.ultrabans.gui.Frame;
 import com.modcrafting.ultrabans.security.RSAServerCrypto;
@@ -18,7 +20,18 @@ public class KeyFolder implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
         int returnVal = fc.showOpenDialog(frame.frame);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            frame.crypto = new RSAServerCrypto(fc.getSelectedFile());
+        	boolean pub=false;
+        	boolean priv=false;
+        	File dir = fc.getSelectedFile();
+        	for(File file :dir.listFiles()){
+        		if(file.getName().equalsIgnoreCase("public.key"))pub=true;
+        		if(file.getName().equalsIgnoreCase("private.key"))priv=true;
+        	}
+            if(pub&&priv){
+            	frame.crypto = new RSAServerCrypto(dir);
+            }else{
+            	frame.showError("Keys not found.");
+            }
         }
 	}
 

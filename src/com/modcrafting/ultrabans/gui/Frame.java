@@ -38,6 +38,7 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
 import com.modcrafting.ultrabans.gui.listeners.KeyFolder;
+import com.modcrafting.ultrabans.gui.listeners.MouseListListener;
 import com.modcrafting.ultrabans.gui.listeners.WinListener;
 import com.modcrafting.ultrabans.live.Connection;
 import com.modcrafting.ultrabans.security.RSAServerCrypto;
@@ -49,7 +50,7 @@ public class Frame{
 	int frameY;
 	public JLabel statsBar;
 	public JList playerlist;
-	public JTextArea actionlist;
+	public JList actionlist;
 	public JTextArea console;
 	JTextField input;
 	final UndoManager undo = new UndoManager();
@@ -235,48 +236,14 @@ public class Frame{
 	private void mainArea(){
 		JPanel p = new JPanel();
 		playerlist = new JList();
-		playerlist.addMouseListener(new MouseListener(){
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if(e.getButton()==MouseEvent.BUTTON3){
-					int index = playerlist.locationToIndex(e.getPoint());
-					playerlist.setSelectedIndex(index);
-					String playerName = (String) playerlist.getSelectedValue();
-				}				
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
+		playerlist.addMouseListener(new MouseListListener(playerlist,this));
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.setBorder(BorderFactory.createTitledBorder("Online Players"));
 		p.add(new JScrollPane(playerlist));
 		
 		JPanel p2 = new JPanel();
-		actionlist = new JTextArea();
-		actionlist.setEditable(false);
+		actionlist = new JList();
+		actionlist.addMouseListener(new MouseListListener(actionlist,this));
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 		p2.setBorder(BorderFactory.createTitledBorder("Action Players"));
 		p2.add(new JScrollPane(actionlist));

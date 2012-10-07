@@ -76,7 +76,7 @@ public class Ipban implements CommandExecutor{
 			return true;
 		}
 		
-		if(plugin.autoComplete) p = plugin.util.expandName(p);
+		p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p); 
 		String victimip = null;
 		if(victim == null){

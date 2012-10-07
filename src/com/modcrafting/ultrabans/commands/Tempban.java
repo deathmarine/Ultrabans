@@ -55,7 +55,7 @@ public class Tempban implements CommandExecutor{
 		if(tempTime == 0) return false;
 		
 		String p = args[0];
-		if(plugin.autoComplete) p = plugin.util.expandName(p);
+		p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
 		long temp = System.currentTimeMillis()/1000+tempTime; //epoch time
 		

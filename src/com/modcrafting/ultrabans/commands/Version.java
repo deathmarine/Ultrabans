@@ -22,7 +22,7 @@ public class Version implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		PluginDescriptionFile pdfFile = plugin.getDescription();

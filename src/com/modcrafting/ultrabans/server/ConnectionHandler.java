@@ -11,25 +11,27 @@ import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.UltraBan;
 
-public class ConnectionHandler implements Runnable {
+public class ConnectionHandler extends Thread{
 	UltraBan plugin;
 	InputStream in;
 	OutputStream out;
 	String line;
 	public Socket sock;
+	UBHandler h;
 	public ConnectionHandler(Socket client, UltraBan instance) throws IOException {
 		plugin=instance;
 		sock = client;
 		in = sock.getInputStream();
 		out = sock.getOutputStream();
-		plugin.getLogger().info("Instantiated ConnectionHandler");
-		plugin.getServer().getLogger().addHandler(new UBHandler(out,plugin.crypto));
-		plugin.getLogger().info("Setup Logger Handler");
+		h = new UBHandler(this,plugin.crypto);
+		plugin.getServer().getLogger().addHandler(h);
+		plugin.getLogger().info(sock.getInetAddress().getHostAddress()+" connected the Live.");
+		start();
 	}
 
+	boolean alive=true;
 	@Override
 	public void run() {
-		boolean alive=true;
 		while(alive){
 			try{
 				byte[] block = new byte[256];
@@ -37,27 +39,28 @@ public class ConnectionHandler implements Runnable {
 				block = plugin.crypto.decrypt(block);
 				line = new String(block);
 		        if(line!=null){
-		        	if(line.contains(".sendCommand."))execute(line.replaceAll(".sendCommand.", "")+"\n");
+		        	if(line.contains(".sendCommand."))execute(line.replaceAll(".sendCommand.", ""));
 		        	if(line.contains(".getPlayers."))getPlayers();
+		        	if(line.contains(".bannedPlayers."))getBanned();
 		        }
 			} catch (BadPaddingException e) {
-				plugin.getLogger().info("Live : Found bad packet. Dismissed.");
 				alive=false;
 			} catch (IOException e){
-				plugin.getLogger().info("Live : Unable to write.");
 				alive=false;
 			} catch (Exception e){
-				e.printStackTrace();
 				alive=false;
 			}
-		}		
+		}
+		plugin.getServer().getLogger().removeHandler(h);
 		try {
 			in.close();
 			out.close();
 			sock.close();
+			this.interrupt();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 	}
 	private void execute(String str){
 		plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), str);
@@ -68,7 +71,31 @@ public class ConnectionHandler implements Runnable {
 			sb.append(p.getName());
 			sb.append(" ");
 		}
-		out.write(plugin.crypto.encrypt((".players."+sb.toString()).getBytes()));
+		if(alive)out.write(plugin.crypto.encrypt((".oplayers."+sb.toString()).getBytes()));
+	}
+	public void getBanned() throws Exception{
+		StringBuilder sb = new StringBuilder();
+		for(String p:plugin.bannedPlayers){
+			sb.append(p);
+			sb.append(" ");
+		}
+		if(alive)out.write(plugin.crypto.encrypt((".bplayers."+sb.toString()).getBytes()));
+	}
+	public void write(byte[] bytes) throws IOException{
+		if(alive){
+			out.write(bytes);
+		}
+	}
+	public void flush() throws IOException{
+		if(alive){
+			out.flush();
+		}
+	}
+	public void close() throws IOException{
+		if(sock.isConnected()&&!sock.isOutputShutdown()){
+			out.close();
+		}
+		
 	}
 
 }

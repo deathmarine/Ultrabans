@@ -13,7 +13,7 @@ public class UBServer implements Runnable{
 	boolean alive;
 	int port;
 	UltraBan plugin;
-	List<Thread> threads = new ArrayList<Thread>();
+	List<ConnectionHandler> threads = new ArrayList<ConnectionHandler>();
 	public UBServer(int p,UltraBan instance){
 		port=p;
 		plugin=instance;
@@ -29,11 +29,8 @@ public class UBServer implements Runnable{
 		while(alive){
 			try{
 				Socket client = server.accept();
-				plugin.getLogger().info("Found the client");
 				ConnectionHandler connectionHandler = new ConnectionHandler(client, plugin);
-				Thread t = new Thread(connectionHandler);
-				threads.add(t);
-				t.start();
+				threads.add(connectionHandler);
 			} catch (IOException e) {
 				plugin.getLogger().info("Could not listen on port");
 			}
@@ -50,7 +47,7 @@ public class UBServer implements Runnable{
 		}
 	}
 	public void disconnectAll(){
-		for(Thread running:threads){
+		for(ConnectionHandler running:threads){
 			running.interrupt();
 		}
 	}

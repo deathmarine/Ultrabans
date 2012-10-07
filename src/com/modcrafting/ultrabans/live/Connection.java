@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JLabel;
 
@@ -64,7 +66,8 @@ public class Connection {
 		    alive=true;
 		    textArea.setText("Connected");
 		    try {
-				getPlayers();
+		    	getoPlayers();
+		    	getbPlayers();
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
@@ -76,7 +79,8 @@ public class Connection {
 					input = new String(block);
 					if(input!=null){
 						if(input.contains(".console."))writeConsole(input.replaceAll(".console.", ""));
-						if(input.contains(".players."))updatePlayers(input.replaceAll(".players.", ""));
+						if(input.contains(".oplayers."))updateOPlayers(input.replaceAll(".oplayers.", ""));
+						if(input.contains(".bplayers."))updateBPlayers(input.replaceAll(".bplayers.", ""));
 					}
 		    	}catch (IOException e) {
 		    		disconnect();
@@ -93,13 +97,19 @@ public class Connection {
 			frame.showError("Client is not connected.");
 		}
 	}
-	public void writeConsole(String input){
+	public void writeConsole(String input){		
 		frame.console.append(input+"\n");
 	}
-	public void updatePlayers(String input){
+	public void updateOPlayers(String input){
 		frame.playerlist.setListData(input.split(" "));
 	}
-	public void getPlayers() throws Exception{
+	public void updateBPlayers(String input){
+		frame.actionlist.setListData(input.split(" "));
+	}
+	public void getoPlayers() throws Exception{
 		out.write(frame.crypto.encrypt((".getPlayers.").getBytes()));
+	}
+	public void getbPlayers() throws Exception{
+		out.write(frame.crypto.encrypt((".bannedPlayers.").getBytes()));
 	}
 }

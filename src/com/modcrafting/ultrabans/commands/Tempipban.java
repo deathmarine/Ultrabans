@@ -38,9 +38,7 @@ public class Tempipban implements CommandExecutor{
 		if (args.length < 3) return false;
 
 		String p = args[0]; // Get the victim's potential name
-		
-		if(plugin.autoComplete)
-			p = plugin.util.expandName(p);
+		p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
 		
 		long tempTime = 0;

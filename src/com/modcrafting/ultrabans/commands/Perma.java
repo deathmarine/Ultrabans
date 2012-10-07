@@ -37,7 +37,7 @@ public class Perma implements CommandExecutor{
 		if (args.length < 1) return false;
 		String p = args[0];
 		
-		if(plugin.autoComplete) p = plugin.util.expandName(p);
+		p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
 		
 		if(args.length > 1){

@@ -37,7 +37,7 @@ public class Pardon implements CommandExecutor{
 		if (args.length < 1) return false;
 		
 		String jaile = args[0];
-		if(plugin.autoComplete) jaile = plugin.util.expandName(jaile);
+		jaile = plugin.util.expandName(jaile);
 		plugin.jailed.remove(jaile.toLowerCase());
 		
 		Player jailee = plugin.getServer().getPlayer(jaile);

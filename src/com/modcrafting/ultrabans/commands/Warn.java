@@ -23,23 +23,21 @@ public class Warn implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+		String admin=plugin.admin;
+		String reason=plugin.reason;
 		boolean broadcast = true;
 		Player player = null;
-		String admin = config.getString("defAdminName", "server");
-		String reason = config.getString("defReason", "not sure");
 		if (sender instanceof Player){
 			player = (Player)sender;
 			admin = player.getName();
 		}
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		if (args.length < 1) return false;
-
 		String p = args[0];
-		if(plugin.autoComplete)
-			p = plugin.util.expandName(p);
+		p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){
@@ -47,82 +45,95 @@ public class Warn implements CommandExecutor{
 				reason = plugin.util.combineSplit(2, args, " ");
 			}else
 				reason = plugin.util.combineSplit(1, args, " ");
-			
 		}
 		if(victim != null){
 			if(victim.getName() == admin){
-				sender.sendMessage(ChatColor.RED + "You cannot warn yourself!");
+				String bcmsg = config.getString("Messages.Warn.Emo", "You cannot warn yourself!");
+				bcmsg = plugin.util.formatMessage(bcmsg);
+				sender.sendMessage(ChatColor.RED + bcmsg);
 				return true;
 			}
-			if(victim.hasPermission( "ultraban.override.warn")){
-				sender.sendMessage(ChatColor.RED + "Your warning has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to warn you!");
+			if(victim.hasPermission("ultraban.override.warn")){
+				String bcmsg = config.getString("Messages.Denied.Emo", "Your warning has been denied!");
+				bcmsg = plugin.util.formatMessage(bcmsg);
+				sender.sendMessage(ChatColor.RED+bcmsg);
 				return true;
 			}
 			//Max Warning System
-			if(config.getBoolean("enableMaxWarn", false)){
-				Integer max = config.getInt("maxWarnings", 5);
+			if(config.getBoolean("MaxWarning.Enable", false)){
+				Integer max = config.getInt("MaxWarning.Amt", 5);
 				String idoit = victim.getName();
-				if(plugin.db.maxWarns(idoit) != null && plugin.db.maxWarns(idoit).size() >= max){						
-					String cmd = config.getString("maxWarnResult", "ban");
+				if(plugin.db.maxWarns(idoit) != null && plugin.db.maxWarns(idoit).size() >= max){
+					String cmd = config.getString("MaxWarning.Result", "ban");
+					String r = config.getString("MaxWarning.Message","Max Warns");
+					boolean s = config.getBoolean("MaxWarning.Silent",true);
+					StringBuilder sb = new StringBuilder();
 					if(cmd.equalsIgnoreCase("ban") || cmd.equalsIgnoreCase("kick") || cmd.equalsIgnoreCase("ipban") || cmd.equalsIgnoreCase("jail") || cmd.equalsIgnoreCase("permaban")){
-						String fakecmd = cmd + " " + idoit + " " + "-s" + " " + " Max Warnings";
+						sb.append(cmd);
+						sb.append(" ");
+						sb.append(idoit);
+						sb.append(" ");
+						if(s){
+							sb.append("-s");
+							sb.append(" ");
+						}
+						sb.append(r);
 						if(player != null){
-							player.getPlayer().performCommand(fakecmd);
+							player.getPlayer().performCommand(sb.toString());
 						}else{
-							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
+							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), sb.toString());
 						}
 					}else if(cmd.equalsIgnoreCase("tempban") || cmd.equalsIgnoreCase("tempipban") || cmd.equalsIgnoreCase("tempjail")){
-						String fakecmd = cmd + " " + idoit + " " + "-s" + " "
-								+ config.getString("maxWarnResulttime.amt", "5") + " " 
-								+ config.getString("maxWarnResulttime.mode", "day") + " "
-								+ "Max Warnings";
+						sb.append(cmd);
+						sb.append(" ");
+						sb.append(idoit);
+						sb.append(" ");
+						if(s){
+							sb.append("-s");
+							sb.append(" ");
+						}
+						sb.append(config.getString("MaxWarning.Temp.Amt", "5"));
+						sb.append(" ");
+						sb.append(config.getString("MaxWarning.Temp.Mode", "day"));
+						sb.append(" ");
+						
+						sb.append(r);
+						if(player != null){
+							player.getPlayer().performCommand(sb.toString());
+						}else{
+							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), sb.toString());
+						}
+					}else{
+						String fakecmd = "ban" + " " + idoit + " " + "-s" + " " + r;
 						if(player != null){
 							player.getPlayer().performCommand(fakecmd);
 						}else{
 							plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
 						}
-					}else{
-						sender.sendMessage(ChatColor.RED + "Max Warnings improperly configured Defaulting to ban.");
-						return true;
 					}
-						String banMsgBroadcast = "&4%cmd% &7performed by &1Ultrabans &7on &4%victim%&7. Reason:&4 %reason%";
-						banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-						banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexReason, "Reached Max Warnings");
-						banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexVictim, idoit);
-						banMsgBroadcast = banMsgBroadcast.replaceAll("%cmd%", cmd);
-						plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
-					
 					return true;
 				}	
 			}
 			
-			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 2);
-			plugin.getLogger().info(admin + " warned player " + victim.getName() + ".");
-			String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
-			warnMsgBroadcast = warnMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-			warnMsgBroadcast = warnMsgBroadcast.replaceAll(plugin.regexReason, reason);
-			warnMsgBroadcast = warnMsgBroadcast.replaceAll(plugin.regexVictim, victim.getName());
+			String bcmsg = config.getString("Messages.Warn.MsgToBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
+			bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+			bcmsg = bcmsg.replaceAll(plugin.regexReason, reason);
+			bcmsg = bcmsg.replaceAll(plugin.regexVictim, victim.getName());
+			bcmsg = plugin.util.formatMessage(bcmsg);
 			if(broadcast){ 
-				plugin.getServer().broadcastMessage(plugin.util.formatMessage(warnMsgBroadcast));
-				return true;
+				plugin.getServer().broadcastMessage(bcmsg);
 			}else{
-					String warnMsgVictim = config.getString("messages.warnMsgVictim", "You have been warned by %admin%. Reason: %reason%");
-					warnMsgVictim = warnMsgVictim.replaceAll(plugin.regexAdmin, admin);
-					warnMsgVictim = warnMsgVictim.replaceAll(plugin.regexReason, reason);
-					sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(warnMsgBroadcast));
-				return true;
-				
+				String wMsgV = config.getString("Messages.Warn.MsgToVictim", "You have been warned by %admin%. Reason: %reason%");
+				wMsgV = wMsgV.replaceAll(plugin.regexAdmin, admin);
+				wMsgV = wMsgV.replaceAll(plugin.regexReason, reason);
+				wMsgV = plugin.util.formatMessage(wMsgV);
+				sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
+				victim.sendMessage(wMsgV);
 			}	
+			plugin.db.addPlayer(victim.getName(), reason, admin, 0, 2);
+			plugin.getLogger().info(bcmsg);
 		}else{
-
-			String warnMsgVictim = config.getString("messages.warnMsgVictim", "You have been warned by %admin%. Reason: %reason%");
-			warnMsgVictim = warnMsgVictim.replaceAll(plugin.regexAdmin, admin);
-			warnMsgVictim = warnMsgVictim.replaceAll(plugin.regexReason, reason);
-			String warnMsgBroadcast = config.getString("messages.warnMsgBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
-			warnMsgBroadcast = warnMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-			warnMsgBroadcast = warnMsgBroadcast.replaceAll(plugin.regexReason, reason);
-			warnMsgBroadcast = warnMsgBroadcast.replaceAll(plugin.regexVictim, p);
+			//Offline Warning
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim != null){
 				if(victim.hasPermission("ultraban.override.warn")){
@@ -130,15 +141,19 @@ public class Warn implements CommandExecutor{
 					return true;
 				}
 			}
-			plugin.db.addPlayer(p, reason, admin, 0, 2);
-			plugin.getLogger().info(admin + " warned player " + p + ".");
+			String bcmsg = config.getString("Messages.Warn.MsgToBroadcast", "%victim% was warned by %admin%. Reason: %reason%");
+			bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+			bcmsg = bcmsg.replaceAll(plugin.regexReason, reason);
+			bcmsg = bcmsg.replaceAll(plugin.regexVictim, p);
+			bcmsg = plugin.util.formatMessage(bcmsg);
 			if(broadcast){ 
-				plugin.getServer().broadcastMessage(plugin.util.formatMessage(warnMsgBroadcast));
-				return true;
+				plugin.getServer().broadcastMessage(bcmsg);
 			}else{
-				sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(warnMsgBroadcast));
-				return true;
+				sender.sendMessage(ChatColor.ITALIC+"Silent: "+bcmsg);
 			}
+			plugin.db.addPlayer(p, reason, admin, 0, 2);
+			plugin.getLogger().info(bcmsg);
 		}
+		return true;
 	}
 }

@@ -25,21 +25,20 @@ public class Tempjail implements CommandExecutor{
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean broadcast = true;
 		Player player = null;
-		String admin = config.getString("defAdminName", "server");
-		String reason = config.getString("defReason", "not sure");
+		String admin = plugin.admin;
+		String reason = plugin.reason;
 		if (sender instanceof Player){
 			player = (Player)sender;
 			admin = player.getName();
 		}
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		if (args.length < 3) return false;
 
 		String p = args[0];
-		
-		if(plugin.autoComplete) p = plugin.util.expandName(p);
+		p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
 		long tempTime = 0;
 		if(args.length > 3){
@@ -70,7 +69,10 @@ public class Tempjail implements CommandExecutor{
 				return true;
 			}	
 			if(plugin.jailed.contains(victim.getName().toLowerCase())){
-				sender.sendMessage(ChatColor.BLUE + victim.getName() +  ChatColor.GRAY + " is already jailed for " + reason);
+				String failed = config.getString("Messages.TempJail.Failed", "%victim% is already jailed!");
+				failed = failed.replaceAll(plugin.regexVictim, victim.getName());
+				failed = plugin.util.formatMessage(failed);
+				sender.sendMessage(failed);
 				return true;
 			}
 			plugin.tempJail.put(victim.getName().toLowerCase(), temp);
@@ -78,14 +80,14 @@ public class Tempjail implements CommandExecutor{
 			plugin.jailed.add(p.toLowerCase());
 			
 			plugin.getLogger().info(admin + " tempjailed player " + victim.getName() + ".");
-			String tempjailMsgVictim = config.getString("messages.tempjailMsgVictim", "You have been temp. jailed by %admin%. Reason: %reason%!");
+			String tempjailMsgVictim = config.getString("Messages.TempJail.MsgToVictim", "You have been temp. jailed by %admin%. Reason: %reason%!");
 			if(tempjailMsgVictim.contains(plugin.regexAdmin)) tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexAdmin, admin);
 			if(tempjailMsgVictim.contains(plugin.regexReason)) tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexReason, reason);
 			if(tempjailMsgVictim.contains(plugin.regexVictim)) tempjailMsgVictim = tempjailMsgVictim.replaceAll(plugin.regexVictim, victim.getName());
 			if(tempjailMsgVictim != null){
 				sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(tempjailMsgVictim));
 			}
-			String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
+			String tempjailMsgBroadcast = config.getString("Messages.TempJail.MsgToBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
 			if(tempjailMsgBroadcast.contains(plugin.regexAdmin)) tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			if(tempjailMsgBroadcast.contains(plugin.regexReason)) tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
 			if(tempjailMsgBroadcast.contains(plugin.regexVictim)) tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, p);
@@ -115,7 +117,7 @@ public class Tempjail implements CommandExecutor{
 			plugin.jailed.add(p.toLowerCase());
 			plugin.db.addPlayer(p, reason, admin, temp, 6);
 			
-			String tempjailMsgBroadcast = config.getString("messages.tempjailMsgBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
+			String tempjailMsgBroadcast = config.getString("Messages.TempJail.MsgToBroadcast", "%victim% was temp. jailed by %admin%. Reason: %reason%!");
 			if(tempjailMsgBroadcast.contains(plugin.regexAdmin)) tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
 			if(tempjailMsgBroadcast.contains(plugin.regexReason)) tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexReason, reason);
 			if(tempjailMsgBroadcast.contains(plugin.regexVictim)) tempjailMsgBroadcast = tempjailMsgBroadcast.replaceAll(plugin.regexVictim, p);

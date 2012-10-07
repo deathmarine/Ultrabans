@@ -48,7 +48,7 @@ public class Jail implements CommandExecutor{
 			return true;
 		}
 		String p = args[0];
-		if(plugin.autoComplete) p = plugin.util.expandName(p);
+		p = plugin.util.expandName(p);
 		
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){

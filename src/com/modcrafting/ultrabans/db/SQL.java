@@ -23,22 +23,21 @@ import com.modcrafting.ultrabans.util.EditBan;
 
 public class SQL implements Database{
 	UltraBan plugin;
-	public String mysqlTable = "banlist";
-	public String logip = "banlistip";
+	String mysqlTable;
+	String logip;
+	String mysqlDatabase;
+	String mysqlUser;
+	String mysqlPassword;
 	public SQL(UltraBan instance){
 		plugin = instance;
-	}
-	public void setTables(){
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		mysqlTable = Config.getString("mysql-table","banlist");
-		logip = Config.getString("mysql-table-ip","banlistip");
+		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+		mysqlDatabase = config.getString("MySQL.Database","jdbc:mysql://localhost:3306/minecraft");
+		mysqlUser = config.getString("MySQL.User","root");
+		mysqlPassword = config.getString("MySQL.Password","root");
+		mysqlTable = config.getString("MySQL.Table","banlist");
+		logip = config.getString("MySQL.IPTable","banlistip");
 	}
 	public Connection getSQLConnection() {
-		setTables();
-		YamlConfiguration Config = (YamlConfiguration) plugin.getConfig();
-		String mysqlDatabase = Config.getString("mysql-database","jdbc:mysql://localhost:3306/minecraft");
-		String mysqlUser = Config.getString("mysql-user","root");
-		String mysqlPassword = Config.getString("mysql-password","root");
 		try {
 			return DriverManager.getConnection(mysqlDatabase + "?autoReconnect=true&user=" + mysqlUser + "&password=" + mysqlPassword);
 		} catch (SQLException ex) {
@@ -91,18 +90,15 @@ public class SQL implements Database{
 			") ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;";
 	@Override
 	public void load() {
-
-		String tloc = plugin.getConfig().getString("mysql-table","banlist");
-		String lloc = plugin.getConfig().getString("mysql-table-ip","banlistip");
 		Connection conn = getSQLConnection();
 		PreparedStatement s;
 		String str;
 		try {
 			str=SQLCreateBansTable;
-			s = conn.prepareStatement(str.replaceAll("%table%",tloc));
+			s = conn.prepareStatement(str.replaceAll("%table%",mysqlTable));
 			s.execute();
 			str=SQLCreateBanipTable;
-			s = conn.prepareStatement(str.replaceAll("%table%",lloc));
+			s = conn.prepareStatement(str.replaceAll("%table%",logip));
 			s.execute();
 			s.close();
 		} catch (SQLException e) {
