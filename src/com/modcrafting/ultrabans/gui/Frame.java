@@ -8,6 +8,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.net.Socket;
 
 import javax.swing.BorderFactory;
@@ -35,9 +37,9 @@ import javax.swing.text.Document;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
-import com.modcrafting.ultrabans.gui.listeners.Connection;
 import com.modcrafting.ultrabans.gui.listeners.KeyFolder;
 import com.modcrafting.ultrabans.gui.listeners.WinListener;
+import com.modcrafting.ultrabans.live.Connection;
 import com.modcrafting.ultrabans.security.RSAServerCrypto;
 
 public class Frame{
@@ -233,7 +235,41 @@ public class Frame{
 	private void mainArea(){
 		JPanel p = new JPanel();
 		playerlist = new JList();
-		//playerlist.;
+		playerlist.addMouseListener(new MouseListener(){
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton()==MouseEvent.BUTTON3){
+					int index = playerlist.locationToIndex(e.getPoint());
+					playerlist.setSelectedIndex(index);
+					String playerName = (String) playerlist.getSelectedValue();
+				}				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.setBorder(BorderFactory.createTitledBorder("Online Players"));
 		p.add(new JScrollPane(playerlist));

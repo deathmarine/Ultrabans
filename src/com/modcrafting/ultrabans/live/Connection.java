@@ -1,4 +1,4 @@
-package com.modcrafting.ultrabans.gui.listeners;
+package com.modcrafting.ultrabans.live;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,7 +77,6 @@ public class Connection {
 					if(input!=null){
 						if(input.contains(".console."))writeConsole(input.replaceAll(".console.", ""));
 						if(input.contains(".players."))updatePlayers(input.replaceAll(".players.", ""));
-						System.out.println(input);
 					}
 		    	}catch (IOException e) {
 		    		disconnect();
