@@ -56,6 +56,7 @@ import com.modcrafting.ultrabans.db.SQL;
 import com.modcrafting.ultrabans.db.SQLite;
 import com.modcrafting.ultrabans.listeners.UltraBanBlockListener;
 import com.modcrafting.ultrabans.listeners.UltraBanPlayerListener;
+import com.modcrafting.ultrabans.security.RSAServerCrypto;
 import com.modcrafting.ultrabans.server.UBServer;
 import com.modcrafting.ultrabans.util.DataHandler;
 import com.modcrafting.ultrabans.util.EditBan;
@@ -73,6 +74,7 @@ public class UltraBan extends JavaPlugin {
 	public DataHandler data = new DataHandler(this);
 	public Formatting util = new Formatting(this);
 	public Jailtools jail = new Jailtools(this);
+	public RSAServerCrypto crypto;
 	public Database db;
 	public net.milkbowl.vault.economy.Economy economy = null;
 	public boolean autoComplete;
@@ -128,8 +130,12 @@ public class UltraBan extends JavaPlugin {
 		loadCommands();
 		long diff = System.currentTimeMillis()-time;
 		this.getLogger().info(" Loaded. "+diff+"ms");
-		ubserver = new UBServer(9981,this);
-		new Thread(ubserver).start();
+		if(true){
+			this.getLogger().info("Live initializing.");
+			crypto = new RSAServerCrypto(this.getDataFolder());
+			ubserver = new UBServer(9981,this);
+			new Thread(ubserver).start();
+		}
 	}
 	public boolean setupEconomy(){
 		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);

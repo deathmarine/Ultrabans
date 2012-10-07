@@ -1,24 +1,37 @@
 package com.modcrafting.ultrabans.server;
 
-import java.io.PrintWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
+import com.modcrafting.ultrabans.security.RSAServerCrypto;
+
 public class UBHandler extends Handler{
-	PrintWriter out;
-	public UBHandler(PrintWriter pw){
+	OutputStream out;
+	RSAServerCrypto crypto;
+	public UBHandler(OutputStream pw,RSAServerCrypto sc){
 		out=pw;
+		crypto=sc;
 	}
 	@Override
 	public void close() throws SecurityException {
-		out.close();
+		try {
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void flush() {
-		out.flush();
+		try {
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -28,7 +41,12 @@ public class UBHandler extends Handler{
 		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
 		Date now = new Date();
 		now.setTime(System.currentTimeMillis());
-		out.println(format.format(now)+" ["+record.getLevel()+"] "+record.getMessage());
+		String s = ".console. "+format.format(now)+" ["+record.getLevel()+"] "+record.getMessage();
+		try {
+			out.write(crypto.encrypt(s.getBytes()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

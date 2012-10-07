@@ -15,6 +15,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -35,20 +36,23 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
 import com.modcrafting.ultrabans.gui.listeners.Connection;
+import com.modcrafting.ultrabans.gui.listeners.KeyFolder;
 import com.modcrafting.ultrabans.gui.listeners.WinListener;
+import com.modcrafting.ultrabans.security.RSAServerCrypto;
 
 public class Frame{
 	Splash splash;
-	JFrame frame;
+	public JFrame frame;
 	int frameX;
 	int frameY;
 	public JLabel statsBar;
-	public JTextArea playerlist;
+	public JList playerlist;
 	public JTextArea actionlist;
 	public JTextArea console;
 	JTextField input;
 	final UndoManager undo = new UndoManager();
 	Connection connection;
+	public RSAServerCrypto crypto;
 	public Socket sock;
 	public Frame(){
 		frame = new JFrame("Ultrabans Live");
@@ -103,6 +107,10 @@ public class Frame{
 				}
 			}
 		});
+		menu.add(menuItem);menuItem = new JMenuItem("Select KeyFolder...");
+		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+		menuItem.getAccessibleContext().setAccessibleDescription("Sets the crypto keys used for the program.");
+		menuItem.addActionListener(new KeyFolder(this));
 		menu.add(menuItem);
 		menuItem = new JMenuItem("Disconnect");
 		menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
@@ -201,11 +209,16 @@ public class Frame{
 		button.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-					connection.out.println("a"+input.getText());
+					if(connection!=null)
+						try {
+							connection.sendtoServer(input.getText());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					input.setText("");
 			}
-			
 		});
+	    frame.getRootPane().setDefaultButton(button);
 		p.add(input);
         p.add(button);
 		c.add(p);
@@ -219,8 +232,8 @@ public class Frame{
 	}
 	private void mainArea(){
 		JPanel p = new JPanel();
-		playerlist = new JTextArea();
-		playerlist.setEditable(false);
+		playerlist = new JList();
+		//playerlist.;
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.setBorder(BorderFactory.createTitledBorder("Online Players"));
 		p.add(new JScrollPane(playerlist));

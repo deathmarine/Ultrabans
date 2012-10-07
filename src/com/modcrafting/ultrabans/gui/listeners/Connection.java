@@ -1,21 +1,21 @@
 package com.modcrafting.ultrabans.gui.listeners;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 import javax.swing.JLabel;
+
 import com.modcrafting.ultrabans.gui.Frame;
 
 public class Connection {
 	Socket sock;
 	Frame frame;
-	BufferedReader in;
-	public PrintWriter out;
+	InputStream in;
+	public OutputStream out;
 	ClientWorker cw;
 	boolean alive;
 	Thread cwc;
@@ -55,43 +55,52 @@ public class Connection {
 		    this.textArea = statsBar;
 		  }
 		  public void run(){
-		    try{
-		      in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-		      out = new PrintWriter(client.getOutputStream(), true);
-		    } catch (IOException e) {
-		    	
-		    }
+		    try {
+				in = client.getInputStream();
+			    out = client.getOutputStream();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		    alive=true;
 		    textArea.setText("Connected");
-		    out.println("pl");
-			out.flush();
+		    try {
+				getPlayers();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
 		    while(alive){
-		      try{
-		    	  input = in.readLine();
-		        if(input!=null){
-		        	if(input.startsWith("pl")){
-		        		updatePlayers(input);
-		        	}else{
-				        frame.console.append(input+"\n");		        		
-		        	}
-		        }
-		       }catch (IOException e) {
-					disconnect();
-		       }
+		    	try{
+					byte[] block = new byte[256];
+					in.read(block, 0, block.length);
+					block = frame.crypto.decrypt(block);
+					input = new String(block);
+					if(input!=null){
+						if(input.contains(".console."))writeConsole(input.replaceAll(".console.", ""));
+						if(input.contains(".players."))updatePlayers(input.replaceAll(".players.", ""));
+						System.out.println(input);
+					}
+		    	}catch (IOException e) {
+		    		disconnect();
+		    	}catch (Exception e) {
+				e.printStackTrace();
+				}
 		    }
 		  }
 		}
-	public void sendtoServer(String command){
+	public void sendtoServer(String command) throws Exception{
 		if(alive){
-			out.println(command);
-			out.flush();
+			out.write(frame.crypto.encrypt((".sendCommand."+command).getBytes()));
 		}else{
 			frame.showError("Client is not connected.");
 		}
 	}
+	public void writeConsole(String input){
+		frame.console.append(input+"\n");
+	}
 	public void updatePlayers(String input){
-		for(String s:input.substring(2).split(" ")){
-			frame.playerlist.append(s+"\n");
-		}
+		frame.playerlist.setListData(input.split(" "));
+	}
+	public void getPlayers() throws Exception{
+		out.write(frame.crypto.encrypt((".getPlayers.").getBytes()));
 	}
 }
