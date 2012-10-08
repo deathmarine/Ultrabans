@@ -66,7 +66,7 @@ public class Tempjail implements CommandExecutor{
 		if(tempTime == 0) return false;
 		long temp = System.currentTimeMillis()/1000+tempTime;
 		if(victim != null){
-			if(victim.getName() == admin){
+			if(victim.getName().equalsIgnoreCase(admin)){
 				String bcmsg = config.getString("Messages.TempJail.Emo","You cannot tempjail yourself!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);

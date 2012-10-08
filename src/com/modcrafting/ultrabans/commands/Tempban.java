@@ -22,6 +22,10 @@ public class Tempban implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission(command.getPermission())){
+			sender.sendMessage(ChatColor.RED+plugin.perms);
+			return true;
+		}
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean broadcast = true;
 		Player player = null;
@@ -30,10 +34,6 @@ public class Tempban implements CommandExecutor{
 		if (sender instanceof Player){
 			player = (Player)sender;
 			admin = player.getName();
-		}
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+plugin.perms);
-			return true;
 		}
 		if (args.length < 3) return false;
 		long tempTime = 0;
@@ -67,7 +67,7 @@ public class Tempban implements CommandExecutor{
 		long temp = System.currentTimeMillis()/1000+tempTime; //epoch time
 		
 		if(victim != null){
-			if(victim.getName() == admin){
+			if(victim.getName().equalsIgnoreCase(admin)){
 				String bcmsg = config.getString("Messages.TempBan.Emo","You cannot tempban yourself!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);

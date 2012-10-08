@@ -8,8 +8,6 @@
 package com.modcrafting.ultrabans.commands;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,12 +23,12 @@ public class Spawn implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		String admin = config.getString("defAdminName", "server");
+		String admin = plugin.admin;
 		if(sender instanceof Player){
 			admin = sender.getName();
 		}
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		if(args.length < 1) return false;
@@ -41,20 +39,21 @@ public class Spawn implements CommandExecutor{
 		if(victim != null){
 			idoit = victim.getName();
 		}else{
-			sender.sendMessage(ChatColor.GRAY + "Player must be online!");
+			String smvic = config.getString("Messages.Spawn.Failed","%victim% is not Online.");
+			smvic=plugin.util.formatMessage(smvic);
+			sender.sendMessage(ChatColor.GRAY + smvic);
 			return true;
 		}
-		String fspawnMsgVictim = config.getString("messages.fspawnMsgVictim");
-		if(fspawnMsgVictim.contains(plugin.regexAdmin)) fspawnMsgVictim = fspawnMsgVictim.replaceAll(plugin.regexAdmin, admin);
-		if(fspawnMsgVictim.contains(plugin.regexVictim)) fspawnMsgVictim = fspawnMsgVictim.replaceAll(plugin.regexVictim, idoit);
-		if(fspawnMsgVictim != null) victim.sendMessage(plugin.util.formatMessage(fspawnMsgVictim));
-		String fspawnMsgBroadcast = config.getString("messages.fspawnMsgBroadcast", "%victim% is now at spawn!");
-		if(fspawnMsgBroadcast.contains(plugin.regexAdmin)) fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-		if(fspawnMsgBroadcast.contains(plugin.regexVictim)) fspawnMsgBroadcast = fspawnMsgBroadcast.replaceAll(plugin.regexVictim, idoit);
-		if(fspawnMsgBroadcast != null)  sender.sendMessage(plugin.util.formatMessage(fspawnMsgBroadcast));
-		World wtlp = victim.getWorld();
-		Location tlp = wtlp.getSpawnLocation();
-		victim.teleport(tlp);	
+		String smvic = config.getString("Messages.Spawn.MsgToVictim","You have been sent to spawn!");
+		smvic=plugin.util.formatMessage(smvic);
+		victim.sendMessage(smvic);
+		victim.teleport(victim.getWorld().getSpawnLocation());	
+		
+		String bcmsg = config.getString("Messages.Spawn.MsgToSender","%victim% is now at spawn!");
+		if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+		if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, idoit);
+		bcmsg=plugin.util.formatMessage(bcmsg);
+		sender.sendMessage(bcmsg);
 		return true;
 	}
 }

@@ -47,7 +47,7 @@ public class Warn implements CommandExecutor{
 				reason = plugin.util.combineSplit(1, args, " ");
 		}
 		if(victim != null){
-			if(victim.getName() == admin){
+			if(victim.getName().equalsIgnoreCase(admin)){
 				String bcmsg = config.getString("Messages.Warn.Emo", "You cannot warn yourself!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(ChatColor.RED + bcmsg);

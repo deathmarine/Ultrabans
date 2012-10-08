@@ -6,11 +6,11 @@ MySQL:
   Address: 'jdbc:mysql://localhost:3306/minecraft'
   User: 'root'
   Password: 'root'
-  Table: banlist
-  IPTable: banlistip
+  Table: 'banlist'
+  IPTable: 'banlistip'
 #SQLite Information#
 SQLite:
-  Filename: banlist
+  Filename: 'banlist'
 #delete dat on ban#
 CleanOnBan: true
 #kick on max ping#
@@ -37,7 +37,7 @@ Label:
   Reason: 'Unsure'
 #change to true or false to enable lockdown#
 #also can be done ingame /lockdown#
-lockdown: false
+Lockdown: false
 #Enabling dupePolicy will disallow duplicate IP connections#
 dupePolicy: false
 enableLoginDupeCheck: true
@@ -106,35 +106,51 @@ messages:
   kickMsgFailed: '&7Kick failed: &7%victim% &7isn''t online.'
   banMsgVictim: 'You have been banned by %admin%. Reason: %reason%!'
   banMsgBroadcast: '&4%victim% &7was banned by &3%admin%&7. Reason: &4%reason%!'
-  permbanMsgVictim: 'You have been permabanned by %admin%. Reason: %reason%!'
-  permbanMsgBroadcast: '&4%victim% &7has been permabanned by &3%admin%&7. Reason: &4%reason%!'
-  tempbanMsgVictim: 'You have been temp. banned by %admin%. Reason: %reason%!'
-  tempbanMsgBroadcast: '&4%victim% &7was temp. banned by &3%admin%&7. Reason: &4%reason%!'
   LoginTempban: '&7You are banned until &4%time%&7! Reason: &4%reason%!'
   LoginBan: '%admin% banned you from this server! Reason: %reason%!'
   LoginIPBan: 'Your IP is banned!'
   emptyMsgVictim: '&3%admin% has cleared your inventory!'
   emptyMsgBroadcast: '&3%admin% has cleared the inventory of &4%victim%!'
-  starveMsgVictim: '&7You are now starving!'
-  starveMsgBroadcast: '&4%victim% is now starving!'
-  fspawnMsgVictim: '&7You have been sent to spawn!'
-  fspawnMsgBroadcast: '&4%victim% &7is now at spawn!'
   jailMsgVictim: '&7You have been jailed by &3%admin%&7. Reason: &4%reason%!'
-  jailMsgRelease: '&4%victim% &7was released from jail by &3%admin%&7!'
   jailMsgBroadcast: '&4%victim% &7was jailed by &3%admin%&7. Reason: &4%reason%!'
-  lockMsgLogin: 'Server is under a lockdown, Try again later! Sorry.'
+  lockMsgLogin: 
   DupeIPKick: 'Duplicate IP addresses disabled.'
   jailCmdMsg: 'You cannot use commands while jailed!'
   jailChatMsg: 'Your cry falls on deaf ears.'
   jailPlaceMsg: 'You cannot place blocks while you are jailed!'
   jailBreakMsg: 'You cannot break blocks while you are jailed!'
-  tempipbanMsgVictim: 'You have been temp. ipbanned by %admin%. Reason: %reason%!'
-  tempipbanMsgBroadcast: '&4%victim% &7was temp. ipbanned by &3%admin%&7. Reason: &4%reason%!'
-  muteChatMsg: 'You have been muted!'
-  muteMsg: 'You have muted %victim%.'
-  unmuteMsgVictim: 'You have been unmuted.'
-  unmuteMsg: 'You have unmuted %victim%.'
 Messages:
+  Lockdown:
+    Start: 'Lockdown initiated. PlayerLogin disabled.'
+    End: 'Lockdown ended. PlayerLogin reenabled.'
+    Status: 'Lockdown is disabled.'
+    LoginMsg: 'Server is under a lockdown, Try again later! Sorry.'
+  Mute:
+    MuteMsgToSender: 'You have muted %victim%.'
+    MuteMsgToVictim: 'You have been muted!'
+    UnmuteMsgToSender: 'You have unmuted %victim%.'
+    UnmuteMsgToVictim: 'You have been unmuted.'
+    Denied: 'Your mute has been denied!'
+    Emo: 'You cannot mute yourself!'    
+  Pardon:
+    Msg: '%victim% was released from jail by %admin%!'
+  PermaBan:
+    MsgToVictim: 'You have been permabanned by %admin%. Reason: %reason%!'
+    MsgToBroadcast: '%victim% was permabanned by %admin%. Reason: %reason%!'
+    Failed: '%victim% is already banned.'
+    Online: '%victim% must be Online.'
+    Denied: 'Your permaban has been denied!'
+    Emo: 'You cannot permaban yourself!'    
+  Spawn:
+    MsgToVictim: 'You have been sent to spawn!'
+    MsgToSender: '%victim% is now at spawn!'
+    Failed: '%victim% is not Online.'
+  Starve:
+    MsgToVictim: 'You are now starving!'
+    MsgToSender: '%victim% is now starving!'
+    Failed: '%victim% is not Online.'
+    Denied: 'Your starve attempt has been denied!'
+    Emo: 'You cannot starve yourself!'
   TempBan:
     MsgToVictim: 'You have been tempbanned by %admin% for %amt% %mode%s. Reason: %reason%!'
     MsgToBroadcast: '%victim% was tempbanned by %admin% for %amt% %mode%s. Reason: %reason%!'

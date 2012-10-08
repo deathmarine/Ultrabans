@@ -66,7 +66,7 @@ public class Tempipban implements CommandExecutor{
 		long temp = System.currentTimeMillis()/1000+tempTime;
 		
 		if(victim != null){
-			if(victim.getName() == admin){
+			if(victim.getName().equalsIgnoreCase(admin)){
 				String bcmsg = config.getString("Messages.TempIpBan.Emo","You cannot tempipban yourself!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);

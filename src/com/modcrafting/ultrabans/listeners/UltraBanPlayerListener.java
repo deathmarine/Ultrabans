@@ -94,7 +94,7 @@ public class UltraBanPlayerListener implements Listener{
 			return;
 		}
 		if(config.getBoolean("lockdown", false)){
-			String lockMsgLogin = config.getString("messages.lockMsgLogin", "Server is under a lockdown, Try again later!");
+			String lockMsgLogin = config.getString("Messages.Lockdown.LoginMsg", "Server is under a lockdown, Try again later!");
 			if(player.hasPermission("ultraban.override.lockdown") || player.isOp()) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
 			plugin.getLogger().info(player.getName() + " attempted to join during lockdown.");
 		}

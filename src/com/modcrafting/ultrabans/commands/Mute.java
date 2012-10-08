@@ -22,60 +22,60 @@ public class Mute implements CommandExecutor {
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission(command.getPermission())){
+			sender.sendMessage(ChatColor.RED+plugin.perms);
+			return true;
+		}
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = null;
-		String admin = config.getString("defAdminName", "server");
+		String admin = plugin.admin;
 		if (sender instanceof Player){
 			player = (Player)sender;
 			admin = player.getName();
 		}
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
-			return true;
-		}
 		if (args.length < 1) return false;
-		
 		String p = plugin.util.expandName(args[0]); 
 		Player victim = plugin.getServer().getPlayer(p);
 		if(victim != null){
-
-			if(victim.getName() == admin){
-				sender.sendMessage(ChatColor.RED + "You cannot mute yourself!");
+			if(victim.getName().equalsIgnoreCase(admin)){
+				String bcmsg = config.getString("Messages.Mute.Emo","You cannot mute yourself!");
+				bcmsg = plugin.util.formatMessage(bcmsg);
+				sender.sendMessage(bcmsg);
 				return true;
 			}
 			if(victim.hasPermission( "ultraban.override.mute")){
-				sender.sendMessage(ChatColor.RED + "Your mute has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player: " + player.getName() + " Attempted to mute you!");
+				String bcmsg = config.getString("Messages.Mute.Denied","Your mute has been denied!");
+				bcmsg = plugin.util.formatMessage(bcmsg);
+				sender.sendMessage(bcmsg);
 				return true;
 			}
-			
 			if (plugin.muted.contains(p.toLowerCase())){
 				plugin.muted.remove(p.toLowerCase());
-				
-				String adminMsg = config.getString("messages.unmuteMsgVictim");
-		 		if(adminMsg != null) victim.sendMessage(plugin.util.formatMessage(adminMsg));
-		 		
-				String adminMsgs = config.getString("messages.unmuteMsg");
+		 		victim.sendMessage(plugin.util.formatMessage(config.getString("Messages.Mute.UnmuteMsgToVictim","You have been unmuted.")));
+				String adminMsgs = config.getString("Messages.Mute.UnmuteMsgToSender","You have unmuted %victim%.");
 				if(adminMsgs.contains(plugin.regexVictim)) adminMsgs = adminMsgs.replaceAll(plugin.regexVictim, p);
-		 		if(adminMsgs != null) sender.sendMessage(plugin.util.formatMessage(adminMsgs));
+		 		sender.sendMessage(plugin.util.formatMessage(adminMsgs));
 				return true;
 			}
 			plugin.muted.add(p.toLowerCase());
-			
-			String adminMsg = config.getString("messages.muteChatMsg");
-	 		if(adminMsg != null) victim.sendMessage(plugin.util.formatMessage(adminMsg));
-	 		
-			String adminMsgs = config.getString("messages.muteMsg");
+	 		victim.sendMessage(plugin.util.formatMessage(config.getString("Messages.Mute.MuteMsgToVictim","You have been muted!")));
+	 		String adminMsgs = config.getString("Messages.Mute.MuteMsgToSender","You have muted %victim%.");
 			if(adminMsgs.contains(plugin.regexVictim)) adminMsgs = adminMsgs.replaceAll(plugin.regexVictim, p);
-	 		sender.sendMessage(plugin.util.formatMessage(adminMsgs));
-
+			adminMsgs=plugin.util.formatMessage(adminMsgs);
+	 		sender.sendMessage(adminMsgs);
 			plugin.db.addPlayer(p, "Muted", admin, 0, 7);
 			plugin.getLogger().info(admin + " muted player " + p + ".");
-			return true;
 		}else{
-			sender.sendMessage(ChatColor.RED + "Player must be online!");
-			return true;
-		}		
+			if (plugin.muted.contains(p.toLowerCase())){
+				plugin.muted.remove(p.toLowerCase());
+				String adminMsgs = config.getString("Messages.Mute.UnmuteMsgToSender","You have unmuted %victim%.");
+				if(adminMsgs.contains(plugin.regexVictim)) adminMsgs = adminMsgs.replaceAll(plugin.regexVictim, p);
+		 		sender.sendMessage(plugin.util.formatMessage(adminMsgs));
+			}else{
+				sender.sendMessage(ChatColor.RED + "Player must be online!");				
+			}
+		}	
+		return true;	
 	}
 
 }

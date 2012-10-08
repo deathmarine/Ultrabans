@@ -23,12 +23,12 @@ public class Starve implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		String admin = config.getString("defAdminName", "server");
+		String admin = plugin.admin;
 		if (sender instanceof Player){
 			admin = sender.getName();
 		}
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		if (args.length < 1) return false;
@@ -39,28 +39,33 @@ public class Starve implements CommandExecutor{
 		if (victim != null){
 			idoit = victim.getName();
 			if(victim.getName() == admin){
-				sender.sendMessage(ChatColor.RED + "You cannot starve yourself!");
+				String bcmsg = config.getString("Messages.Starve.Emo","You cannot starve yourself!");
+				bcmsg = plugin.util.formatMessage(bcmsg);
+				sender.sendMessage(bcmsg);
 				return true;
 			}
 			if(victim.hasPermission( "ultraban.override.starve")){
-				sender.sendMessage(ChatColor.RED + "Your starve attempt has been denied! Player Notified!");
-				victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to starve you!");
+				String bcmsg = config.getString("Messages.Starve.Denied","Your starve attempt has been denied!");
+				bcmsg = plugin.util.formatMessage(bcmsg);
+				sender.sendMessage(bcmsg);
 				return true;
 			}
 		}else{
-			sender.sendMessage(ChatColor.GRAY + "Player must be online!");
+			String smvic = config.getString("Messages.Starve.Failed","%victim% is not Online.");
+			smvic=plugin.util.formatMessage(smvic);
+			sender.sendMessage(ChatColor.GRAY + smvic);
 			return true;
 		}
-		String starveMsgVictim = config.getString("messages.starveMsgVictim");
-		if(starveMsgVictim.contains(plugin.regexAdmin)) starveMsgVictim = starveMsgVictim.replaceAll(plugin.regexAdmin, admin);
-		if(starveMsgVictim.contains(plugin.regexVictim)) starveMsgVictim = starveMsgVictim.replaceAll(plugin.regexVictim, idoit);
-		if(starveMsgVictim != null) victim.sendMessage(plugin.util.formatMessage(starveMsgVictim));
-		
-		String starveMsgBroadcast = config.getString("messages.starveMsgBroadcast");
-		if(starveMsgBroadcast.contains(plugin.regexAdmin)) starveMsgBroadcast = starveMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-		if(starveMsgBroadcast.contains(plugin.regexVictim)) starveMsgBroadcast = starveMsgBroadcast.replaceAll(plugin.regexVictim, idoit);
-		if(starveMsgBroadcast != null) sender.sendMessage(plugin.util.formatMessage(starveMsgBroadcast));
+		String smvic = config.getString("Messages.Starve.MsgToVictim","You are now starving!");
+		smvic=plugin.util.formatMessage(smvic);
+		victim.sendMessage(smvic);
 		victim.setFoodLevel(0);	
+		
+		String bcmsg = config.getString("Messages.Starve.MsgToSender","%victim% is now starving!");
+		if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+		if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, idoit);
+		bcmsg=plugin.util.formatMessage(bcmsg);
+		sender.sendMessage(bcmsg);
 		return true;
 	}
 }

@@ -136,7 +136,7 @@ public class Ultrabans extends JavaPlugin {
 		}
 		//Updater
 		if(config.getBoolean("AutoUpdater.Enabled",true)){
-			//Damn Major.Minor.Build version string! in Filename?
+			//Damn Major.Minor.Build version string! in Filename? Nvm.. Fixed it. :)
 			Updater up = new Updater(this,pdf.getName().toLowerCase(),this.getFile(),UpdateType.DEFAULT,true);
 			if(!up.getResult().equals(UpdateResult.SUCCESS)||up.pluginFile(this.getFile().getName())){
 				this.getLogger().info("No Updates found on dev.bukkit.org.");

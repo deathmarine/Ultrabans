@@ -19,18 +19,14 @@ public class Reload implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(sender.hasPermission(command.getPermission())){
-			plugin.reloadConfig();
-			plugin.getServer().getPluginManager().disablePlugin(plugin);
-			plugin.getServer().getPluginManager().enablePlugin(plugin);
-			sender.sendMessage("§2[UltraBan] reloaded.");
-			return true;
-		}else{
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+		if(!sender.hasPermission(command.getPermission())){
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
+		plugin.reloadConfig();
+		plugin.getServer().getPluginManager().disablePlugin(plugin);
+		plugin.getServer().getPluginManager().enablePlugin(plugin);
+		plugin.getLogger().info("Reloaded.");
+		return true;
 	}
-	
-
-
 }

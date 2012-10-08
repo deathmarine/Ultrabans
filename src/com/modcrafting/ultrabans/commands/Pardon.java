@@ -23,52 +23,59 @@ public class Pardon implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission(command.getPermission())){
+			sender.sendMessage(ChatColor.RED+plugin.perms);
+			return true;
+		}
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = null;
-		String admin = config.getString("defAdminName", "server");
+		String admin = plugin.admin;
 		if (sender instanceof Player){
 			player = (Player)sender;
 			admin = player.getName();
 		}
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
-			return true;
-		}
 		if (args.length < 1) return false;
-		
-		String jaile = args[0];
-		jaile = plugin.util.expandName(jaile);
-		plugin.jailed.remove(jaile.toLowerCase());
-		
-		Player jailee = plugin.getServer().getPlayer(jaile);
-		if(jailee == null){
-			jailee = plugin.getServer().getOfflinePlayer(jaile).getPlayer();
-			if(jailee == null){
-				sender.sendMessage(ChatColor.RED + "Unable to find Jailed Player");
+		String p = args[0];
+		p = plugin.util.expandName(p);
+		Player victim = plugin.getServer().getPlayer(p);
+		if(victim == null){
+			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
+			if(victim == null){
+				plugin.db.removeFromJaillist(p);
+				plugin.db.addPlayer(p, "Released From Jail", admin, 0, 8);
+				if(plugin.jailed.contains(p.toLowerCase())){
+					plugin.jailed.remove(p.toLowerCase());
+				}
+				if(plugin.tempJail.containsKey(p.toLowerCase())){
+					plugin.tempJail.remove(p.toLowerCase());
+				}
+				String bcmsg = config.getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
+				if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+				if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, p);
+				bcmsg=plugin.util.formatMessage(bcmsg);
+				sender.sendMessage(bcmsg);
 				return true;
 			}
 		}
-		plugin.db.removeFromJaillist(jailee.getName());
-		plugin.db.addPlayer(jailee.getName(), "Released From Jail", admin, 0, 8);
-		
+		plugin.db.removeFromJaillist(victim.getName());
+		plugin.db.addPlayer(victim.getName(), "Released From Jail", admin, 0, 8);
+		if(plugin.jailed.contains(victim.getName().toLowerCase())){
+			plugin.jailed.remove(victim.getName().toLowerCase());
+		}
+		if(plugin.tempJail.containsKey(victim.getName().toLowerCase())){
+			plugin.tempJail.remove(victim.getName().toLowerCase());
+		}
+		String bcmsg = config.getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
+		if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+		if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, victim.getName());
+		bcmsg=plugin.util.formatMessage(bcmsg);
+		victim.sendMessage(bcmsg);
+		sender.sendMessage(bcmsg);
 		Location stlp = plugin.jail.getJail("release");
-		
 		if(stlp != null){
-			jailee.teleport(stlp);
+			victim.teleport(stlp);
 		}else{
-			jailee.teleport(jailee.getWorld().getSpawnLocation());
-		}
-		
-		if(plugin.tempJail.containsKey(jaile.toLowerCase())){
-			plugin.tempJail.remove(jaile.toLowerCase());
-		}
-		
-		String jailMsgRelease = config.getString("messages.jailMsgRelease");
-		if(jailMsgRelease.contains(plugin.regexAdmin)) jailMsgRelease = jailMsgRelease.replaceAll(plugin.regexAdmin, admin);
-		if(jailMsgRelease.contains(plugin.regexVictim)) jailMsgRelease = jailMsgRelease.replaceAll(plugin.regexVictim, jaile);
-		if(jailMsgRelease != null){
-			jailee.sendMessage(plugin.util.formatMessage(jailMsgRelease));
-			sender.sendMessage(plugin.util.formatMessage(jailMsgRelease));
+			victim.teleport(victim.getWorld().getSpawnLocation());
 		}
 		return true;
 	}

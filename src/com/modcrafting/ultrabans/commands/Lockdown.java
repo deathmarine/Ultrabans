@@ -22,55 +22,55 @@ public class Lockdown implements CommandExecutor {
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission(command.getPermission())){
+			sender.sendMessage(ChatColor.RED+plugin.perms);
+			return true;
+		}
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = null;
-		String admin = config.getString("defAdminName", "server");
+		String admin = plugin.admin;
 		if (sender instanceof Player){
 			player = (Player)sender;
 			admin = player.getName();
 		}
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
-			return true;
-		}
-		boolean lock = config.getBoolean("lockdown", false);
+		boolean lock = config.getBoolean("Lockdown", false);
 		if (args.length < 1) return false;
 		String toggle = args[0];
 		if (toggle.equalsIgnoreCase("on")){ 
 			if(!lock){ 
 				lockdownOn();
-				sender.sendMessage(ChatColor.GRAY + "Lockdown initiated.PlayerLogin disabled.");
+				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.Start","Lockdown initiated. PlayerLogin disabled.")));
 				plugin.getLogger().info(admin + " initiated lockdown.");
+			}else{
+				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.LoginMsg","Server is under a lockdown, Try again later! Sorry.")));
 			}
-			if(lock) sender.sendMessage(ChatColor.GRAY + "Lockdown already initiated.PlayerLogin disabled.");
-			return true;
 		}
 		if (toggle.equalsIgnoreCase("off")){
 			if(lock){
 				lockdownEnd();
-				sender.sendMessage(ChatColor.GRAY + "Lockdown ended.PlayerLogin reenabled.");
+				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.End","Lockdown ended.PlayerLogin reenabled.")));
 				plugin.getLogger().info(admin + " disabled lockdown.");
+			}else{
+				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.Status","Lockdown is disabled.")));
 			}
-			if(!lock) sender.sendMessage(ChatColor.GRAY + "Lockdown already ended / never initiated.");
-			return true;
 		}
 		if (toggle.equalsIgnoreCase("status")){
-			if(lock) sender.sendMessage(ChatColor.GRAY + "Lockdown in progress.PlayerLogin disabled.");
-			if(!lock) sender. sendMessage(ChatColor.GRAY + "Lockdown is not in progress.");
-			return true;
+			if(lock){
+				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.LoginMsg","Server is under a lockdown, Try again later! Sorry.")));
+			}else{
+				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.Status","Lockdown is disabled.")));
+			}
 		}
 		
-		return false;
+		return true;
 	}
-	public void lockdownOn(){
+	private void lockdownOn(){
 		plugin.getConfig().set("lockdown", (boolean) true);
         plugin.saveConfig();
-
     }
-	public void lockdownEnd(){
+	private void lockdownEnd(){
 		plugin.getConfig().set("lockdown",false);
         plugin.saveConfig();
-
     }
 
 }
