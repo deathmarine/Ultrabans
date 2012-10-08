@@ -17,11 +17,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class Export implements CommandExecutor{
-	UltraBan plugin;
-	public Export(UltraBan ultraBan) {
+	Ultrabans plugin;
+	public Export(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {

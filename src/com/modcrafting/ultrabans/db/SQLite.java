@@ -20,13 +20,13 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.EditBan;
 
 public class SQLite implements Database{
-	UltraBan plugin;
+	Ultrabans plugin;
 	String dbname;
-	public SQLite(UltraBan instance){
+	public SQLite(Ultrabans instance){
 		plugin = instance;
 		dbname = plugin.getConfig().getString("SQLite.Filename", "banlist");
 	}

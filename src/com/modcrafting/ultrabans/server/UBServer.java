@@ -6,15 +6,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class UBServer implements Runnable{
 	ServerSocket server;
 	boolean alive;
 	int port;
-	UltraBan plugin;
+	Ultrabans plugin;
 	List<ConnectionHandler> threads = new ArrayList<ConnectionHandler>();
-	public UBServer(int p,UltraBan instance){
+	public UBServer(int p,Ultrabans instance){
 		port=p;
 		plugin=instance;
 	}

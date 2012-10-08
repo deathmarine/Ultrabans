@@ -16,12 +16,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.EditBan;
 
 public class Edit implements CommandExecutor{
-	UltraBan plugin;
-	public Edit(UltraBan ultraBan){
+	Ultrabans plugin;
+	public Edit(Ultrabans ultraBan){
 		this.plugin = ultraBan;
 	}
 

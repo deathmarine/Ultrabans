@@ -10,11 +10,11 @@ package com.modcrafting.ultrabans.util;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class Jailtools {
-	UltraBan plugin;
-    public Jailtools(UltraBan ultraBan) {
+	Ultrabans plugin;
+    public Jailtools(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
 

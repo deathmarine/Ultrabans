@@ -7,11 +7,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class Inventory implements CommandExecutor{
-	UltraBan plugin;
-	public Inventory(UltraBan instance){
+	Ultrabans plugin;
+	public Inventory(Ultrabans instance){
 		plugin = instance;
 	}
 	@Override

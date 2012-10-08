@@ -18,17 +18,17 @@ import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.EditBan;
 
 public class SQL implements Database{
-	UltraBan plugin;
+	Ultrabans plugin;
 	String mysqlTable;
 	String logip;
 	String mysqlDatabase;
 	String mysqlUser;
 	String mysqlPassword;
-	public SQL(UltraBan instance){
+	public SQL(Ultrabans instance){
 		plugin = instance;
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		mysqlDatabase = config.getString("MySQL.Database","jdbc:mysql://localhost:3306/minecraft");

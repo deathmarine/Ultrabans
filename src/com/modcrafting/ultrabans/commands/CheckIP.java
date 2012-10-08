@@ -17,11 +17,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class CheckIP implements CommandExecutor{
-	UltraBan plugin;
-	public CheckIP(UltraBan ultraBan) {
+	Ultrabans plugin;
+	public CheckIP(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {

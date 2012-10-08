@@ -19,11 +19,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class UltraBanBlockListener implements Listener {
-	UltraBan plugin;
-	public UltraBanBlockListener(UltraBan instance) {
+	Ultrabans plugin;
+	public UltraBanBlockListener(Ultrabans instance) {
 		plugin = instance;
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)

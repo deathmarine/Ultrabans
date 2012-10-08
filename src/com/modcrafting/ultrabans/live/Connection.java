@@ -6,9 +6,6 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.JLabel;
 
 import com.modcrafting.ultrabans.gui.Frame;

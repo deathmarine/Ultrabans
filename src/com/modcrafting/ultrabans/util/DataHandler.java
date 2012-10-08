@@ -11,11 +11,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class DataHandler {
-	UltraBan plugin;
-	public DataHandler(UltraBan instance) {
+	Ultrabans plugin;
+	public DataHandler(Ultrabans instance) {
 		plugin = instance;
 	}
 	public void createDefaultConfiguration(String name) {

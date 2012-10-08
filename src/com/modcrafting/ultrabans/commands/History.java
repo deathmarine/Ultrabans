@@ -13,13 +13,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.EditBan;
 
 public class History implements CommandExecutor{
-	UltraBan plugin;
+	Ultrabans plugin;
 	String permission = "ultraban.history";
-	public History(UltraBan ultraBan) {
+	public History(Ultrabans ultraBan) {
 		this.plugin = ultraBan;	
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

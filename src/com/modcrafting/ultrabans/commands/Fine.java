@@ -10,11 +10,11 @@ package com.modcrafting.ultrabans.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class Fine implements CommandExecutor{
-	UltraBan plugin;
-	public Fine(UltraBan ultraBan) {
+	Ultrabans plugin;
+	public Fine(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {

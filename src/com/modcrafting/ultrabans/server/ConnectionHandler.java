@@ -9,16 +9,16 @@ import javax.crypto.BadPaddingException;
 
 import org.bukkit.entity.Player;
 
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class ConnectionHandler extends Thread{
-	UltraBan plugin;
+	Ultrabans plugin;
 	InputStream in;
 	OutputStream out;
 	String line;
 	public Socket sock;
 	UBHandler h;
-	public ConnectionHandler(Socket client, UltraBan instance) throws IOException {
+	public ConnectionHandler(Socket client, Ultrabans instance) throws IOException {
 		plugin=instance;
 		sock = client;
 		in = sock.getInputStream();

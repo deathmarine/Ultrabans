@@ -26,13 +26,13 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class UltraBanPlayerListener implements Listener{
-	UltraBan plugin;
+	Ultrabans plugin;
 	String spamcheck = null;
 	int spamCount = 0;
-	public UltraBanPlayerListener(UltraBan ultraBans) {
+	public UltraBanPlayerListener(Ultrabans ultraBans) {
 		this.plugin = ultraBans;
 	}
 

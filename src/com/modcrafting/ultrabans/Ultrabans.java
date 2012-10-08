@@ -14,9 +14,12 @@ import net.h31ix.updater.Updater;
 import net.h31ix.updater.Updater.UpdateResult;
 import net.h31ix.updater.Updater.UpdateType;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.boxysystems.jgoogleanalytics.FocusPoint;
+import com.boxysystems.jgoogleanalytics.JGoogleAnalyticsTracker;
 import com.modcrafting.ultrabans.commands.Ban;
 import com.modcrafting.ultrabans.commands.Check;
 import com.modcrafting.ultrabans.commands.CheckIP;
@@ -56,10 +59,11 @@ import com.modcrafting.ultrabans.security.RSAServerCrypto;
 import com.modcrafting.ultrabans.server.UBServer;
 import com.modcrafting.ultrabans.util.DataHandler;
 import com.modcrafting.ultrabans.util.EditBan;
+import com.modcrafting.ultrabans.util.ErrorHandler;
 import com.modcrafting.ultrabans.util.Formatting;
 import com.modcrafting.ultrabans.util.Jailtools;
 
-public class UltraBan extends JavaPlugin {
+public class Ultrabans extends JavaPlugin {
 	public HashSet<String> bannedPlayers = new HashSet<String>();
 	public HashSet<String> bannedIPs = new HashSet<String>();
 	public HashSet<String> jailed = new HashSet<String>();
@@ -72,13 +76,15 @@ public class UltraBan extends JavaPlugin {
 	public Jailtools jail = new Jailtools(this);
 	public RSAServerCrypto crypto;
 	public Database db;
-	public String regexAdmin = "%admin%";
-	public String regexReason = "%reason%";
-	public String regexVictim = "%victim%";
-	public String regexAmt = "%amt%";
+	public final String regexAdmin = "%admin%";
+	public final String regexReason = "%reason%";
+	public final String regexVictim = "%victim%";
+	public final String regexAmt = "%amt%";
+	public final String regexMode = "%mode%";
 	public String admin;
 	public String reason;
 	public String perms;
+	public JGoogleAnalyticsTracker tracker;
 	UBServer ubserver;
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
@@ -93,10 +99,6 @@ public class UltraBan extends JavaPlugin {
 		
 	}
 	public void onEnable() {
-		Updater up = new Updater(this, "ultrabans", this.getFile(), UpdateType.DEFAULT, true);
-		if(!up.getResult().equals(UpdateResult.SUCCESS)||up.pluginFile(this.getFile().getName())){
-			this.getLogger().info("No Updates found on dev.bukkit.org.");
-		}
 		long time = System.currentTimeMillis();
 		this.getDataFolder().mkdir();
 		data.createDefaultConfiguration("config.yml");
@@ -117,29 +119,48 @@ public class UltraBan extends JavaPlugin {
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new UltraBanPlayerListener(this), this);
 		pm.registerEvents(new UltraBanBlockListener(this), this);
-		if(config.getBoolean("serverSync.enable", false)) this.getServer().getScheduler().scheduleAsyncRepeatingTask(this,new Runnable(){
-			@Override
-			public void run() {
-				onDisable();
-				db.load();
-				db.loadJailed();
-				System.out.println("UltraBans Sync is Enabled!");
-			}
-			
-		},l,l);	
 		loadCommands();
-		this.getLogger().info(" Loaded. "+(System.currentTimeMillis()-time)+"ms");
-		boolean live = config.getBoolean("Live.Enabled");
-		if(live){
-			long cur = System.currentTimeMillis();
-			int port = config.getInt("Live.Port");
+
+		PluginDescriptionFile pdf = this.getDescription();
+		
+		//Sync
+		if(config.getBoolean("Sync.Enabled", false)){
+			this.getServer().getScheduler().scheduleAsyncRepeatingTask(this,new Runnable(){
+				@Override
+				public void run(){
+					onDisable();
+					db.load();
+					db.loadJailed();
+				}
+			},l,config.getLong("Sync.Timing",72000L));	
+		}
+		//Updater
+		if(config.getBoolean("AutoUpdater.Enabled",true)){
+			//Damn Major.Minor.Build version string! in Filename?
+			Updater up = new Updater(this,pdf.getName().toLowerCase(),this.getFile(),UpdateType.DEFAULT,true);
+			if(!up.getResult().equals(UpdateResult.SUCCESS)||up.pluginFile(this.getFile().getName())){
+				this.getLogger().info("No Updates found on dev.bukkit.org.");
+			}			
+		}
+		//Statistic Tracker
+		if(config.getBoolean("GoogleAnalytics.Enabled",true)){
+			tracker = new JGoogleAnalyticsTracker(pdf.getName(),pdf.getVersion(),"UA-35400100-1");
+			tracker.setLoggingAdapter(new ErrorHandler(this));
+			FocusPoint focusPoint=new FocusPoint("PluginLoaded");
+			tracker.trackAsynchronously(focusPoint);
+			//Pssfffttt... Metrics? Ha.
+		}
+		//Live Gui
+		if(config.getBoolean("Live.Enabled",false)){
 			this.getLogger().info("Live initializing.");
+			int port = config.getInt("Live.Port",9981);
+			//RSA 2048bit
 			crypto = new RSAServerCrypto(this.getDataFolder());
 			ubserver = new UBServer(port,this);
 			new Thread(ubserver).start();
 			this.getLogger().info("Live Address: "+this.getServer().getIp()+":"+port);
-			this.getLogger().info("Live Loaded. "+(System.currentTimeMillis()-cur)+"ms");
 		}
+		this.getLogger().info("Loaded. "+(System.currentTimeMillis()-time)+"ms");
 	}
 	public void loadCommands(){
 		getCommand("ban").setExecutor(new Ban(this));

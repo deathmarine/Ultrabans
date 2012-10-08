@@ -13,11 +13,11 @@ import java.util.regex.PatternSyntaxException;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class Formatting {
-	UltraBan plugin;
-	public Formatting(UltraBan instance) {
+	Ultrabans plugin;
+	public Formatting(Ultrabans instance) {
 		plugin = instance;
 	}
 	public String expandName(String p) {

@@ -41,13 +41,22 @@ lockdown: false
 #Enabling dupePolicy will disallow duplicate IP connections#
 dupePolicy: false
 enableLoginDupeCheck: true
-serverSync:
-  #This will set the server to sync the database if multiple servers are in place.#
-  enable: false
+#This will set the server to sync the database if multiple servers are in place.#
+Sync:
+  Enabled: false
   #Timing is in Long format Example:#
   #1 Hour = 60 Seconds * 60 Minutes * 20 ServerTickRatePerSec = 72000L
-  timing: 72000L
-
+  Timing: 72000L
+#Enable Live Server#
+Live:
+  Enabled: false
+  Port: 9981
+#Auto Updater#
+AutoUpdater:
+  Enabled: true
+#Error / Usage Tracking#
+GoogleAnalytics:
+  Enable: true
 #Chat#
 Chat:
   #Checks Chat Messages for a valid IP address#
@@ -104,8 +113,6 @@ messages:
   LoginTempban: '&7You are banned until &4%time%&7! Reason: &4%reason%!'
   LoginBan: '%admin% banned you from this server! Reason: %reason%!'
   LoginIPBan: 'Your IP is banned!'
-  fineMsgVictim: 'You have been fined by %admin% in the amount of %amt%!'
-  fineMsgBroadcast: '&4%victim% &7was fined by &3%admin%&7 in the amount of &4%amt%!'
   emptyMsgVictim: '&3%admin% has cleared your inventory!'
   emptyMsgBroadcast: '&3%admin% has cleared the inventory of &4%victim%!'
   starveMsgVictim: '&7You are now starving!'
@@ -121,8 +128,6 @@ messages:
   jailChatMsg: 'Your cry falls on deaf ears.'
   jailPlaceMsg: 'You cannot place blocks while you are jailed!'
   jailBreakMsg: 'You cannot break blocks while you are jailed!'
-  tempjailMsgVictim: 'You have been temp. jailed by %admin%. Reason: %reason%!'
-  tempjailMsgBroadcast: 
   tempipbanMsgVictim: 'You have been temp. ipbanned by %admin%. Reason: %reason%!'
   tempipbanMsgBroadcast: '&4%victim% &7was temp. ipbanned by &3%admin%&7. Reason: &4%reason%!'
   muteChatMsg: 'You have been muted!'
@@ -130,10 +135,25 @@ messages:
   unmuteMsgVictim: 'You have been unmuted.'
   unmuteMsg: 'You have unmuted %victim%.'
 Messages:
+  TempBan:
+    MsgToVictim: 'You have been tempbanned by %admin% for %amt% %mode%s. Reason: %reason%!'
+    MsgToBroadcast: '%victim% was tempbanned by %admin% for %amt% %mode%s. Reason: %reason%!'
+    Failed: '%victim% is already tempbanned!'
+    Denied: 'Your tempban has been denied!'
+    Emo: 'You cannot tempban yourself!'
+  TempIpBan:
+    MsgToVictim: 'You have been tempipbanned by %admin% for %amt% %mode%s. Reason: %reason%!'
+    MsgToBroadcast: '%victim% was tempipbanned by %admin% for %amt% %mode%s. Reason: %reason%!'
+    Failed: '%victim% is already tempipbanned!'
+    Denied: 'Your tempipban has been denied!'
+    Emo: 'You cannot tempipban yourself!'
+    IPNotFound: 'IP address not found. Processed as a normal tempban for %victim%!'  
   TempJail:
     MsgToVictim: 'You have been tempjailed by %admin% for %amt% %mode%s. Reason: %reason%!'
     MsgToBroadcast: '%victim% was tempjailed by %admin% for %amt% %mode%s. Reason: %reason%!'
     Failed: '%victim% is already jailed!'
+    Denied: 'Your tempjail has been denied!'
+    Emo: 'You cannot tempjail yourself!'
   Unban:
     MsgToBroadcast: '%victim% was unbanned by %admin%!'
     PermaBanned: 'Unable to unban, %Victim% was Permabanned.'

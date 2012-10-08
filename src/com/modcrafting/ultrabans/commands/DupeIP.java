@@ -13,11 +13,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import com.modcrafting.ultrabans.UltraBan;
+import com.modcrafting.ultrabans.Ultrabans;
 
 public class DupeIP implements CommandExecutor{
-	UltraBan plugin;
-	public DupeIP(UltraBan ultraBan) {
+	Ultrabans plugin;
+	public DupeIP(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
