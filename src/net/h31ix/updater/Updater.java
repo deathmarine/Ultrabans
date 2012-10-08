@@ -486,34 +486,40 @@ public class Updater
     /**
      * Check to see if the program should continue by evaluation whether the plugin is already updated, or shouldn't be updated
      */
-    private boolean versionCheck(String title)
-    {
-        if(type != UpdateType.NO_VERSION_CHECK)
-        {
+    private boolean versionCheck(String title){
+        if(type != UpdateType.NO_VERSION_CHECK){
             String version = plugin.getDescription().getVersion();
-            if(title.split("v").length == 2)
-            {
+            if(title.split("v").length == 2){
                 String remoteVersion = title.split("v")[1].split(" ")[0]; // Get the newest file's version number
-                if(hasTag(version) || version.equalsIgnoreCase(remoteVersion))
-                {
+                plugin.getLogger().info("current"+version+"remote"+remoteVersion);
+                int remVer = calVer(remoteVersion);
+                int curVer = calVer(version);
+                plugin.getLogger().info("current"+curVer+"remote"+remVer);
+                if(hasTag(version)||version.equalsIgnoreCase(remoteVersion)||curVer>=remVer){
                     // We already have the latest version, or this build is tagged for no-update
                     result = Updater.UpdateResult.NO_UPDATE;
                     return false;
                 }
-            }
-            else
-            {
-                // The file's name did not contain the string 'vVersion'
-                plugin.getLogger().warning("The author of this plugin has misconfigured their Auto Update system");
-                plugin.getLogger().warning("Files uploaded to BukkitDev should contain the version number, seperated from the name by a 'v', such as PluginName v1.0");
-                plugin.getLogger().warning("Please notify the author (" + plugin.getDescription().getAuthors().get(0) + ") of this error.");
-                result = Updater.UpdateResult.FAIL_NOVERSION;
+            }else{
+            	result = Updater.UpdateResult.FAIL_NOVERSION;
                 return false;
             }
         }
         return true;
     }
-        
+    private Integer calVer(String s) throws NumberFormatException{
+        if(s.contains(".")){
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i <s.length(); i++) {
+                Character c = s.charAt(i);
+                if (Character.isDigit(s.charAt(i))) {
+                	sb.append(c);
+                }
+            }
+        	return Integer.parseInt(sb.toString());
+        }
+        return Integer.parseInt(s);
+    }
     /**
      * Evaluate whether the version number is marked showing that it should not be updated by this program
      */  
