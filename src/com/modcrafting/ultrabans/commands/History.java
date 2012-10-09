@@ -18,23 +18,27 @@ import com.modcrafting.ultrabans.util.EditBan;
 
 public class History implements CommandExecutor{
 	Ultrabans plugin;
-	String permission = "ultraban.history";
 	public History(Ultrabans ultraBan) {
 		this.plugin = ultraBan;	
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		if (args.length < 1) return false;
 		String p = args[0];
 		List<EditBan> bans = plugin.db.listRecent(p);
 		if(bans.size() < 1){
-			sender.sendMessage(ChatColor.GREEN + "Error in command");
+			String msg = plugin.getConfig().getString("Messages.History.Failed","Unable to find any bans.");
+			msg=plugin.util.formatMessage(msg);
+			sender.sendMessage(ChatColor.RED + msg);
 			return true;
 		}
-		sender.sendMessage(ChatColor.BLUE + "Ultrabans Listing " + ChatColor.GRAY + args[0] + ChatColor.BLUE + " records.");
+		String msg = plugin.getConfig().getString("Messages.History.Header","Ultrabans Listing %amt% Records.");
+		if(msg.contains(plugin.regexAmt)) msg=msg.replaceAll(plugin.regexAmt, args[0]);
+		msg=plugin.util.formatMessage(msg);
+		sender.sendMessage(ChatColor.BLUE + msg);
 		for(EditBan ban : bans){
 			Date date = new Date();
 			date.setTime(ban.time*1000);

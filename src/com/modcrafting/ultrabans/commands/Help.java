@@ -17,6 +17,7 @@ public class Help implements CommandExecutor{
 	public Help(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
+	//F'n Smart!
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		int page = 1;
 		if(args.length>0){
@@ -26,7 +27,7 @@ public class Help implements CommandExecutor{
 				page = 1;
 			}
 		}
-		plugin.getServer().dispatchCommand(sender, "help Ultraban "+page);
+		plugin.getServer().dispatchCommand(sender, "help Ultrabans "+page);
 		return true;
 	}
 

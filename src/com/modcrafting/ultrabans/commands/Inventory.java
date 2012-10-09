@@ -17,19 +17,23 @@ public class Inventory implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		if(sender instanceof Player){
 			if(args.length<1)return false;
 			OfflinePlayer victim = plugin.getServer().getOfflinePlayer(args[0]);
 			if(victim==null||!victim.isOnline()){
-				sender.sendMessage(ChatColor.RED+"Unable to find player");
+				String msg = plugin.getConfig().getString("Messages.InvOf.Failed","Unable to find player.");
+				msg=plugin.util.formatMessage(msg);
+				sender.sendMessage(ChatColor.RED + msg);
 				return true;
 			}
 			((Player)sender).openInventory(victim.getPlayer().getInventory());			
 		}else{
-			sender.sendMessage("This command must be executed by a player.");
+			String msg = plugin.getConfig().getString("Messages.InvOf.Console","This command must be executed by a player.");
+			msg=plugin.util.formatMessage(msg);
+			sender.sendMessage(ChatColor.RED + msg);
 		}
 		return true;
 	}

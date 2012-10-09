@@ -97,13 +97,6 @@ Chat:
 #Messages#
 messages:
   banMsgFailed: '&4%victim% &7is already banned!'
-  unbanMsg: '&7Successfully unbanned &4%victim%&7!'
-  unbanMsgBroadcast: '&4%victim% &7was unbanned by &3%admin%&7!'
-  unbanMsgFailed: '&4%victim% &7is already unbanned!'
-  kickAllMsg: '%admin% kicked everyone. Reason: %reason%!'
-  kickMsgVictim: 'You have been kicked by %admin%. Reason: %reason%!'
-  kickMsgBroadcast: '&4%victim% &7was kicked by &3%admin%&7. Reason: &4%reason%!'
-  kickMsgFailed: '&7Kick failed: &7%victim% &7isn''t online.'
   banMsgVictim: 'You have been banned by %admin%. Reason: %reason%!'
   banMsgBroadcast: '&4%victim% &7was banned by &3%admin%&7. Reason: &4%reason%!'
   LoginTempban: '&7You are banned until &4%time%&7! Reason: &4%reason%!'
@@ -111,15 +104,48 @@ messages:
   LoginIPBan: 'Your IP is banned!'
   emptyMsgVictim: '&3%admin% has cleared your inventory!'
   emptyMsgBroadcast: '&3%admin% has cleared the inventory of &4%victim%!'
-  jailMsgVictim: '&7You have been jailed by &3%admin%&7. Reason: &4%reason%!'
-  jailMsgBroadcast: '&4%victim% &7was jailed by &3%admin%&7. Reason: &4%reason%!'
-  lockMsgLogin: 
   DupeIPKick: 'Duplicate IP addresses disabled.'
   jailCmdMsg: 'You cannot use commands while jailed!'
   jailChatMsg: 'Your cry falls on deaf ears.'
   jailPlaceMsg: 'You cannot place blocks while you are jailed!'
   jailBreakMsg: 'You cannot break blocks while you are jailed!'
 Messages:
+  Export:
+    Failed: 'Could not export ban lists.'
+    Completed: 'Exported banlists.'
+  History:
+    Header: 'Ultrabans Listing %amt% Records.'
+    Failed: 'Unable to find any bans.'
+  Import:
+    Loading: 'Be patient. Loading...'
+    Failed: 'Could not import ban list.'
+    Completed: 'System imported the banlist to the database.'
+  InvOf:
+    Failed: 'Unable to find player.'
+    Console: 'This command must be executed by a player.'
+  IPBan:
+    MsgToVictim: 'You have been ipbanned by %admin%. Reason: %reason%!'
+    MsgToBroadcast: '%victim% was ipbanned by %admin%. Reason: %reason%!'
+    IPNotFound: 'IP address not found. Processed as a normal ban for %victim%!' 
+    Failed: '%victim% is already in banned.'
+    Denied: 'Your ipban attempt has been denied!'
+    Emo: 'You cannot ipban yourself!'      
+  Jail:
+    MsgToVictim: 'You have been jailed by %admin%. Reason: %reason%!'
+    MsgToBroadcast: '%victim% was jailed by %admin%. Reason: %reason%!'
+    SetJail: 'Jail has been set!'
+    SetRelease: 'Release has been set!'
+    Failed: '%victim% is already in jail.'
+    Online: '%victim% must be online to be jailed.'
+    Denied: 'Your jail attempt has been denied!'
+    Emo: 'You cannot jail yourself!'  
+  Kick:
+    MsgToAll: 'Everyone has been kicked by %admin%. Reason: %reason%'
+    MsgToVictim: 'You have been kicked by %admin%. Reason: %reason%!'
+    MsgToBroadcast: '%victim% was kicked by %admin%. Reason: %reason%!'
+    Online: '%victim% must be online.'
+    Denied: 'Your kick has been denied!'
+    Emo: 'You cannot kick yourself!'  
   Lockdown:
     Start: 'Lockdown initiated. PlayerLogin disabled.'
     End: 'Lockdown ended. PlayerLogin reenabled.'
@@ -138,17 +164,17 @@ Messages:
     MsgToVictim: 'You have been permabanned by %admin%. Reason: %reason%!'
     MsgToBroadcast: '%victim% was permabanned by %admin%. Reason: %reason%!'
     Failed: '%victim% is already banned.'
-    Online: '%victim% must be Online.'
+    Online: '%victim% must be online.'
     Denied: 'Your permaban has been denied!'
     Emo: 'You cannot permaban yourself!'    
   Spawn:
     MsgToVictim: 'You have been sent to spawn!'
     MsgToSender: '%victim% is now at spawn!'
-    Failed: '%victim% is not Online.'
+    Failed: '%victim% is not online.'
   Starve:
     MsgToVictim: 'You are now starving!'
     MsgToSender: '%victim% is now starving!'
-    Failed: '%victim% is not Online.'
+    Failed: '%victim% is not online.'
     Denied: 'Your starve attempt has been denied!'
     Emo: 'You cannot starve yourself!'
   TempBan:
@@ -172,7 +198,7 @@ Messages:
     Emo: 'You cannot tempjail yourself!'
   Unban:
     MsgToBroadcast: '%victim% was unbanned by %admin%!'
-    PermaBanned: 'Unable to unban, %Victim% was Permabanned.'
+    PermaBanned: 'Unable to unban, %victim% was Permabanned.'
     Failed: '%victim% is already unbanned!'
   Warn:
     MsgToVictim: 'You have been warned by %admin%. Reason: %reason%'

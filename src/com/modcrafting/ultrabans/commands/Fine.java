@@ -17,6 +17,7 @@ public class Fine implements CommandExecutor{
 	public Fine(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
+	//This is the reason for Analytics... To see what is actually used.
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		/*
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();

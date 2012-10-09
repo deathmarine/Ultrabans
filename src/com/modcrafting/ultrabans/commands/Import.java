@@ -12,7 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.logging.Level;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -27,13 +26,15 @@ public class Import implements CommandExecutor{
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
 			@Override
 			public void run() {
-				sender.sendMessage(ChatColor.GRAY + "Be patient. Loading");
+				String msg = plugin.getConfig().getString("Messages.Import.Loading","Be patient. Loading...");
+				msg=plugin.util.formatMessage(msg);
+				sender.sendMessage(ChatColor.GRAY + msg);
 				try {
 					BufferedReader banlist = new BufferedReader(new FileReader("banned-players.txt"));
 					String p;
@@ -60,12 +61,15 @@ public class Import implements CommandExecutor{
 						}
 					}
 					bannedIP.close();
-					sender.sendMessage(ChatColor.GREEN + "Banlist imported.");
-					plugin.getLogger().info("System imported the banlist to the database.");
-					return;
+					msg = plugin.getConfig().getString("Messages.Import.Completed","System imported the banlist to the database.");
+					msg=plugin.util.formatMessage(msg);
+					sender.sendMessage(ChatColor.GRAY + msg);
+					plugin.getLogger().info(msg);
 				} catch (IOException e) {
-					plugin.getLogger().log(Level.SEVERE, "Could not import ban list.");
-					sender.sendMessage(ChatColor.RED + "Could not import ban list.");
+					msg = plugin.getConfig().getString("Messages.Import.Failed","Could not import ban list.");
+					msg=plugin.util.formatMessage(msg);
+					sender.sendMessage(ChatColor.RED + msg);
+					plugin.getLogger().severe(msg);
 				}
 			}
 		});	

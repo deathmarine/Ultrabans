@@ -22,6 +22,10 @@ public class Tempipban implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission(command.getPermission())){
+			sender.sendMessage(ChatColor.RED+plugin.perms);
+			return true;
+		}
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean broadcast = true;
 		Player player = null;
@@ -30,10 +34,6 @@ public class Tempipban implements CommandExecutor{
 		if (sender instanceof Player){
 			player = (Player)sender;
 			admin = player.getName();
-		}
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+plugin.perms);
-			return true;
 		}
 		if (args.length < 3) return false;
 		String p = args[0];
@@ -92,7 +92,7 @@ public class Tempipban implements CommandExecutor{
 				String failed = config.getString("Messages.TempIpBan.IPNotFound", "IP address not found. Processed as a normal tempban for %victim%!");
 				if(failed.contains(plugin.regexVictim)) failed = failed.replaceAll(plugin.regexVictim, p);
 				failed = plugin.util.formatMessage(failed);
-
+				sender.sendMessage(failed);
 				StringBuilder sb = new StringBuilder();
 				sb.append("tempban");
 				sb.append(" ");
