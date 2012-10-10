@@ -26,7 +26,7 @@ public class CheckIP implements CommandExecutor{
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		if (args.length < 1) return false;
@@ -34,38 +34,38 @@ public class CheckIP implements CommandExecutor{
 
 			@Override
 			public void run() {
-		String p = args[0];
-		String ip = plugin.db.getAddress(p.toLowerCase());
-		InetAddress InetP;
-		if(ip == null){
-			Player n = plugin.getServer().getPlayer(p);
-			if(n!=null){
-				plugin.db.setAddress(n.getName().toLowerCase(), plugin.getServer().getPlayer(p).getAddress().getAddress().getHostAddress());
-			}else{
-				sender.sendMessage(ChatColor.GRAY + "Player not found!");
-				return;
-			}
-		}
-		try {
-			InetP = InetAddress.getByName(ip);
-			sender.sendMessage(ChatColor.YELLOW + "IP Address: " + ip);
-			sender.sendMessage(ChatColor.YELLOW + "Host Address: " + InetP.getHostAddress());
-			sender.sendMessage(ChatColor.YELLOW + "Host Name: " + InetP.getHostName());
-			sender.sendMessage(ChatColor.YELLOW + "Connection: " + InetP.getCanonicalHostName());
-			
-			try {
-				boolean ping = InetP.isReachable(1800);
-				if (ping){
-					sender.sendMessage(ChatColor.GREEN + "Ping Test Passed.");
-				}else{
-					sender.sendMessage(ChatColor.RED + "Ping Test Failed.");
+				String p = args[0];
+				String ip = plugin.db.getAddress(p.toLowerCase());
+				InetAddress InetP;
+				if(ip == null){
+					Player n = plugin.getServer().getPlayer(p);
+					if(n!=null){
+						plugin.db.setAddress(n.getName().toLowerCase(),plugin.getServer().getPlayer(p).getAddress().getAddress().getHostAddress());
+					}else{
+						sender.sendMessage(ChatColor.GRAY + "Player not found!");
+						return;
+					}
 				}
-			} catch (IOException e) {
-				sender.sendMessage(ChatColor.RED + "Ping Test Failed.");
-			}
-		} catch (UnknownHostException e) {
-			sender.sendMessage(ChatColor.RED + "Gathering Information Failed: Recommend Kick!");
-		}
+				try {
+					InetP = InetAddress.getByName(ip);
+					sender.sendMessage(ChatColor.YELLOW + "IP Address: " + ip);
+					sender.sendMessage(ChatColor.YELLOW + "Host Address: " + InetP.getHostAddress());
+					sender.sendMessage(ChatColor.YELLOW + "Host Name: " + InetP.getHostName());
+					sender.sendMessage(ChatColor.YELLOW + "Connection: " + InetP.getCanonicalHostName());
+			
+					try {
+						boolean ping = InetP.isReachable(1800);
+						if (ping){
+							sender.sendMessage(ChatColor.GREEN + "Ping Test Passed.");
+						}else{
+							sender.sendMessage(ChatColor.RED + "Ping Test Failed.");
+						}
+					} catch (IOException e) {
+						sender.sendMessage(ChatColor.RED + "Ping Test Failed.");
+					}
+				} catch (UnknownHostException e) {
+					sender.sendMessage(ChatColor.RED + "Gathering Information Failed: Recommend Kick!");
+				}
 			}
 		});
 		return true;

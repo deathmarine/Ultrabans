@@ -13,11 +13,6 @@ SQLite:
   Filename: 'banlist'
 #delete dat on ban#
 CleanOnBan: true
-#kick on max ping#
-KickMaxPing: true
-MaxPing: 200
-#Disable command usage on muted#
-muteVanilla: true
 #Max Warnings#
 MaxWarning:
   Enable: false#
@@ -38,16 +33,21 @@ Label:
 #change to true or false to enable lockdown#
 #also can be done ingame /lockdown#
 Lockdown: false
-#Enabling dupePolicy will disallow duplicate IP connections#
-dupePolicy: false
-enableLoginDupeCheck: true
+Login:
+#Check for duplicates on Login#
+  DupeCheck:
+    Enable: true
+#Check ping on Login#
+  PingCheck:
+    Enable: true
+    MaxPing: 200
 #This will set the server to sync the database if multiple servers are in place.#
 Sync:
   Enabled: false
   #Timing is in Long format Example:#
   #1 Hour = 60 Seconds * 60 Minutes * 20 ServerTickRatePerSec = 72000L
   Timing: 72000L
-#Enable Live Server#
+#Enable Ultrabans Live Server#
 Live:
   Enabled: false
   Port: 9981
@@ -70,7 +70,7 @@ Chat:
     #kick,jail,warn,ban,ipban, leave blank for no action#
     Result: warn
     Silent: false
-
+    Reason: 'Advertising'
   #This will allow you to filter out messages containing any words that you define#
   SwearCensor:
     Enable: true
@@ -83,7 +83,7 @@ Chat:
     #kick,jail,warn,ban,ipban, leave blank for no action#
     Result: warn
     Silent: false
-
+    Reason: 'Language'
   #Checks if the message is duplicate and disables it#
   SpamCheck:
     Enable: true
@@ -92,24 +92,32 @@ Chat:
     #kick,jail,warn,ban,ipban, leave blank for no action#
     Result: kick
     Silent: false
-
-
-#Messages#
-messages:
-  banMsgFailed: '&4%victim% &7is already banned!'
-  banMsgVictim: 'You have been banned by %admin%. Reason: %reason%!'
-  banMsgBroadcast: '&4%victim% &7was banned by &3%admin%&7. Reason: &4%reason%!'
-  LoginTempban: '&7You are banned until &4%time%&7! Reason: &4%reason%!'
-  LoginBan: '%admin% banned you from this server! Reason: %reason%!'
-  LoginIPBan: 'Your IP is banned!'
-  emptyMsgVictim: '&3%admin% has cleared your inventory!'
-  emptyMsgBroadcast: '&3%admin% has cleared the inventory of &4%victim%!'
-  DupeIPKick: 'Duplicate IP addresses disabled.'
-  jailCmdMsg: 'You cannot use commands while jailed!'
-  jailChatMsg: 'Your cry falls on deaf ears.'
-  jailPlaceMsg: 'You cannot place blocks while you are jailed!'
-  jailBreakMsg: 'You cannot break blocks while you are jailed!'
+    Reason: 'Spam'
+  Jail:
+    Mute: true
+  Muted:
+    Vannila: true
 Messages:
+  Ban:
+    MsgToVictim: 'You have been banned by %admin%. Reason: %reason%!'
+    MsgToBroadcast: '%victim% was banned by %admin%. Reason: %reason%!'
+    Failed: '%victim% is already in banned.'
+    Denied: 'Your ban attempt has been denied!'
+    Emo: 'You cannot ban yourself!'   
+    Login: '%admin% banned you from this server! Reason: %reason%!'
+  CheckBan:
+    Header: 'Found %amt% records for %victim%.'
+    None: 'No records found for %victim%.'
+  Clean:
+    Complete: 'Deleted %amt% player.dat files.'
+  DupeIP:
+    Failed: 'Unable to view ip for %victim% !'
+    Header: 'Scanning Current IP of %victim%: %ip% !'
+    Completed: 'Scanning Complete!'
+  Empty:
+    MsgToVictim: '%admin% has cleared your inventory!'
+    MsgToSender: '%admin% has cleared the inventory of %victim%!'
+    Online: '%victim% must be online.'
   Export:
     Failed: 'Could not export ban lists.'
     Completed: 'Exported banlists.'
@@ -129,7 +137,8 @@ Messages:
     IPNotFound: 'IP address not found. Processed as a normal ban for %victim%!' 
     Failed: '%victim% is already in banned.'
     Denied: 'Your ipban attempt has been denied!'
-    Emo: 'You cannot ipban yourself!'      
+    Emo: 'You cannot ipban yourself!'
+    Login: 'Your IP is banned!'   
   Jail:
     MsgToVictim: 'You have been jailed by %admin%. Reason: %reason%!'
     MsgToBroadcast: '%victim% was jailed by %admin%. Reason: %reason%!'
@@ -138,7 +147,9 @@ Messages:
     Failed: '%victim% is already in jail.'
     Online: '%victim% must be online to be jailed.'
     Denied: 'Your jail attempt has been denied!'
-    Emo: 'You cannot jail yourself!'  
+    Emo: 'You cannot jail yourself!'
+    PlaceMsg: 'You cannot place blocks while you are jailed!'
+    BreakMsg: 'You cannot break blocks while you are jailed!'
   Kick:
     MsgToAll: 'Everyone has been kicked by %admin%. Reason: %reason%'
     MsgToVictim: 'You have been kicked by %admin%. Reason: %reason%!'
@@ -157,7 +168,8 @@ Messages:
     UnmuteMsgToSender: 'You have unmuted %victim%.'
     UnmuteMsgToVictim: 'You have been unmuted.'
     Denied: 'Your mute has been denied!'
-    Emo: 'You cannot mute yourself!'    
+    Emo: 'You cannot mute yourself!'
+    Chat: 'Your cry falls on deaf ears.'   
   Pardon:
     Msg: '%victim% was released from jail by %admin%!'
   PermaBan:
@@ -183,6 +195,7 @@ Messages:
     Failed: '%victim% is already tempbanned!'
     Denied: 'Your tempban has been denied!'
     Emo: 'You cannot tempban yourself!'
+    Login: 'You have been tempbanned by %admin% for %time%. Reason: %reason%!'
   TempIpBan:
     MsgToVictim: 'You have been tempipbanned by %admin% for %amt% %mode%s. Reason: %reason%!'
     MsgToBroadcast: '%victim% was tempipbanned by %admin% for %amt% %mode%s. Reason: %reason%!'

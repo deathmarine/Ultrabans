@@ -14,26 +14,24 @@ public class Clean implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
-		if(sender.hasPermission(command.getPermission())){
-			final long time = System.currentTimeMillis();
-
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable(){
-				int count = 0;
-				@Override
-				public void run() {
-					List<String> list = plugin.db.getBans();
-					int size = list.size();
-					for(String name:list){
-						if(plugin.data.deletePlyrdat(name)) count++;
-					}
-					long dif = System.currentTimeMillis()-time;
-					sender.sendMessage(ChatColor.AQUA+"Ultrabans found "+ChatColor.BLUE+String.valueOf(size)+ChatColor.AQUA+" Ban(s)");
-					sender.sendMessage(ChatColor.AQUA+"Deleted "+ChatColor.BLUE+String.valueOf(count)+ChatColor.AQUA+" Player.dat files in "+ChatColor.BLUE+String.valueOf(dif)+"ms.");
-					
-				}
-				
-			});
+		if(!sender.hasPermission(command.getPermission())){
+			sender.sendMessage(ChatColor.RED+plugin.perms);
+			return true;
 		}
+		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable(){
+			int count = 0;
+			@Override
+			public void run() {
+				List<String> list = plugin.db.getBans();
+				for(String name:list){
+					if(plugin.data.deletePlyrdat(name)) count++;
+				}
+				String msg = plugin.getConfig().getString("Messages.Clean.Complete","Deleted %amt% player.dat files.");
+				if(msg.contains(plugin.regexAmt)) msg=msg.replaceAll(plugin.regexAmt, String.valueOf(count));
+				msg=plugin.util.formatMessage(msg);
+				sender.sendMessage(msg);
+			}
+		});
 		return true;
 	}
 

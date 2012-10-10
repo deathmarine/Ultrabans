@@ -490,12 +490,19 @@ public class Updater
         if(type != UpdateType.NO_VERSION_CHECK){
             String version = plugin.getDescription().getVersion();
             if(title.split("v").length == 2){
-                String remoteVersion = title.split("v")[1].split(" ")[0]; // Get the newest file's version number
-                plugin.getLogger().info("current"+version+"remote"+remoteVersion);
-                int remVer = calVer(remoteVersion);
-                int curVer = calVer(version);
-                plugin.getLogger().info("current"+curVer+"remote"+remVer);
-                if(hasTag(version)||version.equalsIgnoreCase(remoteVersion)||curVer>=remVer){
+            	String remoteVersion = title.split("v")[1].split(" ")[0]; // Get the newest file's version number
+                int remVer = -1,curVer=0;
+                try
+                {
+                    remVer = calVer(remoteVersion);
+                    curVer = calVer(version);
+                }
+                catch(NumberFormatException nfe)
+                {
+                remVer=-1;
+                }
+                if(hasTag(version)||version.equalsIgnoreCase(remoteVersion)||curVer>=remVer)
+                {
                     // We already have the latest version, or this build is tagged for no-update
                     result = Updater.UpdateResult.NO_UPDATE;
                     return false;
@@ -512,7 +519,7 @@ public class Updater
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i <s.length(); i++) {
                 Character c = s.charAt(i);
-                if (Character.isDigit(s.charAt(i))) {
+                if (Character.isLetterOrDigit(s.charAt(i))){
                 	sb.append(c);
                 }
             }

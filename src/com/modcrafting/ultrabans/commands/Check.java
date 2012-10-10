@@ -24,7 +24,7 @@ public class Check implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		if (args.length < 1) return false;
@@ -43,10 +43,17 @@ public class Check implements CommandExecutor{
 		
 		List<EditBan> bans = plugin.db.listRecords(p, sender);
 		if(bans.isEmpty()){
-			sender.sendMessage(ChatColor.GREEN + "No records");
+			String msg = plugin.getConfig().getString("Messages.CheckBan.None","No records found for %victim%.");
+			if(msg.contains(plugin.regexAmt)) msg=msg.replaceAll(plugin.regexAmt, String.valueOf(bans.size()));
+			msg=plugin.util.formatMessage(msg);
+			sender.sendMessage(ChatColor.GREEN + msg);
 			return true;
 		}
-		sender.sendMessage(ChatColor.BLUE + "Found " + bans.size() + " records for user " + bans.get(0).name + " :");
+		String msg = plugin.getConfig().getString("Messages.CheckBan.Header","Found %amt% records for %victim%.");
+		if(msg.contains(plugin.regexAmt)) msg=msg.replaceAll(plugin.regexAmt, String.valueOf(bans.size()));
+		if(msg.contains(plugin.regexVictim)) msg=msg.replaceAll(plugin.regexVictim, bans.get(0).name);
+		msg=plugin.util.formatMessage(msg);
+		sender.sendMessage(ChatColor.BLUE + msg);
 		for(EditBan ban : bans){
 			sender.sendMessage(ChatColor.RED + plugin.util.banType(ban.type) + ChatColor.GRAY + ban.id + ": " + ChatColor.GREEN + ban.reason + ChatColor.AQUA +" by " + ban.admin);
 		}

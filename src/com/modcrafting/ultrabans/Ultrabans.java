@@ -71,21 +71,26 @@ public class Ultrabans extends JavaPlugin {
 	public Map<String, Long> tempBans = new HashMap<String, Long>();
 	public Map<String, Long> tempJail = new HashMap<String, Long>();
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
+	
 	public DataHandler data = new DataHandler(this);
 	public Formatting util = new Formatting(this);
 	public Jailtools jail = new Jailtools(this);
+	
 	public RSAServerCrypto crypto;
 	public Database db;
+	public JGoogleAnalyticsTracker tracker;
+	
 	public final String regexAdmin = "%admin%";
 	public final String regexReason = "%reason%";
 	public final String regexVictim = "%victim%";
 	public final String regexAmt = "%amt%";
 	public final String regexMode = "%mode%";
+	
 	public String admin;
 	public String reason;
 	public String perms;
-	public JGoogleAnalyticsTracker tracker;
-	UBServer ubserver;
+	
+	private UBServer ubserver;
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
 		tempBans.clear();
@@ -96,35 +101,34 @@ public class Ultrabans extends JavaPlugin {
 		muted.clear();
 		banEditors.clear();
 		ubserver.disconnect();
-		
 	}
 	public void onEnable() {
 		long time = System.currentTimeMillis();
 		this.getDataFolder().mkdir();
 		data.createDefaultConfiguration("config.yml");
 		FileConfiguration config = getConfig();
+		
 		admin=config.getString("Label.Console", "Server");
 		reason=config.getString("Label.Reason", "Unsure");
 		perms=config.getString("Messages.Permission","You do not have the required permissions.");
 		
-		long l = config.getLong("serverSync.timing", 72000L); 
-		if(this.getConfig().getString("Database").equalsIgnoreCase("mysql")){
-			db = new SQL(this);
-		}else{
-			db = new SQLite(this);
-		}
-		
-		db.load();
-		db.loadJailed();
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new UltraBanPlayerListener(this), this);
 		pm.registerEvents(new UltraBanBlockListener(this), this);
 		loadCommands();
 
 		PluginDescriptionFile pdf = this.getDescription();
-		
+		//Storage
+		if(config.getString("Database").equalsIgnoreCase("mysql")){
+			db = new SQL(this);
+		}else{
+			db = new SQLite(this);
+		}
+		db.load();
+		db.loadJailed();
 		//Sync
 		if(config.getBoolean("Sync.Enabled", false)){
+			long t = config.getLong("Sync.Timing", 72000L); 
 			this.getServer().getScheduler().scheduleAsyncRepeatingTask(this,new Runnable(){
 				@Override
 				public void run(){
@@ -132,15 +136,16 @@ public class Ultrabans extends JavaPlugin {
 					db.load();
 					db.loadJailed();
 				}
-			},l,config.getLong("Sync.Timing",72000L));	
+			},1,t);	
 		}
 		//Updater
 		if(config.getBoolean("AutoUpdater.Enabled",true)){
-			//Damn Major.Minor.Build version string! in Filename? Nvm.. Fixed it. :)
 			Updater up = new Updater(this,pdf.getName().toLowerCase(),this.getFile(),UpdateType.DEFAULT,true);
 			if(!up.getResult().equals(UpdateResult.SUCCESS)||up.pluginFile(this.getFile().getName())){
 				this.getLogger().info("No Updates found on dev.bukkit.org.");
-			}			
+			}else{
+				this.getLogger().info("Update "+up.getLatestVersionString()+" found please restart your server.");
+			}
 		}
 		//Statistic Tracker
 		if(config.getBoolean("GoogleAnalytics.Enabled",true)){

@@ -22,7 +22,7 @@ public class DupeIP implements CommandExecutor{
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		if (args.length < 1) return false;
@@ -34,15 +34,26 @@ public class DupeIP implements CommandExecutor{
 				p = plugin.util.expandName(p); 
 				String ip = plugin.db.getAddress(p);
 				if(ip == null){
-					sender.sendMessage(ChatColor.RED + "Unable to view ip for " + p + " !");
+					String msg = plugin.getConfig().getString("Messages.DupeIP.Failed","Unable to view ip for %victim% !");
+					if(msg.contains(plugin.regexVictim)) msg=msg.replaceAll(plugin.regexVictim, p);
+					msg=plugin.util.formatMessage(msg);
+					sender.sendMessage(ChatColor.RED + msg);
 					return;
 				}
 				List<String> list = plugin.db.listPlayers(ip);
-				sender.sendMessage(ChatColor.AQUA + "Scanning Current IP of " + p + ": " + ip + " !");
+				String msg = plugin.getConfig().getString("Messages.DupeIP.Header","Scanning Current IP of %victim%: %ip% !");
+				if(msg.contains(plugin.regexVictim)) msg=msg.replaceAll(plugin.regexVictim, p);
+				if(msg.contains("%ip%")) msg=msg.replaceAll("%ip%", ip);
+				msg=plugin.util.formatMessage(msg);
+				sender.sendMessage(ChatColor.AQUA + msg);
 				for(String name:list){
-					if(!name.equalsIgnoreCase(p)) sender.sendMessage(ChatColor.GRAY + "Player: " + name + " duplicates player: " + p + "!");
+					if(!name.equalsIgnoreCase(p)){
+						sender.sendMessage(ChatColor.GRAY + "Player: " + name + " duplicates player: " + p + "!");
+					}
 				}
-				sender.sendMessage(ChatColor.GREEN + "Scanning Complete!");
+				msg = plugin.getConfig().getString("Messages.DupeIP.Completed","Scanning Complete!");
+				msg=plugin.util.formatMessage(msg);
+				sender.sendMessage(ChatColor.GREEN + msg);
 			}
 		});
 		return true;

@@ -73,7 +73,7 @@ public class Kick implements CommandExecutor{
 		p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
 		if(victim == null){
-			String smvic = config.getString("Messages.Kick.Online","%victim% must be Online.");
+			String smvic = config.getString("Messages.Kick.Online","%victim% must be online.");
 			smvic=plugin.util.formatMessage(smvic);
 			sender.sendMessage(ChatColor.GRAY + smvic);
 			return true;

@@ -27,7 +27,7 @@ public class Edit implements CommandExecutor{
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
+			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;
 		}
 		if(args.length < 1)
@@ -41,7 +41,7 @@ public class Edit implements CommandExecutor{
 			sender.sendMessage(ChatColor.GRAY + "/editban <list/load/id/save/view/reason/time/cancel/help>");
 			sender.sendMessage(ChatColor.GRAY + "     list {player}");
 			sender.sendMessage(ChatColor.GRAY + "     load {player}");
-			sender.sendMessage(ChatColor.GRAY + "     id {banid}");
+			sender.sendMessage(ChatColor.GRAY + "     loadid {banid}");
 			sender.sendMessage(ChatColor.GRAY + "     save");
 			sender.sendMessage(ChatColor.GRAY + "     view");
 			sender.sendMessage(ChatColor.GRAY + "     reason {add/set/show} (text)");
@@ -91,7 +91,7 @@ public class Edit implements CommandExecutor{
 			return true;
 
 		}
-		if(args[0].equalsIgnoreCase("id")){
+		if(args[0].equalsIgnoreCase("loadid")){
 			EditBan ban = plugin.banEditors.get(sender.getName());
 			if(ban != null){
 				sender.sendMessage(ChatColor.RED + "Finish what you're doing first!");

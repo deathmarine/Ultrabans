@@ -21,24 +21,22 @@ public class Ban implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission(command.getPermission())){
+			sender.sendMessage(ChatColor.RED+plugin.perms);
+			return true;
+		}
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean broadcast = true;
-		String admin = config.getString("defAdminName", "server");
-		String reason = config.getString("defReason", "not sure");
+		String admin = plugin.admin;
+		String reason = plugin.reason;
 		if (sender instanceof Player){
 			admin = sender.getName();
-		}
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
-			return true;
 		}
 		if (args.length < 1) return false;
 		
 		String p = args[0];
 		p = plugin.util.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
-		
-		//Additional Argument Check
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
@@ -52,58 +50,57 @@ public class Ban implements CommandExecutor{
 				}
 			}
 		}
-		
-		//Previous Check
+	
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
-			String banMsgVictim = config.getString("messages.banMsgFailed");
-			if(banMsgVictim.contains(plugin.regexVictim)){
+			String failed = config.getString("Messages.IPBan.Failed", "%victim% is already banned.");
+			if(failed.contains(plugin.regexVictim)){
 				if(victim == null){
-					banMsgVictim = banMsgVictim.replaceAll(plugin.regexVictim, p);
+					failed = failed.replaceAll(plugin.regexVictim, p);
 				}else{
-					banMsgVictim = banMsgVictim.replaceAll(plugin.regexVictim, victim.getName());
-				}				
+					failed = failed.replaceAll(plugin.regexVictim, victim.getName());
+				}	
 			}
-			if(banMsgVictim != null) sender.sendMessage(plugin.util.formatMessage(banMsgVictim));
+			failed = plugin.util.formatMessage(failed);
+			sender.sendMessage(failed);
 			return true;
 		}
 		
-		/* 
-		 * Offline Ban
-		 */
 		if(victim == null){
-			//Fix Player not found NPE.
-			String name = p;
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim != null){
 				if(victim.hasPermission( "ultraban.override.ban")){
 					sender.sendMessage(ChatColor.RED + "Your ban has been denied!");
 					return true;
 				}
-				name = victim.getName();
-			}
-			String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
-			if(banMsgBroadcast.contains(plugin.regexAdmin)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-			if(banMsgBroadcast.contains(plugin.regexReason)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexReason, reason);
-			if(banMsgBroadcast.contains(plugin.regexVictim)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexVictim, p.toLowerCase());
-			plugin.bannedPlayers.add(name.toLowerCase());
-			if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(name);
-			plugin.db.addPlayer(name, reason, admin, 0, 0);
-			plugin.getLogger().info(" " + admin + " banned player " + p + ".");
-			if(broadcast){
-				plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
 			}else{
-				sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(banMsgBroadcast));
-			}
-			return true;			
+				String bcmsg = config.getString("Messages.Ban.MsgToBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
+				if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+				if(bcmsg.contains(plugin.regexReason)) bcmsg = bcmsg.replaceAll(plugin.regexReason, reason);
+				if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, p.toLowerCase());
+				plugin.bannedPlayers.add(p.toLowerCase());
+				if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(p);
+				plugin.db.addPlayer(p, reason, admin, 0, 0);
+				plugin.getLogger().info(bcmsg);
+				if(broadcast){
+					plugin.getServer().broadcastMessage(plugin.util.formatMessage(bcmsg));
+				}else{
+					sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(bcmsg));
+				}
+				return true;	
+				
+			}		
 		}
+
 		if(victim.getName().equalsIgnoreCase(admin)){
-			sender.sendMessage(ChatColor.RED + "You cannot ban yourself!");
+			String bcmsg = config.getString("Messages.Ban.Emo","You cannot ban yourself!");
+			bcmsg = plugin.util.formatMessage(bcmsg);
+			sender.sendMessage(bcmsg);
 			return true;
 		}
-		//Override
-		if(victim.hasPermission("ultraban.override.ban")){
-			sender.sendMessage(ChatColor.RED + "Your ban has been denied! Player Notified!");
-			victim.sendMessage(ChatColor.RED + "Player: " + admin + " Attempted to ban you!");
+		if(victim.hasPermission("ultraban.override.tempipban")){
+			String bcmsg = config.getString("Messages.Ban.Denied","Your ban has been denied!");
+			bcmsg = plugin.util.formatMessage(bcmsg);
+			sender.sendMessage(bcmsg);
 			return true;
 		}
 		
@@ -112,20 +109,20 @@ public class Ban implements CommandExecutor{
 		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
 		
 		//Build Messages
-		String banMsgVictim = config.getString("messages.banMsgVictim", "You have been banned by %admin%. Reason: %reason%");
-		if(banMsgVictim.contains(plugin.regexAdmin)) banMsgVictim = banMsgVictim.replaceAll(plugin.regexAdmin, admin);
-		if(banMsgVictim.contains(plugin.regexReason)) banMsgVictim = banMsgVictim.replaceAll(plugin.regexReason, reason);
+		String vicmsg = config.getString("Messages.Ban.MsgToVictim", "You have been banned by %admin%. Reason: %reason%");
+		if(vicmsg.contains(plugin.regexAdmin)) vicmsg = vicmsg.replaceAll(plugin.regexAdmin, admin);
+		if(vicmsg.contains(plugin.regexReason)) vicmsg = vicmsg.replaceAll(plugin.regexReason, reason);
+		victim.kickPlayer(plugin.util.formatMessage(vicmsg));
 		
-		String banMsgBroadcast = config.getString("messages.banMsgBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
-		if(banMsgBroadcast.contains(plugin.regexAdmin)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexAdmin, admin);
-		if(banMsgBroadcast.contains(plugin.regexReason)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexReason, reason);
-		if(banMsgBroadcast.contains(plugin.regexVictim)) banMsgBroadcast = banMsgBroadcast.replaceAll(plugin.regexVictim, p.toLowerCase());
-		victim.kickPlayer(plugin.util.formatMessage(banMsgVictim));
+		String bcmsg = config.getString("Messages.Ban.MsgToBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
+		if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+		if(bcmsg.contains(plugin.regexReason)) bcmsg = bcmsg.replaceAll(plugin.regexReason, reason);
+		if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, p.toLowerCase());
 		if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(victim.getName());
 		if(broadcast){
-			plugin.getServer().broadcastMessage(plugin.util.formatMessage(banMsgBroadcast));
+			plugin.getServer().broadcastMessage(plugin.util.formatMessage(bcmsg));
 		}else{
-			sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(banMsgBroadcast));
+			sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(bcmsg));
 		}
 		plugin.getLogger().info(admin + " banned player " + victim.getName() + ".");
 		return true;

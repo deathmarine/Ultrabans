@@ -22,14 +22,14 @@ public class Empty implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(!sender.hasPermission(command.getPermission())){
+			sender.sendMessage(ChatColor.RED+plugin.perms);
+			return true;
+		}
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		String admin = config.getString("defAdminName", "server");
+		String admin = plugin.admin;
 		if (sender instanceof Player){
 			admin = sender.getName();
-		}
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED + "You do not have the required permissions.");
-			return true;
 		}
 		if (args.length < 1) return false;
 		String p = args[0];
@@ -37,18 +37,23 @@ public class Empty implements CommandExecutor{
 		
 		Player victim = plugin.getServer().getPlayer(p);
 		if (victim == null){
-			sender.sendMessage(ChatColor.GRAY + "Player must be online!");
+			String smvic = config.getString("Messages.Empty.Online","%victim% must be online.");
+			smvic=plugin.util.formatMessage(smvic);
+			sender.sendMessage(ChatColor.GRAY + smvic);
 			return true;
 		}
 		String idoit = victim.getName();
-		String emptyMsgAll = config.getString("messages.emptyMsgBroadcast");
-		if(emptyMsgAll.contains(plugin.regexAdmin))emptyMsgAll = emptyMsgAll.replaceAll(plugin.regexAdmin, admin);
-		if(emptyMsgAll.contains(plugin.regexVictim)) emptyMsgAll = emptyMsgAll.replaceAll(plugin.regexVictim, idoit);
-		if(emptyMsgAll != null) sender.sendMessage(plugin.util.formatMessage(emptyMsgAll));
-		String emptyMsg = config.getString("messages.emptyMsgVictim");
-		if(emptyMsg.contains(plugin.regexAdmin)) emptyMsg = emptyMsg.replaceAll(plugin.regexAdmin, admin);
-		if(emptyMsg.contains(plugin.regexVictim)) emptyMsg = emptyMsg.replaceAll(plugin.regexVictim, idoit);
-		if(emptyMsg != null) victim.sendMessage(plugin.util.formatMessage(emptyMsg));
+		String msgvic = config.getString("Messages.Empty.MsgToVictim","%admin% has cleared your inventory!");
+		if(msgvic.contains(plugin.regexAdmin))msgvic = msgvic.replaceAll(plugin.regexAdmin, admin);
+		msgvic=plugin.util.formatMessage(msgvic);
+		victim.sendMessage(msgvic);
+		
+		String bcmsg = config.getString("Messages.Empty.MsgToSender","%admin% has cleared the inventory of %victim%!");
+		if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+		if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, idoit);
+		bcmsg=plugin.util.formatMessage(bcmsg);
+		sender.sendMessage(bcmsg);
+		
 		victim.getInventory().clear();
 		return true;		
 	}

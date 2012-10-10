@@ -278,8 +278,10 @@ permissions:
   ultraban.override.warn:
     description: Allows the Administration to override warn
   ultraban.override.lockdown:
+    default: op
     description: Allows the Administration to override lockdowns
   ultraban.override.dupeip:
+    default: op
     description: Allows the Administration to override dupe login check
   ultraban.override.pingcheck:
     default: op
