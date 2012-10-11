@@ -93,10 +93,20 @@ Chat:
     Result: kick
     Silent: false
     Reason: 'Spam'
-  Jail:
-    Mute: true
-  Muted:
-    Vannila: true
+Muted:
+  Vannila: true
+  #When Vanilla: true allowed commands.#
+  AllowedCommands:
+  - '/login'
+  - '/register'
+#Jail Configuration#
+Jail:
+  Mute: true
+  Vanilla: true
+  #When Vanilla: true allowed commands.#
+  AllowedCommands:
+  - '/login'
+  - '/register'
 Messages:
   Ban:
     MsgToVictim: 'You have been banned by %admin%. Reason: %reason%!'

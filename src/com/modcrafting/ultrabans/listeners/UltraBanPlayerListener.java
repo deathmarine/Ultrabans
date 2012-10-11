@@ -140,16 +140,19 @@ public class UltraBanPlayerListener implements Listener{
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
-
 		String adminMsg = config.getString("Messages.Mute.Chat", "Your cry falls on deaf ears.");
-		if(plugin.jailed.contains(player.getName().toLowerCase())){
+		if(plugin.jailed.contains(player.getName().toLowerCase())&&config.getBoolean("Jail.Vannila", true)){
+			String args[] = event.getMessage().split(" ");
+			if(config.getStringList("Jail.AllowedCommands").contains(args[0])) return;
 		 	if(plugin.tempJail.get(player.getName().toLowerCase()) != null){
 		 		if(tempjailCheck(player)) return;
 		 	}
 			player.sendMessage(plugin.util.formatMessage(adminMsg));
 			event.setCancelled(true);
 		 }	
-		if(plugin.muted.contains(player.getName().toLowerCase())&&config.getBoolean("Chat.Muted.Vannila", true)){
+		if(plugin.muted.contains(player.getName().toLowerCase())&&config.getBoolean("Muted.Vannila", true)){
+			String args[] = event.getMessage().split(" ");
+			if(config.getStringList("Mute.AllowedCommands").contains(args[0])) return;
 			player.sendMessage(plugin.util.formatMessage(adminMsg));
 			event.setCancelled(true);
 		}
@@ -165,7 +168,7 @@ public class UltraBanPlayerListener implements Listener{
 			player.sendMessage(plugin.util.formatMessage(adminMsg));
 			event.setCancelled(true);
 		}
-		if(plugin.jailed.contains(player.getName().toLowerCase())&&config.getBoolean("Chat.Jail.Mute")){
+		if(plugin.jailed.contains(player.getName().toLowerCase())&&config.getBoolean("Jail.Mute",true)){
 			if(plugin.tempJail.get(player.getName().toLowerCase())!=null&&tempjailCheck(player)) return;
 			player.sendMessage(plugin.util.formatMessage(adminMsg));
 			event.setCancelled(true);
