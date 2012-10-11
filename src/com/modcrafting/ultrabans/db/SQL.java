@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
@@ -39,7 +40,13 @@ public class SQL implements Database{
 	}
 	public Connection getSQLConnection() {
 		try {
-			return DriverManager.getConnection(mysqlDatabase + "?autoReconnect=true&useUnicode=true&characterEncoding=utf8"+"&user=" + mysqlUser + "&password=" + mysqlPassword);
+			Properties info = new Properties();
+			info.put("autoReconnect", "true");
+			info.put("user", mysqlUser);
+			info.put("password", mysqlPassword);
+			info.put("useUnicode", "true");
+			info.put("characterEncoding", "utf8");
+			return DriverManager.getConnection(mysqlDatabase,info);
 		} catch (SQLException ex) {
 			plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
 		}
