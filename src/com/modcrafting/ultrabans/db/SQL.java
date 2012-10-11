@@ -39,7 +39,7 @@ public class SQL implements Database{
 	}
 	public Connection getSQLConnection() {
 		try {
-			return DriverManager.getConnection(mysqlDatabase + "?autoReconnect=true&user=" + mysqlUser + "&password=" + mysqlPassword);
+			return DriverManager.getConnection(mysqlDatabase + "?autoReconnect=true&useUnicode=true&characterEncoding=utf8"+"&user=" + mysqlUser + "&password=" + mysqlPassword);
 		} catch (SQLException ex) {
 			plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
 		}
