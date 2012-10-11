@@ -43,7 +43,7 @@ public class Mute implements CommandExecutor {
 				sender.sendMessage(bcmsg);
 				return true;
 			}
-			if(victim.hasPermission( "ultraban.override.mute")){
+			if(victim.hasPermission("ultraban.override.mute")&&!admin.equalsIgnoreCase(plugin.admin)){
 				String bcmsg = config.getString("Messages.Mute.Denied","Your mute has been denied!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);

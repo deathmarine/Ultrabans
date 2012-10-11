@@ -87,7 +87,7 @@ public class Jail implements CommandExecutor{
 				sender.sendMessage(bcmsg);
 				return true;
 			}
-			if(victim.hasPermission( "ultraban.override.jail")){
+			if(victim.hasPermission( "ultraban.override.jail")&&!admin.equalsIgnoreCase(plugin.admin)){
 				String bcmsg = config.getString("Messages.Jail.Denied","Your jail attempt has been denied!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);

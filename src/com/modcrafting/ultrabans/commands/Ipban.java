@@ -81,7 +81,7 @@ public class Ipban implements CommandExecutor{
 		if(victim == null){
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim != null){
-				if(victim.hasPermission("ultraban.override.tempipban")){
+				if(victim.hasPermission("ultraban.override.ipban")&&!admin.equalsIgnoreCase(plugin.admin)){
 					String bcmsg = config.getString("Messages.IPBan.Denied","Your ipban has been denied!");
 					bcmsg = plugin.util.formatMessage(bcmsg);
 					sender.sendMessage(bcmsg);
@@ -119,7 +119,7 @@ public class Ipban implements CommandExecutor{
 				sender.sendMessage(bcmsg);
 				return true;
 			}
-			if(victim.hasPermission("ultraban.override.tempipban")){
+			if(victim.hasPermission("ultraban.override.ipban")&&!admin.equalsIgnoreCase(plugin.admin)){
 				String bcmsg = config.getString("Messages.IPBan.Denied","Your ipban has been denied!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);

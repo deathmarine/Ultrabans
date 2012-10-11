@@ -43,7 +43,7 @@ public class Ban implements CommandExecutor{
 				reason = plugin.util.combineSplit(2, args, " ");
 			}else{
 				if(args[1].equalsIgnoreCase("-a")){
-					admin = config.getString("defAdminName", "server");
+					admin = plugin.admin;
 					reason = plugin.util.combineSplit(2, args, " ");
 				}else{
 					reason = plugin.util.combineSplit(1, args, " ");
@@ -52,7 +52,7 @@ public class Ban implements CommandExecutor{
 		}
 	
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
-			String failed = config.getString("Messages.IPBan.Failed", "%victim% is already banned.");
+			String failed = config.getString("Messages.Ban.Failed", "%victim% is already banned.");
 			if(failed.contains(plugin.regexVictim)){
 				if(victim == null){
 					failed = failed.replaceAll(plugin.regexVictim, p);
@@ -68,7 +68,7 @@ public class Ban implements CommandExecutor{
 		if(victim == null){
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim != null){
-				if(victim.hasPermission( "ultraban.override.ban")){
+				if(victim.hasPermission("ultraban.override.ban")&&!admin.equalsIgnoreCase(plugin.admin)){
 					sender.sendMessage(ChatColor.RED + "Your ban has been denied!");
 					return true;
 				}
@@ -97,7 +97,7 @@ public class Ban implements CommandExecutor{
 			sender.sendMessage(bcmsg);
 			return true;
 		}
-		if(victim.hasPermission("ultraban.override.tempipban")){
+		if(victim.hasPermission("ultraban.override.ban")&&!admin.equalsIgnoreCase(plugin.admin)){
 			String bcmsg = config.getString("Messages.Ban.Denied","Your ban has been denied!");
 			bcmsg = plugin.util.formatMessage(bcmsg);
 			sender.sendMessage(bcmsg);

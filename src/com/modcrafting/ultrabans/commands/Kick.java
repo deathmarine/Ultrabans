@@ -84,7 +84,7 @@ public class Kick implements CommandExecutor{
 			sender.sendMessage(bcmsg);
 			return true;
 		}
-		if(victim.hasPermission( "ultraban.override.kick")){
+		if(victim.hasPermission( "ultraban.override.kick")&&!admin.equalsIgnoreCase(plugin.admin)){
 			String bcmsg = config.getString("Messages.Kick.Denied","Your kick has been denied!");
 			bcmsg = plugin.util.formatMessage(bcmsg);
 			sender.sendMessage(bcmsg);

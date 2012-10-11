@@ -66,7 +66,7 @@ public class Perma implements CommandExecutor{
 			sender.sendMessage(bcmsg);
 			return true;
 		}
-		if(victim.hasPermission( "ultraban.override.permaban")){
+		if(victim.hasPermission( "ultraban.override.permaban")&&!admin.equalsIgnoreCase(plugin.admin)){
 			String bcmsg = config.getString("Messages.PermaBan.Denied","Your permaban has been denied!");
 			bcmsg = plugin.util.formatMessage(bcmsg);
 			sender.sendMessage(bcmsg);

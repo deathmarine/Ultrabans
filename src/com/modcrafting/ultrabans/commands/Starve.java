@@ -44,7 +44,7 @@ public class Starve implements CommandExecutor{
 				sender.sendMessage(bcmsg);
 				return true;
 			}
-			if(victim.hasPermission( "ultraban.override.starve")){
+			if(victim.hasPermission( "ultraban.override.starve")&&!admin.equalsIgnoreCase(plugin.admin)){
 				String bcmsg = config.getString("Messages.Starve.Denied","Your starve attempt has been denied!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);

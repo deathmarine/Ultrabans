@@ -53,7 +53,7 @@ public class Warn implements CommandExecutor{
 				sender.sendMessage(ChatColor.RED + bcmsg);
 				return true;
 			}
-			if(victim.hasPermission("ultraban.override.warn")){
+			if(victim.hasPermission("ultraban.override.warn")&&!admin.equalsIgnoreCase(plugin.admin)){
 				String bcmsg = config.getString("Messages.Denied.Emo", "Your warning has been denied!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(ChatColor.RED+bcmsg);
@@ -136,7 +136,7 @@ public class Warn implements CommandExecutor{
 			//Offline Warning
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim != null){
-				if(victim.hasPermission("ultraban.override.warn")){
+				if(victim.hasPermission("ultraban.override.warn")&&!admin.equalsIgnoreCase(plugin.admin)){
 					sender.sendMessage(ChatColor.RED + "Your warning has been denied!");
 					return true;
 				}

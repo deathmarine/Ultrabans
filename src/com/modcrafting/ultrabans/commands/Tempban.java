@@ -73,7 +73,7 @@ public class Tempban implements CommandExecutor{
 				sender.sendMessage(bcmsg);
 				return true;
 			}
-			if(victim.hasPermission("ultraban.override.tempipban")){
+			if(victim.hasPermission("ultraban.override.tempban")&&!admin.equalsIgnoreCase(plugin.admin)){
 				String bcmsg = config.getString("Messages.TempBan.Denied","Your tempban has been denied!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);
@@ -113,7 +113,7 @@ public class Tempban implements CommandExecutor{
 		}else{
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim != null){
-				if(victim.hasPermission("ultraban.override.tempipban")){
+				if(victim.hasPermission("ultraban.override.tempban")&&!admin.equalsIgnoreCase(plugin.admin)){
 					String bcmsg = config.getString("Messages.TempBan.Denied","Your tempban has been denied!");
 					bcmsg = plugin.util.formatMessage(bcmsg);
 					sender.sendMessage(bcmsg);

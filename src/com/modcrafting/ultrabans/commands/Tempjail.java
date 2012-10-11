@@ -72,7 +72,7 @@ public class Tempjail implements CommandExecutor{
 				sender.sendMessage(bcmsg);
 				return true;
 			}
-			if(victim.hasPermission("ultraban.override.tempjail")){
+			if(victim.hasPermission("ultraban.override.tempjail")&&!admin.equalsIgnoreCase(plugin.admin)){
 				String bcmsg = config.getString("Messages.TempJail.Denied","Your tempjail has been denied!");
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);
@@ -116,7 +116,7 @@ public class Tempjail implements CommandExecutor{
 		}else{
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim != null){
-				if(victim.hasPermission("ultraban.override.tempjail")){
+				if(victim.hasPermission("ultraban.override.tempjail")&&!admin.equalsIgnoreCase(plugin.admin)){
 					String bcmsg = config.getString("Messages.TempJail.Denied","Your tempjail has been denied!");
 					bcmsg = plugin.util.formatMessage(bcmsg);
 					sender.sendMessage(bcmsg);
