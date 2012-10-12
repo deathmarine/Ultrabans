@@ -6,7 +6,13 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.JLabel;
+import javax.swing.text.BadLocationException;
 
 import com.modcrafting.ultrabans.gui.Frame;
 
@@ -39,7 +45,7 @@ public class Connection {
 		try {
 			if(cw!=null)alive=false;
 			sock.close();
-			frame.statsBar.setText("Disconnected");
+			frame.statsBar.setText("Disconnected  ");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -61,7 +67,7 @@ public class Connection {
 				e1.printStackTrace();
 			}
 		    alive=true;
-		    textArea.setText("Connected");
+		    textArea.setText("Connected  ");
 		    try {
 		    	getoPlayers();
 		    	getbPlayers();
@@ -94,8 +100,14 @@ public class Connection {
 			frame.showError("Client is not connected.");
 		}
 	}
-	public void writeConsole(String input){		
-		frame.console.append(input+"\n");
+	//Thanks Wolverness
+	private Pattern pat = Pattern.compile("(^|(\\x1B\\[(\\d*)(;(\\d*))?m))(.*?)(?=(\\x1B\\[(\\d{0,2})(;(\\d{0,2}))?m)|($))", Pattern.DOTALL);
+	private void writeConsole(String input){
+		Matcher m = pat.matcher(input);
+		while (m.find()) {
+			final String content = m.group(11) != null ? m.group(6) + "\n" : m.group(6);
+			frame.console.append(content);
+		}
 	}
 	public void updateOPlayers(String input){
 		frame.playerlist.setListData(input.split(" "));
