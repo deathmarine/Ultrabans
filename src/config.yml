@@ -3,7 +3,7 @@
 Database: SQLite
 #MySQL Information#
 MySQL:
-  Address: 'jdbc:mysql://localhost:3306/minecraft'
+  Database: 'jdbc:mysql://localhost:3306/minecraft'
   User: 'root'
   Password: 'root'
   Table: 'banlist'

@@ -18,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.tracker.Track;
 
 public class CheckIP implements CommandExecutor{
 	Ultrabans plugin;
@@ -25,6 +26,7 @@ public class CheckIP implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
+		Track.track(command.getName());
 		if(!sender.hasPermission(command.getPermission())){
 			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;

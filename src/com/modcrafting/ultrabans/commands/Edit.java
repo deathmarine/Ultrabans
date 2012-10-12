@@ -17,6 +17,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.tracker.Track;
 import com.modcrafting.ultrabans.util.EditBan;
 
 public class Edit implements CommandExecutor{
@@ -26,6 +27,7 @@ public class Edit implements CommandExecutor{
 	}
 
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		Track.track(command.getName());
 		if(!sender.hasPermission(command.getPermission())){
 			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;

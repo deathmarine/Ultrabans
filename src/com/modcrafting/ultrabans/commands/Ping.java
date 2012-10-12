@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.tracker.Track;
 
 public class Ping implements CommandExecutor{
 	Ultrabans plugin;
@@ -15,6 +16,7 @@ public class Ping implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
+		Track.track(command.getName());
 		if(!sender.hasPermission(command.getPermission())){
 			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;

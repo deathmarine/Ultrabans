@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.tracker.Track;
 
 public class Tempjail implements CommandExecutor{
 	Ultrabans plugin;
@@ -22,6 +23,7 @@ public class Tempjail implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		Track.track(command.getName());
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		boolean broadcast = true;
 		Player player = null;

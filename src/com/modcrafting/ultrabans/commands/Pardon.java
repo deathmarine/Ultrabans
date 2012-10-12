@@ -16,6 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.tracker.Track;
 
 public class Pardon implements CommandExecutor{
 	Ultrabans plugin;
@@ -23,6 +24,7 @@ public class Pardon implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		Track.track(command.getName());
 		if(!sender.hasPermission(command.getPermission())){
 			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;

@@ -18,7 +18,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.boxysystems.jgoogleanalytics.FocusPoint;
 import com.boxysystems.jgoogleanalytics.JGoogleAnalyticsTracker;
 import com.modcrafting.ultrabans.commands.Ban;
 import com.modcrafting.ultrabans.commands.Check;
@@ -57,9 +56,9 @@ import com.modcrafting.ultrabans.listeners.UltraBanBlockListener;
 import com.modcrafting.ultrabans.listeners.UltraBanPlayerListener;
 import com.modcrafting.ultrabans.security.RSAServerCrypto;
 import com.modcrafting.ultrabans.server.UBServer;
+import com.modcrafting.ultrabans.tracker.Track;
 import com.modcrafting.ultrabans.util.DataHandler;
 import com.modcrafting.ultrabans.util.EditBan;
-import com.modcrafting.ultrabans.util.ErrorHandler;
 import com.modcrafting.ultrabans.util.Formatting;
 import com.modcrafting.ultrabans.util.Jailtools;
 import com.modcrafting.ultrabans.util.LoggerHandler;
@@ -79,7 +78,6 @@ public class Ultrabans extends JavaPlugin {
 	
 	public RSAServerCrypto crypto;
 	public Database db;
-	public JGoogleAnalyticsTracker tracker;
 	
 	public final String regexAdmin = "%admin%";
 	public final String regexReason = "%reason%";
@@ -150,14 +148,12 @@ public class Ultrabans extends JavaPlugin {
 		}
 		//Statistic Tracker
 		if(config.getBoolean("GoogleAnalytics.Enabled",true)){
-			tracker = new JGoogleAnalyticsTracker(pdf.getName(),pdf.getVersion(),"UA-35400100-1");
+			JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(pdf.getName(),pdf.getVersion(),"UA-35400100-1");
+			new Track(tracker);
 			//PluginInstances.
-			FocusPoint focusPoint=new FocusPoint(pdf.getName()+pdf.getVersion()+" Loaded");
-			tracker.trackAsynchronously(focusPoint);
+			Track.track(pdf.getName()+pdf.getVersion()+" Loaded");
 			//PluginErrorLogger
-			this.getLogger().addHandler(new LoggerHandler(this));
-			//TrackerErrorLogger
-			tracker.setLoggingAdapter(new ErrorHandler(this));
+			this.getLogger().addHandler(new LoggerHandler());
 
 			//Pssfffttt... Metrics? Ha.
 		}
