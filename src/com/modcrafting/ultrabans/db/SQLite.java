@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 
 import org.bukkit.command.CommandSender;
@@ -54,13 +55,13 @@ public class SQLite implements Database{
 			}
 		}
 		try {
-			Class.forName("org.sqlite.JDBC");
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
+			Properties info = new Properties();
+			info.put("useUnicode", "true");
+			info.put("characterEncoding", "utf8");
+            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dataFolder,info);
     		return conn;
 		} catch (SQLException ex) {
 			plugin.getLogger().log(Level.SEVERE,"SQLite exception on initialize", ex);
-	    } catch (ClassNotFoundException ex) {
-	    	plugin.getLogger().log(Level.SEVERE, "You need the SQLite JBDC library. Google it. Put it in /lib folder.");
 	    }
 		return null;
     }

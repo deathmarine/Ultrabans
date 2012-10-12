@@ -4,15 +4,19 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import com.modcrafting.ultrabans.gui.Frame;
 
 public class MouseListListener implements MouseListener{
 	JList list;
 	Frame frame;
-	public MouseListListener(JList l,Frame f){
+	String[] actions;
+	public MouseListListener(JList l,Frame f, String[] a){
 		list=l;
 		frame=f;
+		actions=a;
 	}
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -20,7 +24,14 @@ public class MouseListListener implements MouseListener{
 			int index = list.locationToIndex(e.getPoint());
 			list.setSelectedIndex(index);
 			String playerName = (String) list.getSelectedValue();
-			frame.console.append(playerName);
+			if(playerName==null) return;
+			JPopupMenu popup = new JPopupMenu();
+			for(String ac:actions){
+		        JMenuItem menuItem = new JMenuItem(ac);
+		        menuItem.addActionListener(new PopupListener(frame,playerName));
+		        popup.add(menuItem);
+			}
+            popup.show(e.getComponent(), e.getX(), e.getY());
 		}				
 	}
 

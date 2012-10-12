@@ -24,29 +24,29 @@ import com.modcrafting.ultrabans.util.EditBan;
 
 public class SQL implements Database{
 	Ultrabans plugin;
-	String mysqlTable;
-	String logip;
-	String mysqlDatabase;
-	String mysqlUser;
-	String mysqlPassword;
+	String bantable;
+	String iptable;
+	String database;
+	String username;
+	String password;
 	public SQL(Ultrabans instance){
 		plugin = instance;
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		mysqlDatabase = config.getString("MySQL.Database","jdbc:mysql://localhost:3306/minecraft");
-		mysqlUser = config.getString("MySQL.User","root");
-		mysqlPassword = config.getString("MySQL.Password","root");
-		mysqlTable = config.getString("MySQL.Table","banlist");
-		logip = config.getString("MySQL.IPTable","banlistip");
+		database = config.getString("MySQL.Database","jdbc:mysql://localhost:3306/minecraft");
+		username = config.getString("MySQL.User","root");
+		password = config.getString("MySQL.Password","root");
+		bantable = config.getString("MySQL.Table","banlist");
+		iptable = config.getString("MySQL.IPTable","banlistip");
 	}
 	public Connection getSQLConnection() {
 		try {
 			Properties info = new Properties();
 			info.put("autoReconnect", "true");
-			info.put("user", mysqlUser);
-			info.put("password", mysqlPassword);
+			info.put("user", username);
+			info.put("password", password);
 			info.put("useUnicode", "true");
 			info.put("characterEncoding", "utf8");
-			return DriverManager.getConnection(mysqlDatabase,info);
+			return DriverManager.getConnection(database,info);
 		} catch (SQLException ex) {
 			plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
 		}
@@ -57,7 +57,7 @@ public class SQL implements Database{
 		if(conn != null){
 			PreparedStatement ps = null;
 			try{
-				ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0 OR type = 1 OR type = 9) AND (temptime > ? OR temptime = 0)");
+				ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE (type = 0 OR type = 1 OR type = 9) AND (temptime > ? OR temptime = 0)");
 				ps.setLong(1, System.currentTimeMillis()/1000);
 				ResultSet rs = ps.executeQuery();
 				while (rs.next()){
@@ -102,10 +102,10 @@ public class SQL implements Database{
 		String str;
 		try {
 			str=SQLCreateBansTable;
-			s = conn.prepareStatement(str.replaceAll("%table%",mysqlTable));
+			s = conn.prepareStatement(str.replaceAll("%table%",bantable));
 			s.execute();
 			str=SQLCreateBanipTable;
-			s = conn.prepareStatement(str.replaceAll("%table%",logip));
+			s = conn.prepareStatement(str.replaceAll("%table%",iptable));
 			s.execute();
 			s.close();
 		} catch (SQLException e) {
@@ -120,7 +120,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE (type = 0)");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE (type = 0)");
 			rs = ps.executeQuery();
 			List<String> list = new ArrayList<String>();
 			while (rs.next()){
@@ -139,7 +139,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("REPLACE INTO " + logip+ " (name,lastip) VALUES(?,?)");
+			ps = conn.prepareStatement("REPLACE INTO " + iptable+ " (name,lastip) VALUES(?,?)");
 			ps.setString(1, pName);
 			ps.setString(2, logIp);
 			ps.executeUpdate();
@@ -156,7 +156,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + logip+ " WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + iptable+ " WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
 			String ip = null;
@@ -177,7 +177,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + logip+ " WHERE lastip = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + iptable+ " WHERE lastip = ?");
 			ps.setString(1, ip);
 			rs = ps.executeQuery();
 			String name = null;
@@ -197,7 +197,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
+			ps = conn.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			ps.executeUpdate();
 			close(conn,ps,null);
@@ -215,7 +215,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try{
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ?");
 			ps.setString(1, bname);
 			rs = ps.executeQuery();
 			boolean set = false;
@@ -235,7 +235,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("INSERT INTO " + mysqlTable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
+			ps = conn.prepareStatement("INSERT INTO " + bantable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
 			ps.setLong(5, tempTime);
 			ps.setString(1, player);
 			ps.setString(2, reason);
@@ -254,7 +254,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("INSERT INTO " + mysqlTable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
+			ps = conn.prepareStatement("INSERT INTO " + bantable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
 			ps.setLong(5, tempTime);
 			ps.setString(1, player);
 			ps.setString(2, reason);
@@ -273,7 +273,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
 			String reason = "";
@@ -294,7 +294,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT lastip FROM " + logip+ " WHERE name = ? AND lastip = ?");
+			ps = conn.prepareStatement("SELECT lastip FROM " + iptable+ " WHERE name = ? AND lastip = ?");
 			ps.setString(1, player);
 			ps.setString(2, ip);
 			rs = ps.executeQuery();
@@ -315,7 +315,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("UPDATE " + logip+ " SET lastip = ? WHERE name = ?");
+			ps = conn.prepareStatement("UPDATE " + iptable+ " SET lastip = ? WHERE name = ?");
 			ps.setString(1, ip);
 			ps.setString(2, p);
 			ps.executeUpdate();
@@ -331,7 +331,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ?");
 			ps.setString(1, name);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
@@ -353,7 +353,7 @@ public class SQL implements Database{
 		Integer num = Integer.parseInt(number.trim());
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " ORDER BY time DESC LIMIT ?");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " ORDER BY time DESC LIMIT ?");
 			ps.setInt(1, num);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
@@ -374,7 +374,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
 			EditBan eb = null;
@@ -395,7 +395,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND type = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ? AND type = ?");
 			ps.setString(1, Name);
 			ps.setInt(2, 2);
 			rs = ps.executeQuery();
@@ -417,7 +417,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE id = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE id = ?");
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
 			EditBan eb = null;
@@ -437,7 +437,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("UPDATE " + mysqlTable + " SET name = ?, reason = ?, admin = ?, time = ?, temptime = ?, type = ? WHERE id = ?");
+			ps = conn.prepareStatement("UPDATE " + bantable + " SET name = ?, reason = ?, admin = ?, time = ?, temptime = ?, type = ? WHERE id = ?");
 			ps.setLong(5, ban.endTime);
 			ps.setString(1, ban.name);
 			ps.setString(2, ban.reason);
@@ -457,7 +457,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-				ps = conn.prepareStatement("DELETE FROM " + mysqlTable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
+				ps = conn.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
 				ps.setString(1, player);
 				ps.setInt(2, 6);
 			
@@ -476,7 +476,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND type = 6 ORDER BY time DESC LIMIT 1");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ? AND type = 6 ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
 			String reason = null;
@@ -496,7 +496,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try{
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE type = 6 AND (temptime > ? OR temptime = 0)");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE type = 6 AND (temptime > ? OR temptime = 0)");
 			ps.setLong(1, System.currentTimeMillis()/1000);
         	rs = ps.executeQuery();
 			while (rs.next()){
@@ -518,7 +518,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conn.prepareStatement("SELECT * FROM " + mysqlTable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT 1");
 			ps.setString(1, player);
 			rs = ps.executeQuery();
 			String admin = null;
@@ -540,7 +540,7 @@ public class SQL implements Database{
 		ResultSet rs = null;
 		try {
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + logip + " WHERE lastip = ?");
+			ps = conn.prepareStatement("SELECT * FROM " + iptable + " WHERE lastip = ?");
 			ps.setString(1, ip);
 			rs = ps.executeQuery();
 			List<String> bans = new ArrayList<String>();

@@ -16,5 +16,4 @@ public class ErrorHandler implements LoggingAdapter {
 	public void logMessage(String message) {
 		plugin.getLogger().info(message);
 	}
-
 }

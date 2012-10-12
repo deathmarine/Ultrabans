@@ -52,7 +52,7 @@ public class Frame{
 	public JTextArea console;
 	JTextField input;
 	final UndoManager undo = new UndoManager();
-	Connection connection;
+	public Connection connection;
 	public RSAServerCrypto crypto;
 	public Socket sock;
 	public Frame(){
@@ -210,12 +210,13 @@ public class Frame{
 		button.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-					if(connection!=null)
+					if(connection!=null){
 						try {
 							connection.sendtoServer(input.getText());
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
+					}
 					input.setText("");
 			}
 		});
@@ -234,14 +235,15 @@ public class Frame{
 	private void mainArea(){
 		JPanel p = new JPanel();
 		playerlist = new JList();
-		playerlist.addMouseListener(new MouseListListener(playerlist,this));
+		String[] a = {"Ban","IpBan","Permaban","Tempban","Tempipban","Unban","Kick","Warn","Jail","Tempjail","Mute","Pardon","Ping","Spawn","Starve"};
+		playerlist.addMouseListener(new MouseListListener(playerlist,this,a));
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.setBorder(BorderFactory.createTitledBorder("Online Players"));
 		p.add(new JScrollPane(playerlist));
 		
 		JPanel p2 = new JPanel();
 		actionlist = new JList();
-		actionlist.addMouseListener(new MouseListListener(actionlist,this));
+		actionlist.addMouseListener(new MouseListListener(actionlist,this,a));
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 		p2.setBorder(BorderFactory.createTitledBorder("Action Players"));
 		p2.add(new JScrollPane(actionlist));

@@ -62,6 +62,7 @@ import com.modcrafting.ultrabans.util.EditBan;
 import com.modcrafting.ultrabans.util.ErrorHandler;
 import com.modcrafting.ultrabans.util.Formatting;
 import com.modcrafting.ultrabans.util.Jailtools;
+import com.modcrafting.ultrabans.util.LoggerHandler;
 
 public class Ultrabans extends JavaPlugin {
 	public HashSet<String> bannedPlayers = new HashSet<String>();
@@ -150,9 +151,14 @@ public class Ultrabans extends JavaPlugin {
 		//Statistic Tracker
 		if(config.getBoolean("GoogleAnalytics.Enabled",true)){
 			tracker = new JGoogleAnalyticsTracker(pdf.getName(),pdf.getVersion(),"UA-35400100-1");
-			tracker.setLoggingAdapter(new ErrorHandler(this));
-			FocusPoint focusPoint=new FocusPoint("PluginLoaded");
+			//PluginInstances.
+			FocusPoint focusPoint=new FocusPoint(pdf.getName()+pdf.getVersion()+" Loaded");
 			tracker.trackAsynchronously(focusPoint);
+			//PluginErrorLogger
+			this.getLogger().addHandler(new LoggerHandler(this));
+			//TrackerErrorLogger
+			tracker.setLoggingAdapter(new ErrorHandler(this));
+
 			//Pssfffttt... Metrics? Ha.
 		}
 		//Live Gui
