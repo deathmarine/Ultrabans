@@ -46,8 +46,10 @@ public class UBServer implements Runnable{
 			e.printStackTrace();
 		}
 	}
-	public void disconnectAll(){
+	private void disconnectAll(){
 		for(ConnectionHandler running:threads){
+			running.alive=false;
+			running.updater.interrupt();
 			running.interrupt();
 		}
 	}

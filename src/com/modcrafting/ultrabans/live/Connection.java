@@ -6,14 +6,10 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JLabel;
-import javax.swing.text.BadLocationException;
-
 import com.modcrafting.ultrabans.gui.Frame;
 
 public class Connection {
@@ -85,10 +81,8 @@ public class Connection {
 						if(input.contains(".oplayers."))updateOPlayers(input.replaceAll(".oplayers.", ""));
 						if(input.contains(".bplayers."))updateBPlayers(input.replaceAll(".bplayers.", ""));
 					}
-		    	}catch (IOException e) {
-		    		disconnect();
 		    	}catch (Exception e) {
-				e.printStackTrace();
+		    		disconnect();
 				}
 		    }
 		  }

@@ -90,6 +90,10 @@ public class Frame{
 		menuItem.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				if(crypto==null){
+					showError("No Keys found.");
+					return;
+				}
 				if(sock!=null&&!sock.isClosed()){
 					showError("It appears you are already connected.");
 					return;
@@ -191,15 +195,15 @@ public class Frame{
 		p.setPreferredSize(new Dimension(frame.getWidth(), 18));
 		statsBar = new JLabel();
 		statsBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
-		statsBar.setPreferredSize(new Dimension(frame.getWidth()/2, 20));
+		statsBar.setPreferredSize(new Dimension(frame.getWidth(), 20));
 		statsBar.setHorizontalAlignment(SwingConstants.RIGHT);
-		statsBar.setText("Disconnected");
+		statsBar.setText("Disconnected ");
 		p.add(statsBar);
 		c.add(p);
 	}
 	private void inputText(Container c) {
 		JPanel p = new JPanel();
-		p.setPreferredSize(new Dimension(frame.getWidth(), 32));
+		p.setPreferredSize(new Dimension((frame.getWidth()), 32));
 		input = new JTextField(16);
         JButton button = new JButton("Send");
 		input.setBackground(Color.white);
@@ -235,7 +239,7 @@ public class Frame{
 	private void mainArea(){
 		JPanel p = new JPanel();
 		playerlist = new JList();
-		String[] a = {"Ban","IpBan","Permaban","Tempban","Tempipban","Unban","Kick","Warn","Jail","Tempjail","Mute","Pardon","Ping","Spawn","Starve"};
+		String[] a = {"Ban","IpBan","Permaban","Tempban","Tempipban","Kick","Warn","Jail","Tempjail","Mute","Pardon","Ping","Spawn","Starve"};
 		playerlist.addMouseListener(new MouseListListener(playerlist,this,a));
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.setBorder(BorderFactory.createTitledBorder("Online Players"));
@@ -243,11 +247,12 @@ public class Frame{
 		
 		JPanel p2 = new JPanel();
 		actionlist = new JList();
-		actionlist.addMouseListener(new MouseListListener(actionlist,this,a));
+		String[] b = {"Unban","Edit"};
+		actionlist.addMouseListener(new MouseListListener(actionlist,this,b));
 		p2.setLayout(new BoxLayout(p2, BoxLayout.Y_AXIS));
 		p2.setBorder(BorderFactory.createTitledBorder("Action Players"));
 		p2.add(new JScrollPane(actionlist));
-		
+        
 		JSplitPane r = new JSplitPane(JSplitPane.VERTICAL_SPLIT,p,p2);
 		r.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		r.setDividerSize(10);
@@ -270,10 +275,10 @@ public class Frame{
 		frame.getContentPane().add(sp,BorderLayout.CENTER);
 	}
 	public void showError(String message){
-		JOptionPane.showMessageDialog(null, message, "Error", 1);
+		JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
 	}
 	public String showInput(String title, String message){
-		return JOptionPane.showInputDialog(null,message, title,1);
+		return JOptionPane.showInputDialog(null,message, title, JOptionPane.QUESTION_MESSAGE);
 	}
 	public void die(){
 		if(connection!=null){

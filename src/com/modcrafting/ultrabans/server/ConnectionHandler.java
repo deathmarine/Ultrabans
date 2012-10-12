@@ -18,6 +18,8 @@ public class ConnectionHandler extends Thread{
 	String line;
 	public Socket sock;
 	UBHandler h;
+	Thread updater;
+	boolean alive=true;
 	public ConnectionHandler(Socket client, Ultrabans instance) throws IOException {
 		plugin=instance;
 		sock = client;
@@ -27,9 +29,25 @@ public class ConnectionHandler extends Thread{
 		plugin.getServer().getLogger().addHandler(h);
 		plugin.getLogger().info(sock.getInetAddress().getHostAddress()+" connected the Live.");
 		start();
+		updater = new Thread(new Runnable(){
+			@Override
+			public synchronized void run() {
+				while(alive){
+					try {
+						getPlayers();
+						getBanned();
+						wait(1000);
+					} catch (InterruptedException e) {
+						alive=false;
+					} catch (Exception e) {
+						alive=false;
+					}
+				}
+			}
+		});
+		updater.start();
 	}
 
-	boolean alive=true;
 	@Override
 	public void run() {
 		while(alive){
