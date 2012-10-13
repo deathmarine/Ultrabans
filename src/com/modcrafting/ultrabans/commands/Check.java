@@ -47,6 +47,7 @@ public class Check implements CommandExecutor{
 		if(bans.isEmpty()){
 			String msg = plugin.getConfig().getString("Messages.CheckBan.None","No records found for %victim%.");
 			if(msg.contains(plugin.regexAmt)) msg=msg.replaceAll(plugin.regexAmt, String.valueOf(bans.size()));
+			if(msg.contains(plugin.regexVictim))msg=msg.replaceAll(plugin.regexVictim, p);
 			msg=plugin.util.formatMessage(msg);
 			sender.sendMessage(ChatColor.GREEN + msg);
 			return true;

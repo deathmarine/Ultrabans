@@ -40,6 +40,7 @@ public class Empty implements CommandExecutor{
 		Player victim = plugin.getServer().getPlayer(p);
 		if (victim == null){
 			String smvic = config.getString("Messages.Empty.Online","%victim% must be online.");
+			if(smvic.contains(plugin.regexVictim))smvic=smvic.replaceAll(plugin.regexVictim, p);
 			smvic=plugin.util.formatMessage(smvic);
 			sender.sendMessage(ChatColor.GRAY + smvic);
 			return true;

@@ -43,19 +43,21 @@ public class Pardon implements CommandExecutor{
 		if(victim == null){
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim == null){
-				plugin.db.removeFromJaillist(p);
-				plugin.db.addPlayer(p, "Released From Jail", admin, 0, 8);
-				if(plugin.jailed.contains(p.toLowerCase())){
-					plugin.jailed.remove(p.toLowerCase());
+				if(plugin.jailed.contains(p.toLowerCase())||plugin.tempJail.containsKey(p.toLowerCase())){
+
+					if(plugin.jailed.contains(p.toLowerCase()))plugin.jailed.remove(p.toLowerCase());
+					plugin.db.removeFromJaillist(p);
+					plugin.db.addPlayer(p, "Released From Jail", admin, 0, 8);
+					if(plugin.tempJail.containsKey(p.toLowerCase()))plugin.tempJail.remove(p.toLowerCase());
+					String bcmsg = config.getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
+					if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+					if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, p);
+					bcmsg=plugin.util.formatMessage(bcmsg);
+					sender.sendMessage(bcmsg);
+				}else{
+					//TODO Make config Fail.
+					sender.sendMessage("Player not found.");
 				}
-				if(plugin.tempJail.containsKey(p.toLowerCase())){
-					plugin.tempJail.remove(p.toLowerCase());
-				}
-				String bcmsg = config.getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
-				if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
-				if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, p);
-				bcmsg=plugin.util.formatMessage(bcmsg);
-				sender.sendMessage(bcmsg);
 				return true;
 			}
 		}

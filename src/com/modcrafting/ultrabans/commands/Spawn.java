@@ -41,7 +41,8 @@ public class Spawn implements CommandExecutor{
 		if(victim != null){
 			idoit = victim.getName();
 		}else{
-			String smvic = config.getString("Messages.Spawn.Failed","%victim% is not Online.");
+			String smvic = config.getString("Messages.Spawn.Failed","%victim% is not online.");
+			if(smvic.contains(plugin.regexVictim))smvic=smvic.replaceAll(plugin.regexVictim, p);
 			smvic=plugin.util.formatMessage(smvic);
 			sender.sendMessage(ChatColor.GRAY + smvic);
 			return true;

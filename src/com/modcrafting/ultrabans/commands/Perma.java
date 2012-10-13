@@ -56,7 +56,8 @@ public class Perma implements CommandExecutor{
 		if(victim == null){
 			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
 			if(victim == null){
-				String smvic = config.getString("Messages.PermaBan.Online","%victim% must be Online.");
+				String smvic = config.getString("Messages.PermaBan.Online","%victim% must be online.");
+				if(smvic.contains(plugin.regexVictim))smvic=smvic.replaceAll(plugin.regexVictim, p);
 				smvic=plugin.util.formatMessage(smvic);
 				sender.sendMessage(ChatColor.GRAY + smvic);
 				return true;
