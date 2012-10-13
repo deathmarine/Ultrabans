@@ -10,7 +10,6 @@ import javax.crypto.BadPaddingException;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.EditBan;
 
 public class ConnectionHandler extends Thread{
 	Ultrabans plugin;
@@ -37,12 +36,12 @@ public class ConnectionHandler extends Thread{
 					try {
 						getPlayers();
 						getBanned();
-						wait(3000);
+						wait(1000);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						//e.printStackTrace();
 						alive=false;
 					} catch (Exception e) {
-						e.printStackTrace();
+						//e.printStackTrace();
 						alive=false;
 					}
 				}
@@ -65,15 +64,15 @@ public class ConnectionHandler extends Thread{
 		        	if(line.contains(".bannedPlayers."))getBanned();
 		        }
 			} catch (BadPaddingException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				alive=false;
 				this.interrupt();
 			} catch (IOException e){
-				e.printStackTrace();
+				//e.printStackTrace();
 				alive=false;
 				this.interrupt();
 			} catch (Exception e){
-				e.printStackTrace();
+				//e.printStackTrace();
 				alive=false;
 				this.interrupt();
 			}
@@ -85,7 +84,7 @@ public class ConnectionHandler extends Thread{
 			sock.close();
 			this.interrupt();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 	}
@@ -102,8 +101,8 @@ public class ConnectionHandler extends Thread{
 	}
 	public void getBanned() throws Exception{
 		StringBuilder sb = new StringBuilder();
-		for(EditBan p:plugin.db.listRecentBans(String.valueOf(10))){
-			sb.append(p.name);
+		for(int i=0;i<10;i++){
+			sb.append(plugin.bannedPlayers.toArray()[i]);
 			sb.append(" ");
 		}
 		if(alive){
