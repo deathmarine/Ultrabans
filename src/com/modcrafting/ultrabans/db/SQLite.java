@@ -360,6 +360,8 @@ public class SQLite implements Database{
 			return bans;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
+		} catch (NumberFormatException nfe){
+			plugin.getLogger().warning("Input was not a number.");
 		}
 		return null;
 	}

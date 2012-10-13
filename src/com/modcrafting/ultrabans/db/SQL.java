@@ -350,8 +350,8 @@ public class SQL implements Database{
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		Integer num = Integer.parseInt(number.trim());
 		try {
+			Integer num = Integer.parseInt(number.trim());
 			conn = getSQLConnection();
 			ps = conn.prepareStatement("SELECT * FROM " + bantable + " ORDER BY time DESC LIMIT ?");
 			ps.setInt(1, num);
@@ -364,6 +364,8 @@ public class SQL implements Database{
 			return bans;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
+		} catch (NumberFormatException nfe){
+			plugin.getLogger().warning("Input was not a number.");
 		}
 		return null;
 	}
