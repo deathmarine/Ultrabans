@@ -37,6 +37,7 @@ import javax.swing.undo.UndoManager;
 
 import com.modcrafting.ultrabans.gui.listeners.KeyFolder;
 import com.modcrafting.ultrabans.gui.listeners.MouseListListener;
+import com.modcrafting.ultrabans.gui.listeners.RightClickEditor;
 import com.modcrafting.ultrabans.gui.listeners.WinListener;
 import com.modcrafting.ultrabans.live.Connection;
 import com.modcrafting.ultrabans.security.RSAServerCrypto;
@@ -210,6 +211,7 @@ public class Frame{
 		input.setForeground(Color.black);
 		input.setEditable(true);
 		input.setVisible(true);
+		input.addMouseListener(new RightClickEditor());
 		input.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		button.addActionListener(new ActionListener(){
 			@Override
@@ -262,6 +264,7 @@ public class Frame{
 		JPanel p3 = new JPanel();
 		console = new JTextArea();
 		console.setEditable(false);
+		console.addMouseListener(new RightClickEditor());
 		p3.setLayout(new BoxLayout(p3, BoxLayout.Y_AXIS));
 		p3.setBorder(BorderFactory.createTitledBorder("Console"));
 		p3.add(new JScrollPane(console));

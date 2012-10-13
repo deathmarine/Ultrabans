@@ -9,15 +9,11 @@ package com.modcrafting.ultrabans;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Random;
-
 import net.h31ix.updater.Updater;
 import net.h31ix.updater.Updater.UpdateResult;
 import net.h31ix.updater.Updater.UpdateType;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
