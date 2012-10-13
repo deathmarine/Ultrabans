@@ -31,8 +31,9 @@ public class UBServer implements Runnable{
 				Socket client = server.accept();
 				ConnectionHandler connectionHandler = new ConnectionHandler(client, plugin);
 				threads.add(connectionHandler);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				plugin.getLogger().info("Could not listen on port");
+				disconnect();
 			}
 		}
 		

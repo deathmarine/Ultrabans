@@ -67,12 +67,15 @@ public class ConnectionHandler extends Thread{
 			} catch (BadPaddingException e) {
 				e.printStackTrace();
 				alive=false;
+				this.interrupt();
 			} catch (IOException e){
 				e.printStackTrace();
 				alive=false;
+				this.interrupt();
 			} catch (Exception e){
 				e.printStackTrace();
 				alive=false;
+				this.interrupt();
 			}
 		}
 		plugin.getServer().getLogger().removeHandler(h);
