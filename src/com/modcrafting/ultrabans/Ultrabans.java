@@ -9,11 +9,15 @@ package com.modcrafting.ultrabans;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
+
 import net.h31ix.updater.Updater;
 import net.h31ix.updater.Updater.UpdateResult;
 import net.h31ix.updater.Updater.UpdateType;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -172,8 +176,6 @@ public class Ultrabans extends JavaPlugin {
 			this.getLogger().info("Live Address: "+this.getServer().getIp()+":"+port);
 		}
 		this.getLogger().info("Loaded. "+((long) (System.currentTimeMillis()-time)/1000)+" secs.");
-		
-		
 	}
 	public void loadCommands(){
 		getCommand("ban").setExecutor(new Ban(this));

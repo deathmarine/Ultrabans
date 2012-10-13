@@ -234,7 +234,6 @@ permissions:
     description: Allows the user to check the inventory of a player.
   ultraban.help:
     description: Allows the use of the help function
-    
   ultraban.override.*:
     description: Allows the Administration to Override Commands
     children:

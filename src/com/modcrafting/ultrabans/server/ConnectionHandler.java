@@ -39,10 +39,10 @@ public class ConnectionHandler extends Thread{
 						wait(1000);
 					} catch (InterruptedException e) {
 						//e.printStackTrace();
-						alive=false;
+						//alive=false;
 					} catch (Exception e) {
 						//e.printStackTrace();
-						alive=false;
+						//alive=false;
 					}
 				}
 			}
@@ -72,9 +72,7 @@ public class ConnectionHandler extends Thread{
 				alive=false;
 				this.interrupt();
 			} catch (Exception e){
-				//e.printStackTrace();
-				alive=false;
-				this.interrupt();
+				
 			}
 		}
 		plugin.getServer().getLogger().removeHandler(h);
