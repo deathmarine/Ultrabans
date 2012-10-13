@@ -366,6 +366,30 @@ public class SQLite implements Database{
 		return null;
 	}
 	@Override
+	public List<EditBan> listRecentBans(String number){
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			Integer num = Integer.parseInt(number.trim());
+			conn = getSQLConnection();
+			ps = conn.prepareStatement("SELECT * FROM banlist WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT ?");
+			ps.setInt(1, num);
+			rs = ps.executeQuery();
+			List<EditBan> bans = new ArrayList<EditBan>();
+			while (rs.next()){
+				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
+			}
+			close(conn,ps,rs);
+			return bans;
+		} catch (SQLException ex) {
+			Error.execute(plugin, ex);
+		} catch (NumberFormatException nfe){
+			plugin.getLogger().warning("Input was not a number.");
+		}
+		return null;
+	}
+	@Override
 	public EditBan loadFullRecord(String pName) {
 		Connection conn = null;
 		PreparedStatement ps = null;

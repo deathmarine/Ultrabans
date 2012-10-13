@@ -37,4 +37,5 @@ public interface Database {
 	public String getAdmin(String player);
 	public void importPlayer(String player, String reason, String admin,long tempTime, long time, int type);
 	public List<String> listPlayers(String ip);
+	public List<EditBan> listRecentBans(String number);
 }
