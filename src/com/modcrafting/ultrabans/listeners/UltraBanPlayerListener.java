@@ -72,7 +72,7 @@ public class UltraBanPlayerListener implements Listener{
 			String msgvic = config.getString("Messages.TempBan.Login", "You have been tempbanned by %admin% for %time%. Reason: %reason%!");
 			if(msgvic.contains(plugin.regexAdmin)) msgvic = msgvic.replaceAll(plugin.regexAdmin, admin);
 			if(msgvic.contains(plugin.regexReason)) msgvic = msgvic.replaceAll(plugin.regexReason, reason);
-			if(msgvic.contains("%time%")) msgvic = msgvic.replaceAll(plugin.regexAmt, dateStr.substring(4, 19));
+			if(msgvic.contains("%time%")) msgvic = msgvic.replaceAll("%time%", dateStr.substring(4, 19));
 			msgvic=plugin.util.formatMessage(msgvic);
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, msgvic);
 			return;
