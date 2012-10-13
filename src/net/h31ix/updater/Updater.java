@@ -93,7 +93,7 @@ public class Updater
         /**
         * The updater found an update, but because of the UpdateType being set to NO_DOWNLOAD, it wasn't downloaded.
         */        
-        UPDATE_AVAILABLE(7);        
+        UPDATE_AVAILABLE(7);  
         
         private static final Map<Integer, Updater.UpdateResult> valueList = new HashMap<Integer, Updater.UpdateResult>();
         private final int value;
@@ -489,7 +489,7 @@ public class Updater
     private boolean versionCheck(String title){
         if(type != UpdateType.NO_VERSION_CHECK){
             String version = plugin.getDescription().getVersion();
-            if(title.split("v").length == 2){
+            if(title!=null&&title.split("v").length == 2){
             	String remoteVersion = title.split("v")[1].split(" ")[0]; // Get the newest file's version number
                 int remVer = -1,curVer=0;
                 try
@@ -556,6 +556,7 @@ public class Updater
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             // Setup a new eventReader
             InputStream in = read();
+            if(in==null) return;
             XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
             // Read the XML document
             while (eventReader.hasNext()) 
@@ -606,7 +607,7 @@ public class Updater
         } 
         catch (IOException e) 
         {
-            throw new RuntimeException(e);
+        	return null;
         }
     }
 }
