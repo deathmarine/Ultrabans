@@ -152,7 +152,7 @@ public class Ultrabans extends JavaPlugin {
 		}
 		//Statistic Tracker
 		if(config.getBoolean("GoogleAnalytics.Enabled",true)){
-			JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(pdf.getName(),pdf.getVersion(),"UA-35400100-1");
+			JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(pdf.getName(),pdf.getVersion(),"UA-35400100-2");
 			new Track(tracker);
 			//PluginInstances.
 			Track.track(pdf.getName()+pdf.getVersion()+" Loaded");

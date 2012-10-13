@@ -76,8 +76,8 @@ Chat:
     Enable: true
     #Use your imagination these are not for me to decide#
     Words: 'test testing tests'
-    #Wildcards %scramble% will scramble the ip and %replace% will show your ip instead#
-    #If no wildcards are present the message entered will replace the ip#
+    #Wildcards %scramble% will scramble the word#
+    #If no wildcards are present the message entered will replace the word#
     #leave blank to erase#
     Blocking: '{Block}'
     #kick,jail,warn,ban,ipban, leave blank for no action#
