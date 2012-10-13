@@ -43,7 +43,6 @@ public class Unban implements CommandExecutor{
 		if(plugin.util.validIP(p)){
 			plugin.bannedIPs.remove(p);
 			String pname = plugin.db.getName(p);
-			Bukkit.unbanIP(p);
 			if (pname != null){
 				String reason = plugin.db.getBanReason(plugin.getServer().getOfflinePlayer(pname).getName());
 				plugin.db.removeFromBanlist(plugin.getServer().getOfflinePlayer(pname).getName());
@@ -76,7 +75,6 @@ public class Unban implements CommandExecutor{
 			String ip = plugin.db.getAddress(plugin.getServer().getOfflinePlayer(p).getName());
 			if(plugin.bannedIPs.contains(ip)){
 				plugin.bannedIPs.remove(ip);
-				Bukkit.unbanIP(ip);
 				plugin.getLogger().info("Also removed the IP ban!");
 			}
 			plugin.db.addPlayer(plugin.getServer().getOfflinePlayer(p).getName(), "Unbanned: " + reason, admin, 0, 5);
@@ -90,11 +88,9 @@ public class Unban implements CommandExecutor{
 			if(plugin.tempBans.containsKey(p.toLowerCase())){
 				plugin.tempBans.remove(p.toLowerCase());
 				plugin.db.removeFromBanlist(plugin.getServer().getOfflinePlayer(p).getName());
-				Bukkit.getOfflinePlayer(p).setBanned(false);
 				String ip = plugin.db.getAddress(plugin.getServer().getOfflinePlayer(p).getName());
 				if(plugin.bannedIPs.contains(ip)){
 					plugin.bannedIPs.remove(ip);
-					Bukkit.unbanIP(ip);
 					System.out.println("Also removed the IP ban!");
 				}
 				plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
