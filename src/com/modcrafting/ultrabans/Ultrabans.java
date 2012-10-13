@@ -9,11 +9,15 @@ package com.modcrafting.ultrabans;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 
 import net.h31ix.updater.Updater;
 import net.h31ix.updater.Updater.UpdateResult;
 import net.h31ix.updater.Updater.UpdateType;
+
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -141,7 +145,11 @@ public class Ultrabans extends JavaPlugin {
 		if(config.getBoolean("AutoUpdater.Enabled",true)){
 			Updater up = new Updater(this,pdf.getName().toLowerCase(),this.getFile(),UpdateType.DEFAULT,true);
 			if(!up.getResult().equals(UpdateResult.SUCCESS)||up.pluginFile(this.getFile().getName())){
-				this.getLogger().info("No Updates found on dev.bukkit.org.");
+				if(up.getResult().equals(UpdateResult.FAIL_NOVERSION)){
+					this.getLogger().info("Unable to connect to dev.bukkit.org.");
+				}else{
+					this.getLogger().info("No Updates found on dev.bukkit.org.");
+				}
 			}else{
 				this.getLogger().info("Update "+up.getLatestVersionString()+" found please restart your server.");
 			}
@@ -167,7 +175,54 @@ public class Ultrabans extends JavaPlugin {
 			new Thread(ubserver).start();
 			this.getLogger().info("Live Address: "+this.getServer().getIp()+":"+port);
 		}
-		this.getLogger().info("Loaded. "+(System.currentTimeMillis()-time)+"ms");
+		this.getLogger().info("Loaded. "+((long) (System.currentTimeMillis()-time)/1000)+" secs.");
+		
+		//Delete -----
+		doNOTUSEME();
+		//Delete ----- 
+		
+	}
+	public Ultrabans ret(){
+		return this;
+	}
+	private void doNOTUSEME(){
+		//Personal Debugger Very temporary
+					this.getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable(){
+						Random ran = new Random();
+						@Override
+						public void run() {
+							String[] a = {"ban","checkban","checkip","dupeip","empty","ipban","kick","forcespawn","starve","tempban","tempipban","unban","uversion","warn","jail","tempjail","permaban","umute","history","pardon","invof","ustatus","uclean","uping"};
+							int i=ran.nextInt(a.length-1);
+							String silent="";
+							if(ran.nextBoolean()) silent=" -s ";
+							if(ran.nextBoolean()) silent="intentionalscrewup";
+							if(ran.nextBoolean()) silent=String.valueOf(ran.nextInt());
+							String player = "";
+							if(ret().getServer().getOnlinePlayers().length==0){
+								for(OfflinePlayer of:ret().getServer().getOfflinePlayers()){
+									if(ran.nextBoolean()){
+										player=of.getName();
+									}
+								}
+								if(player.length()<2)player=String.valueOf(ran.nextLong());
+							}else{
+								for(Player plr:ret().getServer().getOnlinePlayers()){
+									player=plr.getName();
+								}
+							}
+							String cmd = a[i];
+							if(!cmd.startsWith("temp")){
+								ret().getServer().dispatchCommand(ret().getServer().getConsoleSender(), cmd+" "+player+" "+silent+" "+ran.nextLong());
+							}else{
+								
+								String[] modes = {"secs","mins","hours","days","weeks","months"};
+								int ii=ran.nextInt(modes.length-1);
+								ret().getServer().dispatchCommand(ret().getServer().getConsoleSender(), cmd+" "+player+" "+silent+" "+ran.nextInt()+" "+modes[ii]+" "+ran.nextLong());
+								
+							}
+						}
+						
+					}, 120, 30);
 	}
 	public void loadCommands(){
 		getCommand("ban").setExecutor(new Ban(this));
