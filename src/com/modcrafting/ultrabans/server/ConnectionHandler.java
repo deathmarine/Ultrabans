@@ -10,6 +10,7 @@ import javax.crypto.BadPaddingException;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.EditBan;
 
 public class ConnectionHandler extends Thread{
 	Ultrabans plugin;
@@ -36,10 +37,12 @@ public class ConnectionHandler extends Thread{
 					try {
 						getPlayers();
 						getBanned();
-						wait(1000);
+						wait(3000);
 					} catch (InterruptedException e) {
+						e.printStackTrace();
 						alive=false;
 					} catch (Exception e) {
+						e.printStackTrace();
 						alive=false;
 					}
 				}
@@ -62,10 +65,13 @@ public class ConnectionHandler extends Thread{
 		        	if(line.contains(".bannedPlayers."))getBanned();
 		        }
 			} catch (BadPaddingException e) {
+				e.printStackTrace();
 				alive=false;
 			} catch (IOException e){
+				e.printStackTrace();
 				alive=false;
 			} catch (Exception e){
+				e.printStackTrace();
 				alive=false;
 			}
 		}
@@ -93,11 +99,14 @@ public class ConnectionHandler extends Thread{
 	}
 	public void getBanned() throws Exception{
 		StringBuilder sb = new StringBuilder();
-		for(String p:plugin.bannedPlayers){
-			sb.append(p);
+		for(EditBan p:plugin.db.listRecentBans(String.valueOf(10))){
+			sb.append(p.name);
 			sb.append(" ");
 		}
-		if(alive)out.write(plugin.crypto.encrypt((".bplayers."+sb.toString()).getBytes()));
+		if(alive){
+			byte[] b = (".bplayers."+sb.toString()).getBytes();
+			out.write(plugin.crypto.encrypt(b));	
+		}
 	}
 	public void write(byte[] bytes) throws IOException{
 		if(alive){

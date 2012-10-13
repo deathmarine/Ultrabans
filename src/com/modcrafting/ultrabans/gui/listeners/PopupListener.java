@@ -26,6 +26,11 @@ public class PopupListener implements ActionListener{
         if(frame.connection!=null){
 			try {
 				if(target!=null){
+					if(action.equalsIgnoreCase("edit")) return;
+					if(action.startsWith("U")){
+						frame.connection.sendtoServer(action+" "+target);
+						return;
+					}
 					if(!action.startsWith("Temp")){
 						String reason = frame.showInput("Reason", "Would you like to add a reason?");
 						frame.connection.sendtoServer(action+" "+target+" "+reason);

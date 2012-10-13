@@ -24,6 +24,7 @@ public class MouseListListener implements MouseListener{
 			int index = list.locationToIndex(e.getPoint());
 			list.setSelectedIndex(index);
 			String playerName = (String) list.getSelectedValue();
+			if(playerName==null) return;
 			JPopupMenu popup = new JPopupMenu();
 			for(String ac:actions){
 		        JMenuItem menuItem = new JMenuItem(ac);

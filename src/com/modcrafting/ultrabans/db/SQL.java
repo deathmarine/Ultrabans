@@ -378,7 +378,7 @@ public class SQL implements Database{
 		try {
 			Integer num = Integer.parseInt(number.trim());
 			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ? AND (type = 0 OR type = 1) ORDER BY time DESC LIMIT ?");
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE type = 0 OR type = 1 ORDER BY time DESC LIMIT ?");
 			ps.setInt(1, num);
 			rs = ps.executeQuery();
 			List<EditBan> bans = new ArrayList<EditBan>();
