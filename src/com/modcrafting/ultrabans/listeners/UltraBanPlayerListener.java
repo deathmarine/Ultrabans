@@ -7,6 +7,9 @@
  */
 package com.modcrafting.ultrabans.listeners;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
@@ -31,13 +34,14 @@ public class UltraBanPlayerListener implements Listener{
 	Ultrabans plugin;
 	String spamcheck = null;
 	int spamCount = 0;
+	FileConfiguration config;
 	public UltraBanPlayerListener(Ultrabans ultraBans) {
-		this.plugin = ultraBans;
+		plugin = ultraBans;
+		config = ultraBans.getConfig();
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerLogin(PlayerLoginEvent event){
-		FileConfiguration config = plugin.getConfig();
 		Player player = event.getPlayer();
 		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
 			String reason = plugin.db.getBanReason(player.getName());
@@ -77,17 +81,16 @@ public class UltraBanPlayerListener implements Listener{
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, msgvic);
 			return;
 		}
-		if(config.getBoolean("lockdown", false)){
+		if(config.getBoolean("Lockdown", false)&&!player.hasPermission("ultraban.override.lockdown")){
 			String lockMsgLogin = config.getString("Messages.Lockdown.LoginMsg", "Server is under a lockdown, Try again later!");
-			if(player.hasPermission("ultraban.override.lockdown") || player.isOp()) event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
+			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
 			plugin.getLogger().info(player.getName() + " attempted to join during lockdown.");
 		}
 	}
 	@EventHandler(priority = EventPriority.LOW)
-	public void onPlayerJoin(PlayerJoinEvent event){
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+	public void onPlayerJoin(final PlayerJoinEvent event){
 		final Player player = event.getPlayer();
-		String ip = player.getAddress().getAddress().getHostAddress();
+		final String ip = player.getAddress().getAddress().getHostAddress();
 		plugin.db.setAddress(player.getName().toLowerCase(), ip);
 		if(plugin.bannedIPs.contains(ip)){
 			event.setJoinMessage(null);
@@ -133,12 +136,31 @@ public class UltraBanPlayerListener implements Listener{
 			}
 			
 		}
+		if(config.getBoolean("Login.ProxyPingBack.Enable",true)){ //TODO UnderConstruction
+			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable(){
+				@Override
+				public void run() {
+					try {
+						int to = config.getInt("Login.ProxyPingBack.Timeout",10000);
+						InetAddress tip = InetAddress.getByName(ip);
+					 	if(!tip.isReachable(to)){
+					 		event.getPlayer().kickPlayer("");
+					 	}
+					} catch (UnknownHostException e) {
+				 		event.getPlayer().kickPlayer("");
+					} catch (IOException e) {
+				 		event.getPlayer().kickPlayer("");
+					}
+					
+				}
+				
+			});
+		}
 	 	if(plugin.tempJail.get(player.getName().toLowerCase()) != null)tempjailCheck(player);
 		plugin.getLogger().info("Logged " + player.getName() + " connecting from ip:" + ip);
 	}
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
 		String adminMsg = config.getString("Messages.Mute.Chat", "Your cry falls on deaf ears.");
 		if(plugin.jailed.contains(player.getName().toLowerCase())&&config.getBoolean("Jail.Vannila", true)){
@@ -146,6 +168,7 @@ public class UltraBanPlayerListener implements Listener{
 			if(config.getStringList("Jail.AllowedCommands").contains(args[0])) return;
 		 	if(plugin.tempJail.get(player.getName().toLowerCase()) != null){
 		 		if(tempjailCheck(player)) return;
+
 		 	}
 			player.sendMessage(plugin.util.formatMessage(adminMsg));
 			event.setCancelled(true);
@@ -160,7 +183,6 @@ public class UltraBanPlayerListener implements Listener{
 	}
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerChat(AsyncPlayerChatEvent event){
-		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = event.getPlayer();
 		String message = event.getMessage();
 		String adminMsg = config.getString("Messages.Mute.Chat", "Your cry falls on deaf ears.");
@@ -184,9 +206,9 @@ public class UltraBanPlayerListener implements Listener{
 		}
 	}
 	private boolean checkPlayerPing(Player player,int ping){
-		int pingout =plugin.getConfig().getInt("MaxPing",200);
+		int pingout =config.getInt("MaxPing",200);
 		if(ping>pingout&&!player.hasPermission("ultraban.override.pingcheck")){
-			String msgvic = plugin.getConfig().getString("Messages.Kick.MsgToVictim", "You have been kicked by %admin%. Reason: %reason%");
+			String msgvic = config.getString("Messages.Kick.MsgToVictim", "You have been kicked by %admin%. Reason: %reason%");
 			if(msgvic.contains(plugin.regexAdmin)) msgvic = msgvic.replaceAll(plugin.regexAdmin, "Ultrabans");
 			if(msgvic.contains(plugin.regexReason)) msgvic = msgvic.replaceAll(plugin.regexReason, "High Ping Rate");
 			msgvic=plugin.util.formatMessage(msgvic);
@@ -207,7 +229,7 @@ public class UltraBanPlayerListener implements Listener{
 			plugin.db.addPlayer(player.getName(), "Released From Jail", "Served Time", 0, 8);
 			Location stlp = plugin.jail.getJail("release");
 			player.teleport(stlp);
-			String bcmsg = plugin.getConfig().getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
+			String bcmsg = config.getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
 			if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, plugin.admin);
 			if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, player.getName());
 			bcmsg=plugin.util.formatMessage(bcmsg);
@@ -223,7 +245,6 @@ public class UltraBanPlayerListener implements Listener{
 		return false;
 	}
 	private void ipcheck(Player player, String message,AsyncPlayerChatEvent event){
-		FileConfiguration config = plugin.getConfig();
 		String mes = new String(message);
 		String[] content = {"\\,","\\-","\\_","\\="};
 		for (int ii=0;ii<content.length;ii++){
@@ -260,7 +281,6 @@ public class UltraBanPlayerListener implements Listener{
 		}
 	}
 	private void spamcheck(Player player, String message, AsyncPlayerChatEvent event){
-		FileConfiguration config = plugin.getConfig();
 		 String mes = new String(message);
 		 if(!mes.equalsIgnoreCase(spamcheck)){
 			 spamcheck = event.getMessage();
@@ -285,7 +305,6 @@ public class UltraBanPlayerListener implements Listener{
 		
 	}
 	private void swearcheck(Player player, String message, AsyncPlayerChatEvent event){
-		FileConfiguration config = plugin.getConfig();
 		 String mes = new String(message);
 		 String[] string = config.getString("Chat.SwearCensor.Words").split(" ");
 		 String mode = config.getString("Chat.SwearCensor.Blocking");
