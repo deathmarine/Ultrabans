@@ -2,6 +2,7 @@ package com.boxysystems.jgoogleanalytics;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -59,7 +60,7 @@ public class GoogleAnalytics_v1_URLBuildingStrategy implements URLBuildingStrate
     url.append("&utmcs=UTF-8"); //document encoding
     url.append("&utmsr=1440x900"); //screen resolution
     url.append("&utmsc=32-bit"); //color depth
-    url.append("&utmul=en-us"); //user language
+    url.append("&utmul="+Charset.defaultCharset().name()); //user language
     url.append("&utmje=1"); //java enabled
     url.append("&utmfl=9.0%20%20r28"); //flash
     url.append("&utmcr=1"); //carriage return
