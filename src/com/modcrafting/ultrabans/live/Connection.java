@@ -40,7 +40,9 @@ public class Connection {
 	public void disconnect() {
 		try {
 			if(cw!=null)alive=false;
-			sock.close();
+			if(sock!=null)sock.close();
+			//Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException
+			//at com.modcrafting.ultrabans.live.Connection.disconnect(Connection.java:43)
 			frame.statsBar.setText("Disconnected  ");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -72,7 +74,7 @@ public class Connection {
 			}
 		    while(alive){
 		    	try{
-					byte[] block = new byte[256];
+					byte[] block = new byte[512];
 					in.read(block, 0, block.length);
 					block = frame.crypto.decrypt(block);
 					input = new String(block);
