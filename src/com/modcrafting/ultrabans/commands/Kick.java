@@ -40,8 +40,6 @@ public class Kick implements CommandExecutor{
 		if (args.length < 1) return false;
 
 		String p = args[0];
-		p = plugin.util.expandName(p);
-		
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
@@ -55,9 +53,7 @@ public class Kick implements CommandExecutor{
 				}
 			}
 		}
-
-		if(p.equals("*")){
-			if(sender.hasPermission("ultrabans.kick.all")){
+		if(args[0].equals("*")&&sender.hasPermission("ultrabans.kick.all")){
 				String adminMsg = config.getString("Messages.Kick.MsgToAll", "Everyone has been kicked by %admin%. Reason: %reason%");
 				if(adminMsg.contains(plugin.regexAdmin)) adminMsg = adminMsg.replaceAll(plugin.regexAdmin, admin);
 				if(adminMsg.contains(plugin.regexReason)) adminMsg = adminMsg.replaceAll(plugin.regexReason, reason);
@@ -69,7 +65,7 @@ public class Kick implements CommandExecutor{
 				}
 				plugin.getServer().broadcastMessage(adminMsg);
 				plugin.getLogger().info(adminMsg);
-			}
+			
 			return true;
 		}
 		p = plugin.util.expandName(p);
