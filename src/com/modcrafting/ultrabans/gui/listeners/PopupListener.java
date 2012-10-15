@@ -27,7 +27,7 @@ public class PopupListener implements ActionListener{
 			try {
 				if(target!=null){
 					if(action.equalsIgnoreCase("edit")) return;
-					if(action.startsWith("U")){
+					if(action.startsWith("U")||action.equalsIgnoreCase("ping")){
 						frame.connection.sendtoServer(action+" "+target);
 						return;
 					}
