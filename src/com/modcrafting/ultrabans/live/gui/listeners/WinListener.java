@@ -1,9 +1,9 @@
-package com.modcrafting.ultrabans.gui.listeners;
+package com.modcrafting.ultrabans.live.gui.listeners;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import com.modcrafting.ultrabans.gui.Frame;
+import com.modcrafting.ultrabans.live.gui.Frame;
 
 public class WinListener implements WindowListener {
 	Frame frame;

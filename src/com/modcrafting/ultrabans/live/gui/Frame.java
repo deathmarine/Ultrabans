@@ -1,4 +1,4 @@
-package com.modcrafting.ultrabans.gui;
+package com.modcrafting.ultrabans.live.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -35,12 +35,13 @@ import javax.swing.text.Document;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
-import com.modcrafting.ultrabans.gui.listeners.KeyFolder;
-import com.modcrafting.ultrabans.gui.listeners.MouseListListener;
-import com.modcrafting.ultrabans.gui.listeners.RightClickEditor;
-import com.modcrafting.ultrabans.gui.listeners.WinListener;
+import com.modcrafting.ultrabans.live.Config;
 import com.modcrafting.ultrabans.live.Connection;
-import com.modcrafting.ultrabans.security.RSAServerCrypto;
+import com.modcrafting.ultrabans.live.gui.listeners.KeyFolder;
+import com.modcrafting.ultrabans.live.gui.listeners.MouseListListener;
+import com.modcrafting.ultrabans.live.gui.listeners.RightClickEditor;
+import com.modcrafting.ultrabans.live.gui.listeners.WinListener;
+import com.modcrafting.ultrabans.live.security.RSAServerCrypto;
 
 public class Frame{
 	Splash splash;
@@ -56,8 +57,10 @@ public class Frame{
 	public Connection connection;
 	public RSAServerCrypto crypto;
 	public Socket sock;
-	public Frame(){
-		frame = new JFrame("Ultrabans Live");
+	Config cfg;
+	public Frame(Config c){
+		cfg=c;
+		frame = new JFrame(c.getName()+" "+c.getVersion());
 		new Thread(new Splash(frame)).start();
 		buildFrame();
 		createMenu();

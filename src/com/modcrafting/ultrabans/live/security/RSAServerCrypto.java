@@ -1,4 +1,4 @@
-package com.modcrafting.ultrabans.security;
+package com.modcrafting.ultrabans.live.security;
 
 import java.io.File;
 import java.io.FileInputStream;

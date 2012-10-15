@@ -10,7 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JLabel;
-import com.modcrafting.ultrabans.gui.Frame;
+
+import com.modcrafting.ultrabans.live.gui.Frame;
 
 public class Connection {
 	Socket sock;
@@ -41,8 +42,9 @@ public class Connection {
 		try {
 			if(cw!=null)alive=false;
 			if(sock!=null)sock.close();
-			//Exception in thread "AWT-EventQueue-0" java.lang.NullPointerException
-			//at com.modcrafting.ultrabans.live.Connection.disconnect(Connection.java:43)
+			frame.console.setText("");
+			frame.actionlist.setListData(new String[]{});
+			frame.playerlist.setListData(new String[]{});
 			frame.statsBar.setText("Disconnected  ");
 		} catch (IOException e) {
 			e.printStackTrace();

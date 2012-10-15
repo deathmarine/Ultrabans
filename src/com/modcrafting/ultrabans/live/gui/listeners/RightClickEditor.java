@@ -1,4 +1,4 @@
-package com.modcrafting.ultrabans.gui.listeners;
+package com.modcrafting.ultrabans.live.gui.listeners;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

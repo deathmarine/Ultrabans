@@ -54,7 +54,7 @@ import com.modcrafting.ultrabans.db.SQL;
 import com.modcrafting.ultrabans.db.SQLite;
 import com.modcrafting.ultrabans.listeners.UltraBanBlockListener;
 import com.modcrafting.ultrabans.listeners.UltraBanPlayerListener;
-import com.modcrafting.ultrabans.security.RSAServerCrypto;
+import com.modcrafting.ultrabans.live.security.RSAServerCrypto;
 import com.modcrafting.ultrabans.server.UBServer;
 import com.modcrafting.ultrabans.tracker.Track;
 import com.modcrafting.ultrabans.util.DataHandler;

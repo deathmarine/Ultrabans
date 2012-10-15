@@ -1,4 +1,4 @@
-package com.modcrafting.ultrabans.gui.listeners;
+package com.modcrafting.ultrabans.live.gui.listeners;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import com.modcrafting.ultrabans.gui.Frame;
+import com.modcrafting.ultrabans.live.gui.Frame;
 
 public class PopupListener implements ActionListener{
 	Frame frame;

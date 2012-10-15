@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import com.modcrafting.ultrabans.security.RSAServerCrypto;
+import com.modcrafting.ultrabans.live.security.RSAServerCrypto;
 
 public class UBHandler extends Handler{
 	ConnectionHandler out;

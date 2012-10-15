@@ -1,4 +1,4 @@
-package com.modcrafting.ultrabans.gui;
+package com.modcrafting.ultrabans.live.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
