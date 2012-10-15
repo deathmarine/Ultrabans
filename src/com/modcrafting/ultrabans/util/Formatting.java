@@ -101,18 +101,19 @@ public class Formatting {
 		} catch (NumberFormatException ex) {
 			return 0;
 		}
-		if (unit.startsWith("hour"))
+		if (unit.startsWith("h")){
 			sec *= 60;
-		else if (unit.startsWith("day"))
+		}else if(unit.startsWith("d")){
 			sec *= (60*24);
-		else if (unit.startsWith("week"))
+		}else if(unit.startsWith("w")){
 			sec *= (7*60*24);
-		else if (unit.startsWith("month"))
+		}else if(unit.startsWith("mo")){
 			sec *= (30*60*24);
-		else if (unit.startsWith("min"))
+		}else if(unit.startsWith("m")){
 			sec *= 1;
-		else if (unit.startsWith("sec"))
+		}else if(unit.startsWith("s")){
 			sec /= 60;
+		}
 		return sec;
 	}
 }
