@@ -40,7 +40,7 @@ Login:
 #Check ping on Login#
   PingCheck:
     Enable: true
-    MaxPing: 200
+    MaxPing: 500
 #This will set the server to sync the database if multiple servers are in place.#
 Sync:
   Enabled: false

@@ -204,7 +204,7 @@ public class UltraBanPlayerListener implements Listener{
 		}
 	}
 	private boolean checkPlayerPing(Player player,int ping){
-		int pingout =config.getInt("MaxPing",200);
+		int pingout =config.getInt("Login.PingCheck.MaxPing",500);
 		if(ping>pingout&&!player.hasPermission("ultraban.override.pingcheck")){
 			String msgvic = config.getString("Messages.Kick.MsgToVictim", "You have been kicked by %admin%. Reason: %reason%");
 			if(msgvic.contains(plugin.regexAdmin)) msgvic = msgvic.replaceAll(plugin.regexAdmin, "Ultrabans");
