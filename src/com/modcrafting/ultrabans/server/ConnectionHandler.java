@@ -54,7 +54,7 @@ public class ConnectionHandler extends Thread{
 	public void run() {
 		while(alive){
 			try{
-				byte[] block = new byte[256];
+				byte[] block = new byte[512];
 				in.read(block, 0, block.length);
 				block = plugin.crypto.decrypt(block);
 				line = new String(block);
