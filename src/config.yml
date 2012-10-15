@@ -15,7 +15,7 @@ SQLite:
 CleanOnBan: true
 #Max Warnings#
 MaxWarning:
-  Enable: false#
+  Enable: false
   Amt: 5
   #ban,kick,ipban,perma,tempban,tempipban#
   Result: ban
