@@ -90,6 +90,7 @@ public class Ultrabans extends JavaPlugin {
 	public String perms;
 	
 	private UBServer ubserver;
+	
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
 		tempBans.clear();
@@ -99,7 +100,7 @@ public class Ultrabans extends JavaPlugin {
 		jailed.clear();
 		muted.clear();
 		banEditors.clear();
-		ubserver.disconnect();
+		if(ubserver!=null) ubserver.disconnect();
 	}
 	public void onEnable() {
 		long time = System.currentTimeMillis();
