@@ -22,10 +22,11 @@ public class UBServer implements Runnable{
 	public synchronized void run(){
 		try {
 			server = new ServerSocket(port);
+			alive=true;
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			plugin.getLogger().info("Could not listen on port");
+			alive=false;
 		}
-		alive=true;
 		while(alive){
 			try{
 				Socket client = server.accept();

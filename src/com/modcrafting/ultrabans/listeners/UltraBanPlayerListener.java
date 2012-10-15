@@ -133,7 +133,6 @@ public class UltraBanPlayerListener implements Listener{
 					
 				}
 			}
-			
 		}
 		if(config.getBoolean("Login.ProxyPingBack.Enable",true)){ //TODO UnderConstruction
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable(){
