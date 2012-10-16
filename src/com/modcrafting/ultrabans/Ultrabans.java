@@ -8,14 +8,19 @@
 package com.modcrafting.ultrabans;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import net.h31ix.updater.Updater;
 import net.h31ix.updater.Updater.UpdateResult;
 import net.h31ix.updater.Updater.UpdateType;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.boxysystems.jgoogleanalytics.JGoogleAnalyticsTracker;

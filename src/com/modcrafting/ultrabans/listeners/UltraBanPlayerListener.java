@@ -39,7 +39,7 @@ public class UltraBanPlayerListener implements Listener{
 		config = ultraBans.getConfig();
 	}
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerLogin(PlayerLoginEvent event){
 		Player player = event.getPlayer();
 		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
@@ -83,10 +83,11 @@ public class UltraBanPlayerListener implements Listener{
 		if(config.getBoolean("Lockdown", false)&&!player.hasPermission("ultraban.override.lockdown")){
 			String lockMsgLogin = config.getString("Messages.Lockdown.LoginMsg", "Server is under a lockdown, Try again later!");
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
+			lockMsgLogin=plugin.util.formatMessage(lockMsgLogin);
 			plugin.getLogger().info(player.getName() + " attempted to join during lockdown.");
 		}
 	}
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerJoin(final PlayerJoinEvent event){
 		final Player player = event.getPlayer();
 		final String ip = player.getAddress().getAddress().getHostAddress();
@@ -94,6 +95,7 @@ public class UltraBanPlayerListener implements Listener{
 		if(plugin.bannedIPs.contains(ip)){
 			event.setJoinMessage(null);
 			String adminMsg = config.getString("Messages.IPBan.Login", "Your IP is banned!");
+			adminMsg=plugin.util.formatMessage(adminMsg);
 			player.kickPlayer(adminMsg);
 		}
 		if(!plugin.db.matchAddress(player.getName(), ip)){
@@ -104,15 +106,13 @@ public class UltraBanPlayerListener implements Listener{
 				@Override
 				public void run() {
 					String ip = plugin.db.getAddress(player.getName());
-					List<String> list = plugin.db.listPlayers(ip);
-					for(Player admin:plugin.getServer().getOnlinePlayers()){
-						if(admin.hasPermission("ultraban.dupeip")){
-							if(ip == null){
-								admin.sendMessage(ChatColor.RED + "Unable to view ip for " + player.getName() + " !");
-								return;
-							}
-							for(String name:list){
-								if(!name.equalsIgnoreCase(player.getName())) admin.sendMessage(ChatColor.GRAY + "Player: " + name + " duplicates player: " + player.getName() + "!");
+					if(ip != null){
+						List<String> list = plugin.db.listPlayers(ip);
+						for(Player admin:plugin.getServer().getOnlinePlayers()){
+							if(admin.hasPermission("ultraban.dupeip")){
+								for(String name:list){
+									if(!name.equalsIgnoreCase(player.getName())) admin.sendMessage(ChatColor.GRAY + "Player: " + name + " duplicates player: " + player.getName() + "!");
+								}
 							}
 						}
 					}
@@ -134,7 +134,7 @@ public class UltraBanPlayerListener implements Listener{
 				}
 			}
 		}
-		if(config.getBoolean("Login.ProxyPingBack.Enable",true)){ //TODO UnderConstruction
+		if(config.getBoolean("Login.ProxyPingBack.Enable",false)){ //TODO UnderConstruction
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable(){
 				@Override
 				public void run() {
@@ -142,10 +142,10 @@ public class UltraBanPlayerListener implements Listener{
 						int to = config.getInt("Login.ProxyPingBack.Timeout",10000);
 						InetAddress tip = InetAddress.getByName(ip);
 					 	if(!tip.isReachable(to)){
-					 		event.getPlayer().kickPlayer("");
+					 		event.getPlayer().kickPlayer("You've been kicked for Proxy.");
 					 	}
 					} catch (UnknownHostException e) {
-				 		event.getPlayer().kickPlayer("");
+				 		event.getPlayer().kickPlayer("You've been kicked for Proxy.");
 					} catch (IOException e) {
 				 		event.getPlayer().kickPlayer("");
 					}
