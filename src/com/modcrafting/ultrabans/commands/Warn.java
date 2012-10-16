@@ -67,7 +67,7 @@ public class Warn implements CommandExecutor{
 				String idoit = victim.getName();
 				if(plugin.db.maxWarns(idoit) != null && plugin.db.maxWarns(idoit).size() >= max){
 					String cmd = config.getString("MaxWarning.Result", "ban");
-					String r = config.getString("MaxWarning.Message","Max Warns");
+					String r = config.getString("MaxWarning.Reason","Max Warns");
 					boolean s = config.getBoolean("MaxWarning.Silent",true);
 					StringBuilder sb = new StringBuilder();
 					if(cmd.equalsIgnoreCase("ban") || cmd.equalsIgnoreCase("kick") || cmd.equalsIgnoreCase("ipban") || cmd.equalsIgnoreCase("jail") || cmd.equalsIgnoreCase("permaban")){

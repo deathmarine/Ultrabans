@@ -20,7 +20,7 @@ MaxWarning:
   #ban,kick,ipban,perma,tempban,tempipban#
   Result: ban
   Silent: true
-  Message: 'Max Warnings'
+  Reason: 'Max Warnings'
   #Used with Temporary actions#
   Temp:
     Amt: 5
