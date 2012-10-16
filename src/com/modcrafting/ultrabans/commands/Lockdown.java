@@ -67,11 +67,11 @@ public class Lockdown implements CommandExecutor {
 		return true;
 	}
 	private void lockdownOn(){
-		plugin.getConfig().set("lockdown", (boolean) true);
+		plugin.getConfig().set("Lockdown",(boolean) true);
         plugin.saveConfig();
     }
 	private void lockdownEnd(){
-		plugin.getConfig().set("lockdown",false);
+		plugin.getConfig().set("Lockdown",(boolean) false);
         plugin.saveConfig();
     }
 
