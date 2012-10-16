@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -145,14 +146,13 @@ public class UltraBanPlayerListener implements Listener{
 						int to = config.getInt("Login.ProxyPingBack.Timeout",10000);
 						InetAddress tip = InetAddress.getByName(ip);
 					 	if(!tip.isReachable(to)){
-					 		event.getPlayer().kickPlayer("You've been kicked for Proxy.");
+					 		plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "kick "+event.getPlayer()+" Proxy.");
 					 	}
 					} catch (UnknownHostException e) {
-				 		event.getPlayer().kickPlayer("You've been kicked for Proxy.");
+				 		plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "kick "+event.getPlayer()+" Proxy.");
 					} catch (IOException e) {
-				 		event.getPlayer().kickPlayer("");
+				 		plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "kick "+event.getPlayer()+" Proxy.");
 					}
-					
 				}
 				
 			});
@@ -313,11 +313,9 @@ public class UltraBanPlayerListener implements Listener{
 		 if(mode == null) mode = "";
 		 boolean valid = false;
 		 for (int i=0; i<string.length; i++){
-			 if(mes.contains(string[i].trim())){
+			 if(Pattern.compile(Pattern.quote(string[i].trim()), Pattern.CASE_INSENSITIVE).matcher(mes).find()){
 				 if(mode.equalsIgnoreCase("%scramble%")){
 					 mes = mes.replaceAll(string[i].trim(), ChatColor.MAGIC + "AAAAA");
-				 }else if(mode.equalsIgnoreCase("%replace%")){
-					 mes = mes.replaceAll(string[i].trim(), plugin.getServer().getIp());
 				 }else{
 					 mes = mes.replaceAll(string[i].trim(), mode);
 				 }

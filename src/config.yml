@@ -41,6 +41,11 @@ Login:
   PingCheck:
     Enable: true
     MaxPing: 500
+#PingBack joining players, and kick if unreachable. //Experimental#
+  ProxyPingBack:
+    Enable: false
+    #How long in milliseconds to Timeout#
+    Timeout: 10000
 #This will set the server to sync the database if multiple servers are in place.#
 Sync:
   Enabled: false
