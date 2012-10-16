@@ -45,7 +45,7 @@ public class UBServer implements Runnable{
 			disconnectAll();
 			server.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 	private void disconnectAll(){

@@ -1,6 +1,5 @@
 package com.modcrafting.ultrabans.server;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Handler;
@@ -17,20 +16,12 @@ public class UBHandler extends Handler{
 	}
 	@Override
 	public void close() throws SecurityException {
-		try {
-			out.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		//Do nothing
 	}
 
 	@Override
 	public void flush() {
-		try {
-			out.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		//Do nothing
 	}
 
 	@Override
@@ -44,7 +35,7 @@ public class UBHandler extends Handler{
 		try {
 			out.write(crypto.encrypt(s.getBytes()));
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
