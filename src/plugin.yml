@@ -5,6 +5,7 @@ author: Deathmarine
 description: >
              Administration Plugin for Bukkit.
 main: com.modcrafting.ultrabans.Ultrabans
+softdepend: [Essentials]
 commands:
 #Actions#
   ban:
