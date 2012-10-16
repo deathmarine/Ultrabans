@@ -101,17 +101,17 @@ public class Formatting {
 		} catch (NumberFormatException ex) {
 			return 0;
 		}
-		if (unit.startsWith("h")){
+		if (unit.startsWith("h")||unit.startsWith("H")){
 			sec *= 60;
-		}else if(unit.startsWith("d")){
+		}else if(unit.startsWith("d")||unit.startsWith("D")){
 			sec *= (60*24);
-		}else if(unit.startsWith("w")){
+		}else if(unit.startsWith("w")||unit.startsWith("W")){
 			sec *= (7*60*24);
-		}else if(unit.startsWith("mo")){
+		}else if(unit.startsWith("mo")||unit.startsWith("Mo")){
 			sec *= (30*60*24);
-		}else if(unit.startsWith("m")){
+		}else if(unit.startsWith("m")||unit.startsWith("M")){
 			sec *= 1;
-		}else if(unit.startsWith("s")){
+		}else if(unit.startsWith("s")||unit.startsWith("S")){
 			sec /= 60;
 		}
 		return sec;
