@@ -45,6 +45,8 @@ public class UltraBanPlayerListener implements Listener{
 		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
 			String reason = plugin.db.getBanReason(player.getName());
 			String admin = plugin.db.getAdmin(player.getName());
+			if(admin==null) admin = plugin.admin;
+			if(reason==null) reason = plugin.reason;
 			String bcmsg = config.getString("Messages.Ban.Login", "%admin% banned you from this server! Reason: %reason%!");
 			if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
 			if(bcmsg.contains(plugin.regexReason)) bcmsg = bcmsg.replaceAll(plugin.regexReason, reason);
@@ -54,6 +56,8 @@ public class UltraBanPlayerListener implements Listener{
 		if(plugin.tempBans.get(player.getName().toLowerCase()) != null){
 			String reason = plugin.db.getBanReason(player.getName());
 			String admin = plugin.db.getAdmin(player.getName());
+			if(admin==null) admin = plugin.admin;
+			if(reason==null) reason = plugin.reason;
 			long tempTime = plugin.tempBans.get(player.getName().toLowerCase());
 			long diff = tempTime - (System.currentTimeMillis()/1000);
 			if(diff <= 0){
@@ -65,7 +69,6 @@ public class UltraBanPlayerListener implements Listener{
 				plugin.tempBans.remove(player.getName().toLowerCase());
 				plugin.bannedPlayers.remove(player.getName().toLowerCase());
 				plugin.db.removeFromBanlist(player.getName().toLowerCase());
-				admin = plugin.admin;
 				plugin.db.addPlayer(player.getName(), "Untempbanned: " + reason, admin, 0, 5);
 				return;
 			}
@@ -238,6 +241,7 @@ public class UltraBanPlayerListener implements Listener{
 		date.setTime(tempTime*1000);
 		String dateStr = date.toString();
 		String reason = plugin.db.getjailReason(player.getName());
+		if(reason==null) reason = plugin.reason;
 		player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + reason);
 		player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
 		return false;
