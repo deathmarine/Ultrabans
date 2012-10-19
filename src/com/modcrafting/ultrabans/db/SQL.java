@@ -484,7 +484,7 @@ public class SQL implements Database{
 		PreparedStatement ps = null;
 		try {
 			conn = getSQLConnection();
-				ps = conn.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND type = ? ORDER BY time DESC LIMIT 1");
+				ps = conn.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND type = ?");
 				ps.setString(1, player);
 				ps.setInt(2, 6);
 			
@@ -591,6 +591,26 @@ public class SQL implements Database{
 				rs.close();
 		} catch (SQLException ex) {
 			Error.close(plugin, ex);
+		}
+	}
+	@Override
+	public void clearWarns(String player) {
+		Connection conn = getSQLConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ? AND type = 2 ORDER BY time DESC");
+			ps.setString(1, player);
+			rs = ps.executeQuery();
+			while (rs.next()){
+				int i = rs.getInt("id");
+				ps = conn.prepareStatement("DELETE FROM " + bantable + " WHERE id = ?");
+				ps.setInt(1, i);
+				ps.executeUpdate();
+			}
+			close(conn,ps,rs);
+		} catch (SQLException ex) {
+			Error.execute(plugin, ex);
 		}
 	}
 }

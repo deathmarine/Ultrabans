@@ -13,6 +13,8 @@ SQLite:
   Filename: 'banlist'
 #delete dat on ban#
 CleanOnBan: true
+#clear warnings on ban#
+ClearWarnOnBan: false
 #Max Warnings#
 MaxWarning:
   Enable: false

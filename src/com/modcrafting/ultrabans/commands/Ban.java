@@ -121,6 +121,7 @@ public class Ban implements CommandExecutor{
 		if(bcmsg.contains(plugin.regexReason)) bcmsg = bcmsg.replaceAll(plugin.regexReason, reason);
 		if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, p.toLowerCase());
 		if(config.getBoolean("CleanOnBan",false)) plugin.data.deletePlyrdat(victim.getName());
+		if(config.getBoolean("ClearWarnOnBan",false)) plugin.db.clearWarns(victim.getName());
 		if(broadcast){
 			plugin.getServer().broadcastMessage(plugin.util.formatMessage(bcmsg));
 		}else{
