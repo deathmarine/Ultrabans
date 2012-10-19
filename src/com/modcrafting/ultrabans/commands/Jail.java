@@ -40,6 +40,7 @@ public class Jail implements CommandExecutor{
 		}
 		if (args.length < 1) return false;
 		if(args[0].equalsIgnoreCase("setjail")){
+			if(player==null) return true;
 			plugin.jail.setJail(player.getLocation(), "jail");
 			String msg = config.getString("Messages.Jail.SetJail","Jail has been set!");
 			msg=plugin.util.formatMessage(msg);
@@ -47,6 +48,7 @@ public class Jail implements CommandExecutor{
 			return true;
 		}
 		if(args[0].equalsIgnoreCase("setrelease")){
+			if(player==null) return true;
 			plugin.jail.setJail(player.getLocation(), "release");
 			String msg = config.getString("Messages.Jail.SetRelease","Release has been set!");
 			msg=plugin.util.formatMessage(msg);
