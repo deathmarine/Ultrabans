@@ -98,7 +98,7 @@ public class Perma implements CommandExecutor{
 		}else{
 			sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
 		}
-		if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(victim.getName());
+		if(config.getBoolean("CleanOnBan",false)) plugin.data.deletePlyrdat(victim.getName());
 		if(config.getBoolean("ClearWarnOnBan",false)) plugin.db.clearWarns(victim.getName());
 		plugin.bannedPlayers.add(victim.getName().toLowerCase());
 		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 9);
