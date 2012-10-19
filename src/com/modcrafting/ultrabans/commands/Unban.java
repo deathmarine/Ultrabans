@@ -9,6 +9,7 @@ package com.modcrafting.ultrabans.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,16 +39,22 @@ public class Unban implements CommandExecutor{
 		}
 		if (args.length < 1) return false;
 		String p = args[0];
-		
+		OfflinePlayer of = plugin.getServer().getOfflinePlayer(p);
+		if(of!=null){
+			if(of.isBanned()) of.setBanned(false);
+			p=of.getName();
+		}
 		//unban IPv4
 		if(plugin.util.validIP(p)){
 			plugin.bannedIPs.remove(p);
 			String pname = plugin.db.getName(p);
 			if (pname != null){
-				String reason = plugin.db.getBanReason(plugin.getServer().getOfflinePlayer(pname).getName());
-				plugin.db.removeFromBanlist(plugin.getServer().getOfflinePlayer(pname).getName());
-				plugin.db.addPlayer(plugin.getServer().getOfflinePlayer(p).getName(), "Unbanned: " + reason, admin, 0, 5);
-				plugin.getLogger().info(admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");				
+				of = plugin.getServer().getOfflinePlayer(pname);
+				p=of.getName();						
+				String reason = plugin.db.getBanReason(p);
+				plugin.db.removeFromBanlist(p);
+				plugin.db.addPlayer(p, "Unbanned: " + reason, admin, 0, 5);
+				plugin.getLogger().info(admin + " unbanned player " + p + ".");				
 			}else{
 				plugin.db.removeFromBanlist(pname);			
 			}
@@ -87,8 +94,8 @@ public class Unban implements CommandExecutor{
 		}else{
 			if(plugin.tempBans.containsKey(p.toLowerCase())){
 				plugin.tempBans.remove(p.toLowerCase());
-				plugin.db.removeFromBanlist(plugin.getServer().getOfflinePlayer(p).getName());
-				String ip = plugin.db.getAddress(plugin.getServer().getOfflinePlayer(p).getName());
+				plugin.db.removeFromBanlist(p);
+				String ip = plugin.db.getAddress(p);
 				if(plugin.bannedIPs.contains(ip)){
 					plugin.bannedIPs.remove(ip);
 					System.out.println("Also removed the IP ban!");
@@ -96,14 +103,22 @@ public class Unban implements CommandExecutor{
 				plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
 				String bcmsg = config.getString("Messages.Unban.MsgToBroadcast", "%victim% was unbanned by %admin%!");
 				bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
-				bcmsg = bcmsg.replaceAll(plugin.regexVictim, plugin.getServer().getOfflinePlayer(p).getName());
+				bcmsg = bcmsg.replaceAll(plugin.regexVictim, p);
 				bcmsg = plugin.util.formatMessage(bcmsg);
 				plugin.getServer().broadcastMessage(bcmsg);
 				plugin.getLogger().info(bcmsg);
-				
 			}else{
+				if(of!=null){
+					String bcmsg = config.getString("Messages.Unban.MsgToBroadcast", "%victim% was unbanned by %admin%!");
+					bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
+					bcmsg = bcmsg.replaceAll(plugin.regexVictim, p);
+					bcmsg = plugin.util.formatMessage(bcmsg);
+					plugin.getServer().broadcastMessage(bcmsg);
+					plugin.getLogger().info(bcmsg);
+					return true;
+				}
 				String failed = config.getString("Messages.Unban.Failed", "%victim% is already unbanned!");
-				failed = failed.replaceAll(plugin.regexVictim, plugin.getServer().getOfflinePlayer(p).getName());
+				failed = failed.replaceAll(plugin.regexVictim, p);
 				failed = plugin.util.formatMessage(failed);
 				sender.sendMessage(failed);
 			}
