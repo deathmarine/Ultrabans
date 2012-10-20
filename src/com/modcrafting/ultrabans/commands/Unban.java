@@ -76,19 +76,25 @@ public class Unban implements CommandExecutor{
 
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			plugin.bannedPlayers.remove(p.toLowerCase());
-			String reason = plugin.db.getBanReason(plugin.getServer().getOfflinePlayer(p).getName());
-			plugin.db.removeFromBanlist(plugin.getServer().getOfflinePlayer(p).getName());
+			plugin.db.removeFromBanlist(p);
 			Bukkit.getOfflinePlayer(p).setBanned(false);
-			String ip = plugin.db.getAddress(plugin.getServer().getOfflinePlayer(p).getName());
+			String ip = plugin.db.getAddress(p);
 			if(plugin.bannedIPs.contains(ip)){
 				plugin.bannedIPs.remove(ip);
 				plugin.getLogger().info("Also removed the IP ban!");
 			}
-			plugin.db.addPlayer(plugin.getServer().getOfflinePlayer(p).getName(), "Unbanned: " + reason, admin, 0, 5);
-			plugin.getLogger().info(admin + " unbanned player " + plugin.getServer().getOfflinePlayer(p).getName() + ".");
+			if(config.getBoolean("UnbansLog.Enable",true)){
+				String reason = plugin.db.getBanReason(p);
+				if(config.getBoolean("UnbansLog.LogReason",true)&&reason!=null){
+					plugin.db.addPlayer(p, "Unbanned: "+reason, admin, 0, 5);
+				}else{
+					plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
+				}
+			}
+			plugin.getLogger().info(admin + " unbanned player " + p + ".");
 			String bcmsg = config.getString("Messages.Unban.MsgToBroadcast", "%victim% was unbanned by %admin%!");
 			bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
-			bcmsg = bcmsg.replaceAll(plugin.regexVictim, plugin.getServer().getOfflinePlayer(p).getName());
+			bcmsg = bcmsg.replaceAll(plugin.regexVictim, p);
 			plugin.getServer().broadcastMessage(plugin.util.formatMessage(bcmsg));
 			return true;
 		}else{
@@ -100,7 +106,14 @@ public class Unban implements CommandExecutor{
 					plugin.bannedIPs.remove(ip);
 					System.out.println("Also removed the IP ban!");
 				}
-				plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
+				if(config.getBoolean("UnbansLog.Enable",true)){
+					String reason = plugin.db.getBanReason(p);
+					if(config.getBoolean("UnbansLog.LogReason",true)&&reason!=null){
+						plugin.db.addPlayer(p, "Unbanned: "+reason, admin, 0, 5);
+					}else{
+						plugin.db.addPlayer(p, "Unbanned", admin, 0, 5);
+					}
+				}
 				String bcmsg = config.getString("Messages.Unban.MsgToBroadcast", "%victim% was unbanned by %admin%!");
 				bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
 				bcmsg = bcmsg.replaceAll(plugin.regexVictim, p);
