@@ -11,7 +11,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.tracker.Track;
 
 public class Help implements CommandExecutor{
 	Ultrabans plugin;
@@ -20,7 +19,6 @@ public class Help implements CommandExecutor{
 	}
 	//F'n Smart!
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-		Track.track(command.getName());
 		int page = 1;
 		if(args.length>0){
 			try{

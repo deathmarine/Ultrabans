@@ -14,15 +14,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.tracker.Track;
 
 public class DupeIP implements CommandExecutor{
 	Ultrabans plugin;
 	public DupeIP(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
+	@SuppressWarnings("deprecation")
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
-		Track.track(command.getName());
 		if(!sender.hasPermission(command.getPermission())){
 			sender.sendMessage(ChatColor.RED+plugin.perms);
 			return true;

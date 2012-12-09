@@ -18,7 +18,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.boxysystems.jgoogleanalytics.JGoogleAnalyticsTracker;
 import com.modcrafting.ultrabans.commands.Ban;
 import com.modcrafting.ultrabans.commands.Check;
 import com.modcrafting.ultrabans.commands.CheckIP;
@@ -54,14 +53,10 @@ import com.modcrafting.ultrabans.db.SQL;
 import com.modcrafting.ultrabans.db.SQLite;
 import com.modcrafting.ultrabans.listeners.UltraBanBlockListener;
 import com.modcrafting.ultrabans.listeners.UltraBanPlayerListener;
-import com.modcrafting.ultrabans.live.security.RSAServerCrypto;
-import com.modcrafting.ultrabans.server.UBServer;
-import com.modcrafting.ultrabans.tracker.Track;
 import com.modcrafting.ultrabans.util.DataHandler;
 import com.modcrafting.ultrabans.util.EditBan;
 import com.modcrafting.ultrabans.util.Formatting;
 import com.modcrafting.ultrabans.util.Jailtools;
-import com.modcrafting.ultrabans.util.LoggerHandler;
 
 public class Ultrabans extends JavaPlugin {
 	public HashSet<String> bannedPlayers = new HashSet<String>();
@@ -75,8 +70,6 @@ public class Ultrabans extends JavaPlugin {
 	public DataHandler data = new DataHandler(this);
 	public Formatting util = new Formatting(this);
 	public Jailtools jail = new Jailtools(this);
-	
-	public RSAServerCrypto crypto;
 	public Database db;
 	
 	public final String regexAdmin = "%admin%";
@@ -89,8 +82,6 @@ public class Ultrabans extends JavaPlugin {
 	public String reason;
 	public String perms;
 	
-	private UBServer ubserver;
-	
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
 		tempBans.clear();
@@ -100,8 +91,8 @@ public class Ultrabans extends JavaPlugin {
 		jailed.clear();
 		muted.clear();
 		banEditors.clear();
-		if(ubserver!=null) ubserver.disconnect();
 	}
+	@SuppressWarnings("deprecation")
 	public void onEnable() {
 		long time = System.currentTimeMillis();
 		this.getDataFolder().mkdir();
@@ -150,27 +141,6 @@ public class Ultrabans extends JavaPlugin {
 			}else{
 				this.getLogger().info("Update "+up.getLatestVersionString()+" found please restart your server.");
 			}
-		}
-		//Statistic Tracker
-		if(config.getBoolean("GoogleAnalytics.Enabled",true)){
-			JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(pdf.getName(),pdf.getVersion(),"UA-35400100-2");
-			new Track(tracker);
-			//PluginInstances.
-			Track.track(pdf.getName()+pdf.getVersion()+" Loaded");
-			//PluginErrorLogger
-			this.getLogger().addHandler(new LoggerHandler());
-
-			//Pssfffttt... Metrics? Ha.
-		}
-		//Live Gui
-		if(config.getBoolean("Live.Enabled",false)){
-			this.getLogger().info("Live initializing.");
-			int port = config.getInt("Live.Port",9981);
-			//RSA 2048bit
-			crypto = new RSAServerCrypto(this.getDataFolder());
-			ubserver = new UBServer(port,this);
-			new Thread(ubserver).start();
-			this.getLogger().info("Live Address: "+this.getServer().getIp()+":"+port);
 		}
 		this.getLogger().info("Loaded. "+((long) (System.currentTimeMillis()-time)/1000)+" secs.");
 	}
