@@ -1,0 +1,289 @@
+name: Ultrabans
+version: 2.0.@VERSION@
+website: http://modcrafting.com
+author: Deathmarine
+description: >
+             Administration Plugin for Bukkit.
+main: com.modcrafting.ultrabans.Ultrabans
+softdepend: [Essentials]
+
+commands:
+#Actions#
+  ban:
+    description: Ban a player
+    usage: /<command> {player} (-s/-a) {reason}
+    permission: ultraban.ban
+  tempban:
+    description: Temporarily ban a player
+    usage: /<command> {player} (-s/-a) {amt} {sec/min/hour/day} {Reason}
+    permission: ultraban.tempban
+  ipban:
+    description: IPban a player
+    usage: /<command> {player} (-s/-a) {reason}
+    permission: ultraban.ipban
+  tempipban:
+    description: Temporarily ipban a player
+    usage: /<command> {player} (-s/-a) {amt} {sec/min/hour/day} {Reason}
+    permission: ultraban.tempipban
+  permaban:
+    description: Unbannable Banning
+    usage: /<command> {player} (-s/-a) {reason}
+    permission: ultraban.permaban
+  kick:
+    description: Kick a player
+    usage: /<command> {player / * } (-s/-a) {reason}
+    permission: ultraban.kick
+  unban:
+    description: Unban a player
+    usage: /<command> {player}
+    permission: ultraban.unban
+  warn:
+    description: Warns a player
+    usage: /<command> {player} (-s/-a) {reason}
+    permission: ultraban.warn
+  jail:
+    description: Jail player
+    usage: /<command> (set) {player}
+    permission: ultraban.jail
+  tempjail:
+    description: Temporarily Jails a player to a location
+    usage: /<command> {player} (-s/-a) {amt} {sec/min/hour/day} {Reason}
+    permission: ultraban.tempjail
+  pardon:
+    description: Release a Player
+    usage: /<command> {player}
+    permission: ultraban.pardon
+  lockdown:
+    description: Lockdown the Server
+    usage: /<command> <on/off/status> 
+    permission: ultraban.lockdown
+#Information#
+  checkban:
+    description: Check if a player is banned
+    usage: /<command> {player}
+    permission: ultraban.checkban
+  checkip:
+    description: Check a players ip
+    usage: /<command> {player}
+    permission: ultraban.checkip
+  dupeip:
+    description: Check a players ip against all players
+    usage: /<command> {player}
+    permission: ultraban.dupeip
+  history:
+    description: Shows most recent entries
+    usage: /<command> {amt}
+    permission: ultraban.history
+#Management#
+  uclean:
+    description: Deletes Player dat files for banned players
+    usage: /<command>
+    permission: ultraban.clean
+  uversion:
+    description: Shows current Ultrabans Version
+    usage: /<command>
+    permission: ultraban.version
+  ustatus:
+    description: Shows current Ultrabans status
+    usage: /<command>
+    permission: ultraban.status
+  ureload:
+    description: Reload the banlist
+    usage: /<command>
+    permission: ultraban.reload
+  editban:
+    description: Edit a ban
+    usage: /<command> <list/load/id/save/view/reason/time/cancel/help>
+    permission: ultraban.editban
+  exportbans:
+    description: Export bans to default text files
+    usage: /<command>
+    permission: ultraban.export
+  importbans:
+    description: Import bans to default text files
+    usage: /<command>
+    permission: ultraban.import
+#Tools#
+  empty:
+    description: Empty player inventory.
+    usage: /<command> {player}
+    permission: ultraban.empty
+  forcespawn:
+    description: Sends player to spawn/home
+    usage: /<command> {player}
+    permission: ultraban.spawn
+  starve:
+    description: Removes food from player
+    usage: /<command> {player}
+    permission: ultraban.starve
+  umute:
+    description: Mute player
+    usage: /<command> {player}
+    permission: ultraban.mute
+  invof:
+    description: Shows the current inventory of a player
+    usage: /<command> {player}
+    permission: ultraban.inv
+  uping:
+    description: Shows the current ping of a player
+    usage: /<command> {player}
+    permission: ultraban.ping
+  uhelp:
+    description: Shows Help
+    usage: /<command>
+    permission: ultraban.help
+permissions:
+  ultraban.*:
+    default: op
+    description: Allows the Administration to Full Control
+    children:
+      ultraban.help: true
+      ultraban.inv: true
+      ultraban.mute: true
+      ultraban.starve: true
+      ultraban.spawn: true
+      ultraban.empty: true
+      ultraban.import: true
+      ultraban.export: true
+      ultraban.editban: true
+      ultraban.reload: true
+      ultraban.status: true
+      ultraban.version: true
+      ultraban.history: true
+      ultraban.dupeip: true
+      ultraban.checkip: true
+      ultraban.checkban: true
+      ultraban.lockdown: true
+      ultraban.pardon: true
+      ultraban.tempjail: true
+      ultraban.jail: true
+      ultraban.warn: true
+      ultraban.unban: true
+      ultraban.kick: true
+      ultraban.permaban: true
+      ultraban.ban: true
+      ultraban.tempban: true
+      ultraban.ipban: true
+      ultraban.tempipban: true
+      ultraban.clean: true
+      ultraban.ping: true
+  ultraban.ping:
+    description: Allows the user to check ping
+  ultraban.clean:
+    description: Allows the user to delete Player dat files for banned players 
+  ultraban.ban:
+    description: Allows the Administration to ban a player
+  ultraban.tempban:
+    description: Allows the Administration to temporarily ban a player
+  ultraban.ipban:
+    description: Allows the Administration to ban the players ip
+  ultraban.tempipban:
+    description: Allows the Administration to temporarily ban players ip
+  ultraban.permaban:
+    description: Allows the Administration to permaban a player
+  ultraban.kick:
+    description: Allows the Administration to kick a player from the server
+  ultraban.kick.all:
+    description: Allows the Administration to kick all players excluding themselves
+    children:
+      ultraban.kick: true
+  ultraban.unban:
+    description: Allows the Administration to unban a player
+  ultraban.warn:
+    description: Allows the Administration to warn a player
+  ultraban.jail:
+    description: Allows the Administration to jail a player
+  ultraban.tempjail:
+    description: Allows the Administration to temporarily jail a player
+  ultraban.pardon:
+    description: Allows the user to release a player from jail 
+  ultraban.lockdown:
+    description: Allows the Administration to Lockdown the server
+    children:
+      ultraban.lockdown.override: true
+  ultraban.lockdown.override:
+    description: Allows the Administration to join during lockdown
+  ultraban.checkban:
+    description: Allows the user to check a players ban information  
+  ultraban.checkip:
+    description: Allows the user to check a players ip information
+  ultraban.dupeip:
+    description: Allows the user to view the duplicate information
+  ultraban.history:
+    description: Allows the user to a history of entries
+  ultraban.version:
+    default: true
+    description: Allows the user to view the version
+  ultraban.status:
+    description: Allows the user to check the status of the plugin.
+  ultraban.reload:
+    description: Allows the use of the reload function
+  ultraban.editban:
+    description: Allows the user to edit a previous ban
+  ultraban.import:
+    description: Allows the user to import a banlist
+  ultraban.export:
+    description: Allows the user to export a banlist
+  ultraban.empty:
+    description: Allows the user to empty a players inventory
+  ultraban.spawn:
+    description: Allows the user to force a player to leave an area
+  ultraban.starve:
+    description: Allows the user to empty food level
+  ultraban.mute:
+    description: Allows the user to mute a player
+  ultraban.inv:
+    description: Allows the user to check the inventory of a player.
+  ultraban.help:
+    description: Allows the use of the help function
+  ultraban.override.*:
+    description: Allows the Administration to Override Commands
+    children:
+      ultraban.override.ban: true
+      ultraban.override.ipban: true
+      ultraban.override.jail: true
+      ultraban.override.kick: true
+      ultraban.override.kick.all: true
+      ultraban.override.fine: true
+      ultraban.override.mute: true
+      ultraban.override.permaban: true
+      ultraban.override.starve: true
+      ultraban.override.tempban: true
+      ultraban.override.tempipban: true
+      ultraban.override.tempjail: true
+      ultraban.override.warn: true
+      ultraban.override.lockdown: true
+      ultraban.override.pingcheck: true
+  ultraban.override.ban:
+    description: Allows the Administration to override bans
+  ultraban.override.ipban:
+    description: Allows the Administration to override ipbans
+  ultraban.override.jail:
+    description: Allows the Administration to override jail
+  ultraban.override.kick:
+    description: Allows the Administration to override kick
+  ultraban.override.kick.all:
+    description: Allows the Administration to override kickall
+  ultraban.override.mute:
+    description: Allows the Administration to override mute
+  ultraban.override.permaban:
+    description: Allows the Administration to override permabans
+  ultraban.override.starve:
+    description: Allows the Administration to override starve command
+  ultraban.override.tempban:
+    description: Allows the Administration to override tempban
+  ultraban.override.tempipban:
+    description: Allows the Administration to override tempipban
+  ultraban.override.tempjail:
+    description: Allows the Administration to override tempjail
+  ultraban.override.warn:
+    description: Allows the Administration to override warn
+  ultraban.override.lockdown:
+    default: op
+    description: Allows the Administration to override lockdowns
+  ultraban.override.dupeip:
+    default: op
+    description: Allows the Administration to override dupe login check
+  ultraban.override.pingcheck:
+    default: op
+    description: Allows the Administration to override ping check
