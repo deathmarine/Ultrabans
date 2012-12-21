@@ -6,6 +6,7 @@
     <property name="source" value="1.6"/>
     <path id="Ultrabans.classpath">
         <pathelement location="bin"/>
+        <pathelement location="lib/craftbukkit-1.4.6-R0.1-Dev.jar"/>
         <pathelement location="lib/craftbukkit-1.4.5-R1.0.jar"/>
         <pathelement location="lib/craftbukkit-1.4.5-R0.1.jar"/>
     </path>
