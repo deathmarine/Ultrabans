@@ -18,7 +18,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -35,9 +34,13 @@ public class UltraBanPlayerListener implements Listener{
 	String spamcheck = null;
 	int spamCount = 0;
 	FileConfiguration config;
+	String version;
 	public UltraBanPlayerListener(Ultrabans ultraBans) {
 		plugin = ultraBans;
 		config = ultraBans.getConfig();
+
+		String p2 = plugin.getServer().getClass().getPackage().getName();
+        version = p2.substring(p2.lastIndexOf('.') + 1);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -126,7 +129,13 @@ public class UltraBanPlayerListener implements Listener{
 		}
 		if(config.getBoolean("Login.PingCheck.Enable",true)){
 			boolean p=false;
-			int ping = ((CraftPlayer) player).getHandle().ping;
+
+			int ping = 0;
+			if(version.equals("v1_4_5")){
+				ping = ((org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer) player).getHandle().ping;
+			}else{
+				ping = ((org.bukkit.craftbukkit.entity.CraftPlayer) player).getHandle().ping;
+			}
 			p = checkPlayerPing(player, ping);
 			for(Player admin:plugin.getServer().getOnlinePlayers()){
 				if(admin.hasPermission("ultraban.ping")){
