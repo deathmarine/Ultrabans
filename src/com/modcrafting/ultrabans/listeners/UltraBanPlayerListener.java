@@ -131,7 +131,9 @@ public class UltraBanPlayerListener implements Listener{
 			boolean p=false;
 
 			int ping = 0;
-			if(version.equals("v1_4_5")){
+			if(version.equals("v1_4_6")){
+				ping = ((org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer) player).getHandle().ping;
+			}else if(version.equals("v1_4_5")){
 				ping = ((org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer) player).getHandle().ping;
 			}else{
 				ping = ((org.bukkit.craftbukkit.entity.CraftPlayer) player).getHandle().ping;

@@ -24,10 +24,12 @@ public class Ping implements CommandExecutor{
 			Player p = plugin.getServer().getPlayer(args[0]);
 			if(p!=null){
 				String ping = null;
-				if(version.equals("v1_4_5")){
-					ping = String.valueOf(((org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer) p).getHandle().ping);
+				if(version.equals("v1_4_6")){
+					ping = String.valueOf(((org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer) sender).getHandle().ping);
+				}else if(version.equals("v1_4_5")){
+					ping = String.valueOf(((org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer) sender).getHandle().ping);
 				}else{
-					ping = String.valueOf(((org.bukkit.craftbukkit.entity.CraftPlayer) p).getHandle().ping);
+					ping = String.valueOf(((org.bukkit.craftbukkit.entity.CraftPlayer) sender).getHandle().ping);
 				}
 				sender.sendMessage(ChatColor.GRAY+p.getName()+"'s ping is: "+ChatColor.GOLD+ping+"ms");
 			}else{
@@ -37,7 +39,9 @@ public class Ping implements CommandExecutor{
 		}
 		if(sender instanceof Player){
 			String ping = null;
-			if(version.equals("v1_4_5")){
+			if(version.equals("v1_4_6")){
+				ping = String.valueOf(((org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer) sender).getHandle().ping);
+			}else if(version.equals("v1_4_5")){
 				ping = String.valueOf(((org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer) sender).getHandle().ping);
 			}else{
 				ping = String.valueOf(((org.bukkit.craftbukkit.entity.CraftPlayer) sender).getHandle().ping);
