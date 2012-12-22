@@ -25,11 +25,11 @@ public class Ping implements CommandExecutor{
 			if(p!=null){
 				String ping = null;
 				if(version.equals("v1_4_6")){
-					ping = String.valueOf(((org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer) sender).getHandle().ping);
+					ping = String.valueOf(((org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer) p).getHandle().ping);
 				}else if(version.equals("v1_4_5")){
-					ping = String.valueOf(((org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer) sender).getHandle().ping);
+					ping = String.valueOf(((org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer) p).getHandle().ping);
 				}else{
-					ping = String.valueOf(((org.bukkit.craftbukkit.entity.CraftPlayer) sender).getHandle().ping);
+					ping = String.valueOf(((org.bukkit.craftbukkit.entity.CraftPlayer) p).getHandle().ping);
 				}
 				sender.sendMessage(ChatColor.GRAY+p.getName()+"'s ping is: "+ChatColor.GOLD+ping+"ms");
 			}else{
