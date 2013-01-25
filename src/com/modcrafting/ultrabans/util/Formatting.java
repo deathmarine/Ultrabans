@@ -11,21 +11,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 
 import com.modcrafting.ultrabans.Ultrabans;
 
 public class Formatting {
-	Ultrabans plugin;
-	public Formatting(Ultrabans instance) {
-		plugin = instance;
-	}
-	public String expandName(String p) {
+	public static String expandName(String p) {
 		int m = 0;
 		String Result = "";
-		for (int n = 0; n < plugin.getServer().getOnlinePlayers().length; n++) {
-			String str = plugin.getServer().getOnlinePlayers()[n].getName();
-			if (str.matches("(?i).*" + p + ".*")) {
+		for (int n = 0; n < Bukkit.getOnlinePlayers().length; n++) {
+			String str = Bukkit.getOnlinePlayers()[n].getName();
+			if (StringUtils.containsIgnoreCase(str, p)) {
 				m++;
 				Result = str;
 				if(m==2) {
@@ -45,8 +42,7 @@ public class Formatting {
 		}
 		return p;
 	}
-	public String combineSplit(int startIndex, String[] string, String seperator) {
-    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+	public static String combineSplit(int startIndex, String[] string, String seperator) {
 		StringBuilder builder = new StringBuilder();
 		if(string.length >= 1){
 			for (int i = startIndex; i < string.length; i++) {
@@ -59,14 +55,14 @@ public class Formatting {
 				return builder.toString();
 			}
 		}
-		return config.getString("defReason", "not sure");
+		return Ultrabans.DEFAULT_REASON;
 	}
-	public String formatMessage(String str){
+	public static String formatMessage(String str){
 		String funnyChar = new Character((char) 167).toString();
 		str = str.replaceAll("&", funnyChar);
 		return str;
 	}
-	public String banType(int num){
+	public static String banType(int num){
 		switch(num){
 		case 0: return "B";
 		case 1: return "IP";
@@ -80,7 +76,7 @@ public class Formatting {
 		default: return "?";
 		}
 	}
-	public boolean validIP(String ip) {
+	public static boolean validIP(String ip) {
 	    if (ip == null || ip.isEmpty()) return false;
 	    ip = ip.trim();
 	    if ((ip.length() < 6) & (ip.length() > 15)) return false;
@@ -94,7 +90,7 @@ public class Formatting {
 	    }
 	}
 
-	public long parseTimeSpec(String time, String unit) {
+	public static long parseTimeSpec(String time, String unit) {
 		long sec;
 		try {
 			sec = Integer.parseInt(time)*60;

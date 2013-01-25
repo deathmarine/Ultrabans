@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.Formatting;
 
 public class Lockdown implements CommandExecutor {
 	Ultrabans plugin;
@@ -23,12 +24,12 @@ public class Lockdown implements CommandExecutor {
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+plugin.perms);
+			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
 		Player player = null;
-		String admin = plugin.admin;
+		String admin = Ultrabans.DEFAULT_ADMIN;
 		if (sender instanceof Player){
 			player = (Player)sender;
 			admin = player.getName();
@@ -39,26 +40,26 @@ public class Lockdown implements CommandExecutor {
 		if (toggle.equalsIgnoreCase("on")){ 
 			if(!lock){ 
 				lockdownOn();
-				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.Start","Lockdown initiated. PlayerLogin disabled.")));
+				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.Start","Lockdown initiated. PlayerLogin disabled.")));
 				plugin.getLogger().info(admin + " initiated lockdown.");
 			}else{
-				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.LoginMsg","Server is under a lockdown, Try again later! Sorry.")));
+				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.LoginMsg","Server is under a lockdown, Try again later! Sorry.")));
 			}
 		}
 		if (toggle.equalsIgnoreCase("off")){
 			if(lock){
 				lockdownEnd();
-				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.End","Lockdown ended.PlayerLogin reenabled.")));
+				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.End","Lockdown ended.PlayerLogin reenabled.")));
 				plugin.getLogger().info(admin + " disabled lockdown.");
 			}else{
-				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.Status","Lockdown is disabled.")));
+				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.Status","Lockdown is disabled.")));
 			}
 		}
 		if (toggle.equalsIgnoreCase("status")){
 			if(lock){
-				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.LoginMsg","Server is under a lockdown, Try again later! Sorry.")));
+				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.LoginMsg","Server is under a lockdown, Try again later! Sorry.")));
 			}else{
-				sender.sendMessage(ChatColor.GRAY + plugin.util.formatMessage(config.getString("Messages.Lockdown.Status","Lockdown is disabled.")));
+				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.Status","Lockdown is disabled.")));
 			}
 		}
 		

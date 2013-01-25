@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.Formatting;
 
 public class Starve implements CommandExecutor{
 	Ultrabans plugin;
@@ -23,49 +24,49 @@ public class Starve implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		String admin = plugin.admin;
+		String admin = Ultrabans.DEFAULT_ADMIN;
 		if (sender instanceof Player){
 			admin = sender.getName();
 		}
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+plugin.perms);
+			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		if (args.length < 1) return false;
 		String p = args[0];
-		p = plugin.util.expandName(p); 
+		p = Formatting.expandName(p); 
 		Player victim = plugin.getServer().getPlayer(p);
 		String idoit = null;
 		if (victim != null){
 			idoit = victim.getName();
 			if(victim.getName() == admin){
 				String bcmsg = config.getString("Messages.Starve.Emo","You cannot starve yourself!");
-				bcmsg = plugin.util.formatMessage(bcmsg);
+				bcmsg = Formatting.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);
 				return true;
 			}
-			if(victim.hasPermission( "ultraban.override.starve")&&!admin.equalsIgnoreCase(plugin.admin)){
+			if(victim.hasPermission( "ultraban.override.starve")&&!admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN)){
 				String bcmsg = config.getString("Messages.Starve.Denied","Your starve attempt has been denied!");
-				bcmsg = plugin.util.formatMessage(bcmsg);
+				bcmsg = Formatting.formatMessage(bcmsg);
 				sender.sendMessage(bcmsg);
 				return true;
 			}
 		}else{
 			String smvic = config.getString("Messages.Starve.Failed","%victim% is not online.");
-			if(smvic.contains(plugin.regexVictim))smvic=smvic.replaceAll(plugin.regexVictim, p);
-			smvic=plugin.util.formatMessage(smvic);
+			if(smvic.contains(Ultrabans.VICTIM))smvic=smvic.replaceAll(Ultrabans.VICTIM, p);
+			smvic=Formatting.formatMessage(smvic);
 			sender.sendMessage(ChatColor.GRAY + smvic);
 			return true;
 		}
 		String smvic = config.getString("Messages.Starve.MsgToVictim","You are now starving!");
-		smvic=plugin.util.formatMessage(smvic);
+		smvic=Formatting.formatMessage(smvic);
 		victim.sendMessage(smvic);
 		victim.setFoodLevel(0);	
 		
 		String bcmsg = config.getString("Messages.Starve.MsgToSender","%victim% is now starving!");
-		if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
-		if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, idoit);
-		bcmsg=plugin.util.formatMessage(bcmsg);
+		if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
+		if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, idoit);
+		bcmsg=Formatting.formatMessage(bcmsg);
 		sender.sendMessage(bcmsg);
 		return true;
 	}

@@ -17,7 +17,8 @@ public class Help implements CommandExecutor{
 	public Help(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
-	//F'n Smart!
+	@SuppressWarnings("unused")
+	private static String unused = "Best Help System Evhar!";
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 		int page = 1;
 		if(args.length>0){

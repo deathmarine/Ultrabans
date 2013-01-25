@@ -104,10 +104,6 @@ commands:
     usage: /<command>
     permission: ultraban.import
 #Tools#
-  empty:
-    description: Empty player inventory.
-    usage: /<command> {player}
-    permission: ultraban.empty
   forcespawn:
     description: Sends player to spawn/home
     usage: /<command> {player}

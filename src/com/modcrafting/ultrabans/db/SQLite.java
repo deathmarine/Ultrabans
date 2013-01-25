@@ -569,4 +569,13 @@ public class SQLite implements Database{
 			Error.execute(plugin, ex);
 		}
 	}
+	@Override
+	public void closeConnection() {
+		try {
+			if(conn!=null&&!conn.isClosed())
+				conn.close();
+		} catch (SQLException e) {
+			Error.execute(plugin, e);
+		}
+	}
 }

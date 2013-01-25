@@ -20,6 +20,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.Formatting;
 
 public class UltraBanBlockListener implements Listener {
 	Ultrabans plugin;
@@ -60,21 +61,21 @@ public class UltraBanBlockListener implements Listener {
 		if(diff <= 0){
 			plugin.tempJail.remove(player.getName().toLowerCase());
 			plugin.jailed.remove(player.getName().toLowerCase());
-			plugin.db.removeFromJaillist(player.getName().toLowerCase());
-			plugin.db.addPlayer(player.getName(), "Released From Jail", "Served Time", 0, 8);
+			plugin.getUBDatabase().removeFromJaillist(player.getName().toLowerCase());
+			plugin.getUBDatabase().addPlayer(player.getName(), "Released From Jail", "Served Time", 0, 8);
 			Location stlp = plugin.jail.getJail("release");
 			player.teleport(stlp);
 			String bcmsg = plugin.getConfig().getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
-			if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, plugin.admin);
-			if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, player.getName());
-			bcmsg=plugin.util.formatMessage(bcmsg);
+			if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, Ultrabans.DEFAULT_ADMIN);
+			if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, player.getName());
+			bcmsg=Formatting.formatMessage(bcmsg);
 			player.sendMessage(bcmsg);
 			return true;
 		}
 		Date date = new Date();
 		date.setTime(tempTime*1000);
 		String dateStr = date.toString();
-		String reason = plugin.db.getjailReason(player.getName());
+		String reason = plugin.getUBDatabase().getjailReason(player.getName());
 		player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + reason);
 		player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
 		return false;

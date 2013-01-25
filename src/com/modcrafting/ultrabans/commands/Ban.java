@@ -7,125 +7,139 @@
  */
 package com.modcrafting.ultrabans.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.BanType;
+import com.modcrafting.ultrabans.util.Formatting;
 
 public class Ban implements CommandExecutor{
 	Ultrabans plugin;
-	public Ban(Ultrabans ultraBan) {
-		this.plugin = ultraBan;
+	public Ban(Ultrabans instance){
+		plugin=instance;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+plugin.perms);
+			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
-    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+    	FileConfiguration config = Ultrabans.getPlugin().getConfig();
 		boolean broadcast = true;
-		String admin = plugin.admin;
-		String reason = plugin.reason;
+		String admin = Ultrabans.DEFAULT_ADMIN;
+		String reason = Ultrabans.DEFAULT_REASON;
 		if (sender instanceof Player){
 			admin = sender.getName();
 		}
 		if (args.length < 1) return false;
-		
 		String p = args[0];
-		p = plugin.util.expandName(p);
-		Player victim = plugin.getServer().getPlayer(p);
+		p = Formatting.expandName(p);
+		Player victim = Bukkit.getPlayer(p);
 		if(args.length > 1){
 			if(args[1].equalsIgnoreCase("-s")){
 				broadcast = false;
-				reason = plugin.util.combineSplit(2, args, " ");
+				reason = Formatting.combineSplit(2, args, " ");
 			}else{
-				if(args[1].equalsIgnoreCase("-a")){
-					admin = plugin.admin;
-					reason = plugin.util.combineSplit(2, args, " ");
+				if(args[1].equalsIgnoreCase("-a")
+						&&sender.hasPermission(command.getPermission()+".anon")){
+					admin = Ultrabans.DEFAULT_ADMIN;
+					reason = Formatting.combineSplit(2, args, " ");
 				}else{
-					reason = plugin.util.combineSplit(1, args, " ");
+					reason = Formatting.combineSplit(1, args, " ");
 				}
 			}
 		}
-	
 		if(plugin.bannedPlayers.contains(p.toLowerCase())){
 			String failed = config.getString("Messages.Ban.Failed", "%victim% is already banned.");
-			if(failed.contains(plugin.regexVictim)){
+			if(failed.contains(Ultrabans.VICTIM)){
 				if(victim == null){
-					failed = failed.replaceAll(plugin.regexVictim, p);
+					failed = failed.replaceAll(Ultrabans.VICTIM, p);
 				}else{
-					failed = failed.replaceAll(plugin.regexVictim, victim.getName());
+					failed = failed.replaceAll(Ultrabans.VICTIM, victim.getName());
 				}	
 			}
-			failed = plugin.util.formatMessage(failed);
+			failed = Formatting.formatMessage(failed);
 			sender.sendMessage(failed);
 			return true;
 		}
-		
 		if(victim == null){
-			victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
+			victim = Bukkit.getOfflinePlayer(p).getPlayer();
 			if(victim != null){
-				if(victim.hasPermission("ultraban.override.ban")&&!admin.equalsIgnoreCase(plugin.admin)){
+				if(victim.hasPermission("ultraban.override.ban")
+						&&!admin.equalsIgnoreCase(Ultrabans.ADMIN)){
 					sender.sendMessage(ChatColor.RED + "Your ban has been denied!");
 					return true;
 				}
 			}else{
 				String bcmsg = config.getString("Messages.Ban.MsgToBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
-				if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
-				if(bcmsg.contains(plugin.regexReason)) bcmsg = bcmsg.replaceAll(plugin.regexReason, reason);
-				if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, p.toLowerCase());
+				if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
+				if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replaceAll(Ultrabans.REASON, reason);
+				if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, p.toLowerCase());
 				plugin.bannedPlayers.add(p.toLowerCase());
 				if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(p);
-				plugin.db.addPlayer(p, reason, admin, 0, 0);
-				plugin.getLogger().info(bcmsg);
+				final String fname = p;
+				final String freason = reason;
+				final String fadmin = admin;
+				Bukkit.getScheduler().runTaskAsynchronously(Ultrabans.getPlugin(),new Runnable(){
+					@Override
+					public void run() {
+						Ultrabans.getPlugin().getUBDatabase().addPlayer(fname, freason, fadmin, 0, BanType.BAN.getId());
+					}	
+				});
+				if(plugin.getLog())
+					plugin.getLogger().info(bcmsg);
 				if(broadcast){
-					plugin.getServer().broadcastMessage(plugin.util.formatMessage(bcmsg));
+					Bukkit.broadcastMessage(Formatting.formatMessage(bcmsg));
 				}else{
-					sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(bcmsg));
+					sender.sendMessage(ChatColor.ITALIC + "Silent: " + Formatting.formatMessage(bcmsg));
 				}
 				return true;	
 				
 			}		
 		}
-
 		if(victim.getName().equalsIgnoreCase(admin)){
 			String bcmsg = config.getString("Messages.Ban.Emo","You cannot ban yourself!");
-			bcmsg = plugin.util.formatMessage(bcmsg);
+			bcmsg = Formatting.formatMessage(bcmsg);
 			sender.sendMessage(bcmsg);
 			return true;
 		}
-		if(victim.hasPermission("ultraban.override.ban")&&!admin.equalsIgnoreCase(plugin.admin)){
+		if(victim.hasPermission("ultraban.override.ban")&&!admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN)){
 			String bcmsg = config.getString("Messages.Ban.Denied","Your ban has been denied!");
-			bcmsg = plugin.util.formatMessage(bcmsg);
+			bcmsg = Formatting.formatMessage(bcmsg);
 			sender.sendMessage(bcmsg);
 			return true;
 		}
-		
-		//Lowercase Cache / Normal Case Storage
 		plugin.bannedPlayers.add(victim.getName().toLowerCase());
-		plugin.db.addPlayer(victim.getName(), reason, admin, 0, 0);
-		
-		//Build Messages
+		final String fname = victim.getName();
+		final String freason = reason;
+		final String fadmin = admin;
+		Bukkit.getScheduler().runTaskAsynchronously(Ultrabans.getPlugin(),new Runnable(){
+			@Override
+			public void run() {
+				Ultrabans.getPlugin().getUBDatabase().addPlayer(fname, freason, fadmin, 0, BanType.BAN.getId());
+			}	
+		});
 		String vicmsg = config.getString("Messages.Ban.MsgToVictim", "You have been banned by %admin%. Reason: %reason%");
-		if(vicmsg.contains(plugin.regexAdmin)) vicmsg = vicmsg.replaceAll(plugin.regexAdmin, admin);
-		if(vicmsg.contains(plugin.regexReason)) vicmsg = vicmsg.replaceAll(plugin.regexReason, reason);
-		victim.kickPlayer(plugin.util.formatMessage(vicmsg));
-		
+		if(vicmsg.contains(Ultrabans.ADMIN)) vicmsg = vicmsg.replaceAll(Ultrabans.ADMIN, admin);
+		if(vicmsg.contains(Ultrabans.REASON)) vicmsg = vicmsg.replaceAll(Ultrabans.REASON, reason);
+		victim.kickPlayer(Formatting.formatMessage(vicmsg));
 		String bcmsg = config.getString("Messages.Ban.MsgToBroadcast", "%victim% was banned by %admin%. Reason: %reason%");
-		if(bcmsg.contains(plugin.regexAdmin)) bcmsg = bcmsg.replaceAll(plugin.regexAdmin, admin);
-		if(bcmsg.contains(plugin.regexReason)) bcmsg = bcmsg.replaceAll(plugin.regexReason, reason);
-		if(bcmsg.contains(plugin.regexVictim)) bcmsg = bcmsg.replaceAll(plugin.regexVictim, p.toLowerCase());
-		if(config.getBoolean("CleanOnBan",false)) plugin.data.deletePlyrdat(victim.getName());
-		if(config.getBoolean("ClearWarnOnBan",false)) plugin.db.clearWarns(victim.getName());
+		if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
+		if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replaceAll(Ultrabans.REASON, reason);
+		if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, p.toLowerCase());
+		if(config.getBoolean("CleanOnBan",false)) plugin.data.deletePlyrdat(fname);
+		if(config.getBoolean("ClearWarnOnBan",false)) plugin.getUBDatabase().clearWarns(fname);
 		if(broadcast){
-			plugin.getServer().broadcastMessage(plugin.util.formatMessage(bcmsg));
+			Bukkit.broadcastMessage(Formatting.formatMessage(bcmsg));
 		}else{
-			sender.sendMessage(ChatColor.ITALIC + "Silent: " + plugin.util.formatMessage(bcmsg));
+			sender.sendMessage(ChatColor.ITALIC + "Silent: " + Formatting.formatMessage(bcmsg));
 		}
-		plugin.getLogger().info(admin + " banned player " + victim.getName() + ".");
+		if(plugin.getLog())
+			plugin.getLogger().info(admin + " banned player " + fname + ".");
 		return true;
 	}
 }

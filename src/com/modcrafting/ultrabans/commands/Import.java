@@ -17,24 +17,23 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.Formatting;
 
 public class Import implements CommandExecutor{
 	Ultrabans plugin;
-	String permission = "ultraban.import";
 	public Import(Ultrabans ultraBan) {
 	this.plugin = ultraBan;
 	}
-	@SuppressWarnings("deprecation")
 	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+plugin.perms);
+			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
-		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable(){
 			@Override
 			public void run() {
 				String msg = plugin.getConfig().getString("Messages.Import.Loading","Be patient. Loading...");
-				msg=plugin.util.formatMessage(msg);
+				msg=Formatting.formatMessage(msg);
 				sender.sendMessage(ChatColor.GRAY + msg);
 				try {
 					BufferedReader banlist = new BufferedReader(new FileReader("banned-players.txt"));
@@ -52,25 +51,27 @@ public class Import implements CommandExecutor{
 						    String[] args = ip.split("\\|");
 						    String name = args[0].trim();
 							if(!plugin.bannedIPs.contains(name)) plugin.bannedIPs.add(name);
-							String cknullIP = plugin.db.getName(name);
+							String cknullIP = plugin.getUBDatabase().getName(name);
 							if (cknullIP != null){
-								plugin.db.addPlayer(plugin.db.getName(name), "imported", args[2].trim(), 0, 1);
+								plugin.getUBDatabase().addPlayer(plugin.getUBDatabase().getName(name), "imported", args[2].trim(), 0, 1);
 							}else{
-								plugin.db.setAddress("import", name);
-								plugin.db.addPlayer("import", "imported", args[2].trim(), 0, 1);
+								plugin.getUBDatabase().setAddress("import", name);
+								plugin.getUBDatabase().addPlayer("import", "imported", args[2].trim(), 0, 1);
 							}
 						}
 					}
 					bannedIP.close();
 					msg = plugin.getConfig().getString("Messages.Import.Completed","System imported the banlist to the database.");
-					msg=plugin.util.formatMessage(msg);
+					msg=Formatting.formatMessage(msg);
 					sender.sendMessage(ChatColor.GRAY + msg);
-					plugin.getLogger().info(msg);
+					if(plugin.getLog())
+						plugin.getLogger().info(msg);
 				} catch (IOException e) {
 					msg = plugin.getConfig().getString("Messages.Import.Failed","Could not import ban list.");
-					msg=plugin.util.formatMessage(msg);
+					msg=Formatting.formatMessage(msg);
 					sender.sendMessage(ChatColor.RED + msg);
-					plugin.getLogger().severe(msg);
+					if(plugin.getLog())
+						plugin.getLogger().severe(msg);
 				}
 			}
 		});	
@@ -93,6 +94,6 @@ public class Import implements CommandExecutor{
 		}
 	    String admin = args[2].trim();
 	    String reason = args[4];
-		plugin.db.addPlayer(name, reason, admin, temp, type);
+		plugin.getUBDatabase().addPlayer(name, reason, admin, temp, type);
 	}
 }

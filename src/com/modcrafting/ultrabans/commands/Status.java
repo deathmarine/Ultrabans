@@ -14,7 +14,7 @@ public class Status implements CommandExecutor {
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] arg3) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+plugin.perms);
+			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		sender.sendMessage(ChatColor.BLUE+"===Status===");

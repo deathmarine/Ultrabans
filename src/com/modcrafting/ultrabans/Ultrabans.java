@@ -24,7 +24,6 @@ import com.modcrafting.ultrabans.commands.CheckIP;
 import com.modcrafting.ultrabans.commands.Clean;
 import com.modcrafting.ultrabans.commands.DupeIP;
 import com.modcrafting.ultrabans.commands.Edit;
-import com.modcrafting.ultrabans.commands.Empty;
 import com.modcrafting.ultrabans.commands.Export;
 import com.modcrafting.ultrabans.commands.Help;
 import com.modcrafting.ultrabans.commands.History;
@@ -68,19 +67,20 @@ public class Ultrabans extends JavaPlugin {
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	
 	public DataHandler data = new DataHandler(this);
-	public Formatting util = new Formatting(this);
+	public Formatting util = new Formatting();
 	public Jailtools jail = new Jailtools(this);
-	public Database db;
+	private Database db;
 	
-	public final String regexAdmin = "%admin%";
-	public final String regexReason = "%reason%";
-	public final String regexVictim = "%victim%";
-	public final String regexAmt = "%amt%";
-	public final String regexMode = "%mode%";
+	public static final String ADMIN = "%admin%";
+	public static final String REASON = "%reason%";
+	public static final String VICTIM = "%victim%";
+	public static final String AMOUNT = "%amt%";
+	public static final String MODE = "%mode%";
+	public static String DEFAULT_ADMIN;
+	public static String DEFAULT_REASON;
+	public static String DEFAULT_DENY_MESSAGE;
 	
-	public String admin;
-	public String reason;
-	public String perms;
+	private static Ultrabans constant; 
 	
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
@@ -92,16 +92,17 @@ public class Ultrabans extends JavaPlugin {
 		muted.clear();
 		banEditors.clear();
 	}
-	@SuppressWarnings("deprecation")
+	
 	public void onEnable() {
+		setConstant(this);
 		long time = System.currentTimeMillis();
 		this.getDataFolder().mkdir();
 		data.createDefaultConfiguration("config.yml");
 		FileConfiguration config = getConfig();
 		
-		admin=config.getString("Label.Console", "Server");
-		reason=config.getString("Label.Reason", "Unsure");
-		perms=config.getString("Messages.Permission","You do not have the required permissions.");
+		DEFAULT_ADMIN=config.getString("Label.Console", "Server");
+		DEFAULT_REASON=config.getString("Label.Reason", "Unsure");
+		DEFAULT_DENY_MESSAGE=config.getString("Messages.Permission","You do not have the required permissions.");
 		
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new UltraBanPlayerListener(this), this);
@@ -120,7 +121,7 @@ public class Ultrabans extends JavaPlugin {
 		//Sync
 		if(config.getBoolean("Sync.Enabled", false)){
 			long t = config.getLong("Sync.Timing", 72000L); 
-			this.getServer().getScheduler().scheduleAsyncRepeatingTask(this,new Runnable(){
+			this.getServer().getScheduler().scheduleSyncRepeatingTask(this,new Runnable(){
 				@Override
 				public void run(){
 					onDisable();
@@ -150,7 +151,6 @@ public class Ultrabans extends JavaPlugin {
 		getCommand("checkip").setExecutor(new CheckIP(this));
 		getCommand("dupeip").setExecutor(new DupeIP(this));
 		getCommand("editban").setExecutor(new Edit(this));
-		getCommand("empty").setExecutor(new Empty(this));
 		getCommand("importbans").setExecutor(new Import(this));
 		getCommand("exportbans").setExecutor(new Export(this));
 		getCommand("uhelp").setExecutor(new Help(this));
@@ -176,6 +176,21 @@ public class Ultrabans extends JavaPlugin {
 		getCommand("uclean").setExecutor(new Clean(this));
 		getCommand("uping").setExecutor(new Ping(this));
 	}
+	public static Ultrabans getPlugin() {
+		return constant;
+	}
+	private static void setConstant(Ultrabans constant) {
+		Ultrabans.constant = constant;
+	}
+	public Database getUBDatabase(){
+		return db;
+	}
+
+	public boolean getLog() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
 }
 		
 

@@ -14,38 +14,38 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.Formatting;
 
 public class DupeIP implements CommandExecutor{
 	Ultrabans plugin;
 	public DupeIP(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
-	@SuppressWarnings("deprecation")
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+plugin.perms);
+			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		if (args.length < 1) return false;
-		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable(){
 			@Override
 			public void run() {
 				String p = args[0];
 				
-				p = plugin.util.expandName(p); 
-				String ip = plugin.db.getAddress(p);
+				p = Formatting.expandName(p); 
+				String ip = plugin.getUBDatabase().getAddress(p);
 				if(ip == null){
 					String msg = plugin.getConfig().getString("Messages.DupeIP.Failed","Unable to view ip for %victim% !");
-					if(msg.contains(plugin.regexVictim)) msg=msg.replaceAll(plugin.regexVictim, p);
-					msg=plugin.util.formatMessage(msg);
+					if(msg.contains(Ultrabans.VICTIM)) msg=msg.replaceAll(Ultrabans.VICTIM, p);
+					msg=Formatting.formatMessage(msg);
 					sender.sendMessage(ChatColor.RED + msg);
 					return;
 				}
-				List<String> list = plugin.db.listPlayers(ip);
+				List<String> list = plugin.getUBDatabase().listPlayers(ip);
 				String msg = plugin.getConfig().getString("Messages.DupeIP.Header","Scanning Current IP of %victim%: %ip% !");
-				if(msg.contains(plugin.regexVictim)) msg=msg.replaceAll(plugin.regexVictim, p);
+				if(msg.contains(Ultrabans.VICTIM)) msg=msg.replaceAll(Ultrabans.VICTIM, p);
 				if(msg.contains("%ip%")) msg=msg.replaceAll("%ip%", ip);
-				msg=plugin.util.formatMessage(msg);
+				msg=Formatting.formatMessage(msg);
 				sender.sendMessage(ChatColor.AQUA + msg);
 				for(String name:list){
 					if(!name.equalsIgnoreCase(p)){
@@ -53,7 +53,7 @@ public class DupeIP implements CommandExecutor{
 					}
 				}
 				msg = plugin.getConfig().getString("Messages.DupeIP.Completed","Scanning Complete!");
-				msg=plugin.util.formatMessage(msg);
+				msg=Formatting.formatMessage(msg);
 				sender.sendMessage(ChatColor.GREEN + msg);
 			}
 		});

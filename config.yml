@@ -235,6 +235,14 @@ Messages:
   MaxWarn:
     MsgToBroadcast: '&7%cmd%&6 performed by Ultrabans on &7%victim%&6. Reason: &7Reached Max Warnings&6!'
   Permission: 'You do not have the required permissions.'
+Mode:
+  Second: Second(s)
+  Minute: Minute(s)
+  Hour: Hour(s)
+  Day: Day(s)
+  Weeks: Week(s)
+  Month: Month(s)
+  Year: Year(s)
 #Do Not Change Values Below#
 jail:
   x: 0

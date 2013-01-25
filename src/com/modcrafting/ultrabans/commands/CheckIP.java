@@ -24,24 +24,23 @@ public class CheckIP implements CommandExecutor{
 	public CheckIP(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
-	@SuppressWarnings("deprecation")
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+plugin.perms);
+			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		if (args.length < 1) return false;
-		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable(){
 
 			@Override
 			public void run() {
 				String p = args[0];
-				String ip = plugin.db.getAddress(p.toLowerCase());
+				String ip = plugin.getUBDatabase().getAddress(p.toLowerCase());
 				InetAddress InetP;
 				if(ip == null){
 					Player n = plugin.getServer().getPlayer(p);
 					if(n!=null){
-						plugin.db.setAddress(n.getName().toLowerCase(),plugin.getServer().getPlayer(p).getAddress().getAddress().getHostAddress());
+						plugin.getUBDatabase().setAddress(n.getName().toLowerCase(),plugin.getServer().getPlayer(p).getAddress().getAddress().getHostAddress());
 					}else{
 						sender.sendMessage(ChatColor.GRAY + "Player not found!");
 						return;

@@ -15,36 +15,44 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.EditBan;
+import com.modcrafting.ultrabans.util.Formatting;
 
 public class History implements CommandExecutor{
 	Ultrabans plugin;
 	public History(Ultrabans ultraBan) {
 		this.plugin = ultraBan;	
 	}
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+plugin.perms);
+			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		if (args.length < 1) return false;
-		String p = args[0];
-		List<EditBan> bans = plugin.db.listRecent(p);
-		if(bans.size() < 1){
-			String msg = plugin.getConfig().getString("Messages.History.Failed","Unable to find any bans.");
-			msg=plugin.util.formatMessage(msg);
-			sender.sendMessage(ChatColor.RED + msg);
-			return true;
-		}
-		String msg = plugin.getConfig().getString("Messages.History.Header","Ultrabans Listing %amt% Records.");
-		if(msg.contains(plugin.regexAmt)) msg=msg.replaceAll(plugin.regexAmt, args[0]);
-		msg=plugin.util.formatMessage(msg);
-		sender.sendMessage(ChatColor.BLUE + msg);
-		for(EditBan ban : bans){
-			Date date = new Date();
-			date.setTime(ban.time*1000);
-			String dateStr = date.toString();
-			sender.sendMessage(ChatColor.RED + plugin.util.banType(ban.type) + ": " + ban.name + ChatColor.GRAY + " by " + ban.admin + " on " + dateStr.substring(4, 19) + " for " + ban.reason);
-		}
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
+
+			@Override
+			public void run() {
+				List<EditBan> bans = plugin.getUBDatabase().listRecent(args[0]);
+				if(bans.size() < 1){
+					String msg = plugin.getConfig().getString("Messages.History.Failed","Unable to find any bans.");
+					msg=Formatting.formatMessage(msg);
+					sender.sendMessage(ChatColor.RED + msg);
+					return;
+				}
+				String msg = plugin.getConfig().getString("Messages.History.Header","Ultrabans Listing %amt% Records.");
+				if(msg.contains(Ultrabans.AMOUNT)) msg=msg.replaceAll(Ultrabans.AMOUNT, args[0]);
+				msg=Formatting.formatMessage(msg);
+				sender.sendMessage(ChatColor.BLUE + msg);
+				for(EditBan ban : bans){
+					Date date = new Date();
+					date.setTime(ban.time*1000);
+					String dateStr = date.toString();
+					sender.sendMessage(ChatColor.RED + Formatting.banType(ban.type) + ": " + ban.name + ChatColor.GRAY + " by " + ban.admin + " on " + dateStr.substring(4, 19) + " for " + ban.reason);
+				}
+				
+			}
+			
+		});
 		return true;
 	}
 }
