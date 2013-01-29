@@ -97,17 +97,18 @@ public class Formatting {
 		} catch (NumberFormatException ex) {
 			return 0;
 		}
-		if (unit.startsWith("h")||unit.startsWith("H")){
+		
+		if (unit.toLowerCase().startsWith(Ultrabans.getPlugin().getConfig().getString("Mode.Hour", "h").substring(0, 1).toLowerCase())){
 			sec *= 60;
-		}else if(unit.startsWith("d")||unit.startsWith("D")){
+		}else if (unit.toLowerCase().startsWith(Ultrabans.getPlugin().getConfig().getString("Mode.Day", "d").substring(0, 1).toLowerCase())){
 			sec *= (60*24);
-		}else if(unit.startsWith("w")||unit.startsWith("W")){
+		}else if (unit.toLowerCase().startsWith(Ultrabans.getPlugin().getConfig().getString("Mode.Week", "w").substring(0, 1).toLowerCase())){
 			sec *= (7*60*24);
-		}else if(unit.startsWith("mo")||unit.startsWith("Mo")){
+		}else if (unit.toLowerCase().startsWith(Ultrabans.getPlugin().getConfig().getString("Mode.Month", "mo").substring(0, 2).toLowerCase())){
 			sec *= (30*60*24);
-		}else if(unit.startsWith("m")||unit.startsWith("M")){
+		}else if (unit.toLowerCase().startsWith(Ultrabans.getPlugin().getConfig().getString("Mode.Minute", "m").substring(0, 1).toLowerCase())){
 			sec *= 1;
-		}else if(unit.startsWith("s")||unit.startsWith("S")){
+		}else if (unit.toLowerCase().startsWith(Ultrabans.getPlugin().getConfig().getString("Mode.Second", "s").substring(0, 1).toLowerCase())){
 			sec /= 60;
 		}
 		return sec;
