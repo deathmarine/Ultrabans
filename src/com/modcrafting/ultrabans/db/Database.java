@@ -39,5 +39,4 @@ public interface Database {
 	public List<String> listPlayers(String ip);
 	public List<EditBan> listRecentBans(String number);
 	public void clearWarns(String player);
-	public void closeConnection();
 }

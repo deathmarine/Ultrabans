@@ -95,7 +95,8 @@ public class Unban implements CommandExecutor{
 							plugin.getUBDatabase().addPlayer(p, "Unbanned", admin, 0, 5);
 						}
 					}
-					plugin.getLogger().info(admin + " unbanned player " + p + ".");
+					if(plugin.getLog())
+						plugin.getLogger().info(admin + " unbanned player " + p + ".");
 					String bcmsg = config.getString("Messages.Unban.MsgToBroadcast", "%victim% was unbanned by %admin%!");
 					bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
 					bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, p);

@@ -80,7 +80,8 @@ public class Ultrabans extends JavaPlugin {
 	public static String DEFAULT_REASON;
 	public static String DEFAULT_DENY_MESSAGE;
 	
-	private static Ultrabans constant; 
+	private static Ultrabans constant;
+	private boolean log;
 	
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
@@ -99,7 +100,7 @@ public class Ultrabans extends JavaPlugin {
 		this.getDataFolder().mkdir();
 		data.createDefaultConfiguration("config.yml");
 		FileConfiguration config = getConfig();
-		
+		log=config.getBoolean("Log.Enabled",true);
 		DEFAULT_ADMIN=config.getString("Label.Console", "Server");
 		DEFAULT_REASON=config.getString("Label.Reason", "Unsure");
 		DEFAULT_DENY_MESSAGE=config.getString("Messages.Permission","You do not have the required permissions.");
@@ -176,19 +177,21 @@ public class Ultrabans extends JavaPlugin {
 		getCommand("uclean").setExecutor(new Clean(this));
 		getCommand("uping").setExecutor(new Ping(this));
 	}
+	
 	public static Ultrabans getPlugin() {
 		return constant;
 	}
+	
 	private static void setConstant(Ultrabans constant) {
 		Ultrabans.constant = constant;
 	}
+	
 	public Database getUBDatabase(){
 		return db;
 	}
 
 	public boolean getLog() {
-		// TODO Auto-generated method stub
-		return false;
+		return log;
 	}
 	
 }

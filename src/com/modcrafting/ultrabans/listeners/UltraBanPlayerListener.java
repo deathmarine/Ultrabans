@@ -8,6 +8,8 @@
 package com.modcrafting.ultrabans.listeners;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -128,17 +130,26 @@ public class UltraBanPlayerListener implements Listener{
 				}
 			},20L);			
 		}
+		/*
+		//Shows 0 considering the first keepalive packet hasn't been sent.
 		if(config.getBoolean("Login.PingCheck.Enable",true)){
 			boolean p=false;
-
+			
 			int ping = 0;
-			if(version.equals("v1_4_6")){
-				ping = ((org.bukkit.craftbukkit.v1_4_6.entity.CraftPlayer) player).getHandle().ping;
-			}else if(version.equals("v1_4_5")){
-				ping = ((org.bukkit.craftbukkit.v1_4_5.entity.CraftPlayer) player).getHandle().ping;
-			}else{
-				ping = ((org.bukkit.craftbukkit.entity.CraftPlayer) player).getHandle().ping;
-			}
+            for(Method meth:player.getClass().getMethods()){
+            	if(meth.getName().equals("getHandle")){
+					try {
+						Object obj = meth.invoke(player, (Object[]) null);
+	            		for(Field field:obj.getClass().getFields()){
+	            			if(field.getName().equals("ping")){
+	            				ping = field.getInt(obj);
+	            			}
+	            		}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+            	}
+            }
 			p = checkPlayerPing(player, ping);
 			for(Player admin:plugin.getServer().getOnlinePlayers()){
 				if(admin.hasPermission("ultraban.ping")){
@@ -151,6 +162,7 @@ public class UltraBanPlayerListener implements Listener{
 				}
 			}
 		}
+		*/
 		if(config.getBoolean("Login.ProxyPingBack.Enable",false)){ //TODO UnderConstruction
 			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
 				@Override
