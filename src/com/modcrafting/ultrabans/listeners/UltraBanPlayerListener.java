@@ -8,8 +8,6 @@
 package com.modcrafting.ultrabans.listeners;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -85,7 +83,7 @@ public class UltraBanPlayerListener implements Listener{
 			String msgvic = config.getString("Messages.TempBan.Login", "You have been tempbanned by %admin% for %time%. Reason: %reason%!");
 			if(msgvic.contains(Ultrabans.ADMIN)) msgvic = msgvic.replaceAll(Ultrabans.ADMIN, admin);
 			if(msgvic.contains(Ultrabans.REASON)) msgvic = msgvic.replaceAll(Ultrabans.REASON, reason);
-			if(msgvic.contains("%time%")) msgvic = msgvic.replaceAll("%time%", dateStr.substring(4, 19));
+			if(msgvic.contains(Ultrabans.TIME)) msgvic = msgvic.replaceAll(Ultrabans.TIME, dateStr.substring(4, 19));
 			msgvic=Formatting.formatMessage(msgvic);
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, msgvic);
 			return;
@@ -97,7 +95,6 @@ public class UltraBanPlayerListener implements Listener{
 			plugin.getLogger().info(player.getName() + " attempted to join during lockdown.");
 		}
 	}
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerJoin(final PlayerJoinEvent event){
 		final Player player = event.getPlayer();
@@ -113,7 +110,7 @@ public class UltraBanPlayerListener implements Listener{
 			plugin.getUBDatabase().updateAddress(player.getName(), ip);
 		}
 		if(!player.hasPermission("ultraban.override.dupeip")&&config.getBoolean("Login.DupeCheck.Enable", true)){
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin,new Runnable(){
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable(){
 				@Override
 				public void run() {
 					String ip = plugin.getUBDatabase().getAddress(player.getName());
@@ -231,6 +228,7 @@ public class UltraBanPlayerListener implements Listener{
 			swearcheck(player, message, event);
 		}
 	}
+	/*
 	private boolean checkPlayerPing(Player player,int ping){
 		int pingout =config.getInt("Login.PingCheck.MaxPing",500);
 		if(ping>pingout&&!player.hasPermission("ultraban.override.pingcheck")){
@@ -244,6 +242,7 @@ public class UltraBanPlayerListener implements Listener{
 		//pass
 		return false;
 	}
+	*/
 	private boolean tempjailCheck(Player player){
 		long tempTime = plugin.tempJail.get(player.getName().toLowerCase());
 		long now = System.currentTimeMillis()/1000;

@@ -76,6 +76,9 @@ public class Ultrabans extends JavaPlugin {
 	public static final String VICTIM = "%victim%";
 	public static final String AMOUNT = "%amt%";
 	public static final String MODE = "%mode%";
+	public static final String TIME = "%time%";
+	public static final String NL = "%nl%";
+	public static String NEW_LINE = "\n";
 	public static String DEFAULT_ADMIN;
 	public static String DEFAULT_REASON;
 	public static String DEFAULT_DENY_MESSAGE;

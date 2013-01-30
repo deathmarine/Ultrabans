@@ -13,6 +13,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 import com.modcrafting.ultrabans.Ultrabans;
 
@@ -58,9 +59,7 @@ public class Formatting {
 		return Ultrabans.DEFAULT_REASON;
 	}
 	public static String formatMessage(String str){
-		String funnyChar = new Character((char) 167).toString();
-		str = str.replaceAll("&", funnyChar);
-		return str;
+		return ChatColor.translateAlternateColorCodes('&', str);
 	}
 	public static String banType(int num){
 		switch(num){
