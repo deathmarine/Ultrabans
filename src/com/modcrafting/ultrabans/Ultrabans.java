@@ -6,6 +6,7 @@
  * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
  */
 package com.modcrafting.ultrabans;
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -13,6 +14,7 @@ import net.h31ix.updater.Updater;
 import net.h31ix.updater.Updater.UpdateResult;
 import net.h31ix.updater.Updater.UpdateType;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -52,7 +54,6 @@ import com.modcrafting.ultrabans.db.SQL;
 import com.modcrafting.ultrabans.db.SQLite;
 import com.modcrafting.ultrabans.listeners.UltraBanBlockListener;
 import com.modcrafting.ultrabans.listeners.UltraBanPlayerListener;
-import com.modcrafting.ultrabans.util.DataHandler;
 import com.modcrafting.ultrabans.util.EditBan;
 import com.modcrafting.ultrabans.util.Formatting;
 import com.modcrafting.ultrabans.util.Jailtools;
@@ -66,7 +67,6 @@ public class Ultrabans extends JavaPlugin {
 	public Map<String, Long> tempJail = new HashMap<String, Long>();
 	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	
-	public DataHandler data = new DataHandler(this);
 	public Formatting util = new Formatting();
 	public Jailtools jail = new Jailtools(this);
 	private Database db;
@@ -77,8 +77,6 @@ public class Ultrabans extends JavaPlugin {
 	public static final String AMOUNT = "%amt%";
 	public static final String MODE = "%mode%";
 	public static final String TIME = "%time%";
-	public static final String NL = "%nl%";
-	public static String NEW_LINE = "\n";
 	public static String DEFAULT_ADMIN;
 	public static String DEFAULT_REASON;
 	public static String DEFAULT_DENY_MESSAGE;
@@ -101,12 +99,18 @@ public class Ultrabans extends JavaPlugin {
 		setConstant(this);
 		long time = System.currentTimeMillis();
 		this.getDataFolder().mkdir();
-		data.createDefaultConfiguration("config.yml");
+		this.saveDefaultConfig();
 		FileConfiguration config = getConfig();
 		log=config.getBoolean("Log.Enabled",true);
+		if(config.getDouble("Config.Version")<Double.parseDouble(this.getDescription().getVersion().substring(0, 1))){
+			File file = new File(this.getDataFolder(),"/config.yml");
+			if(file.delete()){
+				this.saveDefaultConfig();
+			}
+		}
 		DEFAULT_ADMIN=config.getString("Label.Console", "Server");
 		DEFAULT_REASON=config.getString("Label.Reason", "Unsure");
-		DEFAULT_DENY_MESSAGE=config.getString("Messages.Permission","You do not have the required permissions.");
+		DEFAULT_DENY_MESSAGE=ChatColor.RED+config.getString("Messages.Permission","You do not have the required permissions.");
 		
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new UltraBanPlayerListener(this), this);
@@ -157,7 +161,7 @@ public class Ultrabans extends JavaPlugin {
 		getCommand("editban").setExecutor(new Edit(this));
 		getCommand("importbans").setExecutor(new Import(this));
 		getCommand("exportbans").setExecutor(new Export(this));
-		getCommand("uhelp").setExecutor(new Help(this));
+		getCommand("uhelp").setExecutor(new Help());
 		getCommand("ipban").setExecutor(new Ipban(this));
 		getCommand("kick").setExecutor(new Kick(this));
 		getCommand("ureload").setExecutor(new Reload(this));

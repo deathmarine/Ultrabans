@@ -25,7 +25,7 @@ public class Ban implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
     	FileConfiguration config = Ultrabans.getPlugin().getConfig();
@@ -40,7 +40,8 @@ public class Ban implements CommandExecutor{
 		p = Formatting.expandName(p);
 		Player victim = Bukkit.getPlayer(p);
 		if(args.length > 1){
-			if(args[1].equalsIgnoreCase("-s")){
+			if(args[1].equalsIgnoreCase("-s")
+					&&sender.hasPermission(command.getPermission()+".silent")){
 				broadcast = false;
 				reason = Formatting.combineSplit(2, args, " ");
 			}else{
@@ -80,7 +81,7 @@ public class Ban implements CommandExecutor{
 				if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replaceAll(Ultrabans.REASON, reason);
 				if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, p.toLowerCase());
 				plugin.bannedPlayers.add(p.toLowerCase());
-				if(config.getBoolean("CleanOnBan")) plugin.data.deletePlyrdat(p);
+				if(config.getBoolean("CleanOnBan")) Formatting.deletePlyrdat(p);
 				final String fname = p;
 				final String freason = reason;
 				final String fadmin = admin;
@@ -131,7 +132,7 @@ public class Ban implements CommandExecutor{
 		if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
 		if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replaceAll(Ultrabans.REASON, reason);
 		if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, p.toLowerCase());
-		if(config.getBoolean("CleanOnBan",false)) plugin.data.deletePlyrdat(fname);
+		if(config.getBoolean("CleanOnBan",false)) Formatting.deletePlyrdat(fname);
 		if(config.getBoolean("ClearWarnOnBan",false)) plugin.getUBDatabase().clearWarns(fname);
 		if(broadcast){
 			Bukkit.broadcastMessage(Formatting.formatMessage(bcmsg));

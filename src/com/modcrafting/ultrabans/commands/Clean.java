@@ -2,7 +2,6 @@ package com.modcrafting.ultrabans.commands;
 
 import java.util.List;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,7 +15,7 @@ public class Clean implements CommandExecutor{
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
@@ -25,7 +24,7 @@ public class Clean implements CommandExecutor{
 			public void run() {
 				List<String> list = plugin.getUBDatabase().getBans();
 				for(String name:list){
-					if(plugin.data.deletePlyrdat(name)) count++;
+					if(Formatting.deletePlyrdat(name)) count++;
 				}
 				String msg = plugin.getConfig().getString("Messages.Clean.Complete","Deleted %amt% player.dat files.");
 				if(msg.contains(Ultrabans.AMOUNT)) msg=msg.replaceAll(Ultrabans.AMOUNT, String.valueOf(count));

@@ -22,11 +22,11 @@ import com.modcrafting.ultrabans.util.Formatting;
 public class Import implements CommandExecutor{
 	Ultrabans plugin;
 	public Import(Ultrabans ultraBan) {
-	this.plugin = ultraBan;
+		this.plugin = ultraBan;
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable(){
@@ -63,13 +63,13 @@ public class Import implements CommandExecutor{
 					bannedIP.close();
 					msg = plugin.getConfig().getString("Messages.Import.Completed","System imported the banlist to the database.");
 					msg=Formatting.formatMessage(msg);
-					sender.sendMessage(ChatColor.GRAY + msg);
+					sender.sendMessage(msg);
 					if(plugin.getLog())
 						plugin.getLogger().info(msg);
 				} catch (IOException e) {
 					msg = plugin.getConfig().getString("Messages.Import.Failed","Could not import ban list.");
 					msg=Formatting.formatMessage(msg);
-					sender.sendMessage(ChatColor.RED + msg);
+					sender.sendMessage(msg);
 					if(plugin.getLog())
 						plugin.getLogger().severe(msg);
 				}

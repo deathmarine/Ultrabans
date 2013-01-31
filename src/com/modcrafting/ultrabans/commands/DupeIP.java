@@ -23,7 +23,7 @@ public class DupeIP implements CommandExecutor{
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		if (args.length < 1) return false;
@@ -46,7 +46,7 @@ public class DupeIP implements CommandExecutor{
 				if(msg.contains(Ultrabans.VICTIM)) msg=msg.replaceAll(Ultrabans.VICTIM, p);
 				if(msg.contains("%ip%")) msg=msg.replaceAll("%ip%", ip);
 				msg=Formatting.formatMessage(msg);
-				sender.sendMessage(ChatColor.AQUA + msg);
+				sender.sendMessage(msg);
 				for(String name:list){
 					if(!name.equalsIgnoreCase(p)){
 						sender.sendMessage(ChatColor.GRAY + "Player: " + name + " duplicates player: " + p + "!");
@@ -54,7 +54,7 @@ public class DupeIP implements CommandExecutor{
 				}
 				msg = plugin.getConfig().getString("Messages.DupeIP.Completed","Scanning Complete!");
 				msg=Formatting.formatMessage(msg);
-				sender.sendMessage(ChatColor.GREEN + msg);
+				sender.sendMessage(msg);
 			}
 		});
 		return true;

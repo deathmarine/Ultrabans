@@ -25,7 +25,7 @@ public class Perma implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
@@ -42,11 +42,13 @@ public class Perma implements CommandExecutor{
 		p = Formatting.expandName(p);
 		Player victim = plugin.getServer().getPlayer(p);
 		if(args.length > 1){
-			if(args[1].equalsIgnoreCase("-s")){
+			if(args[1].equalsIgnoreCase("-s")
+					&&sender.hasPermission(command.getPermission()+".silent")){
 				broadcast = false;
 				reason = Formatting.combineSplit(2, args, " ");
 			}else{
-				if(args[1].equalsIgnoreCase("-a")){
+				if(args[1].equalsIgnoreCase("-a")
+						&&sender.hasPermission(command.getPermission()+".anon")){
 					admin = Ultrabans.DEFAULT_ADMIN;
 					reason = Formatting.combineSplit(2, args, " ");
 				}else{
@@ -99,7 +101,7 @@ public class Perma implements CommandExecutor{
 		}else{
 			sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
 		}
-		if(config.getBoolean("CleanOnBan",false)) plugin.data.deletePlyrdat(victim.getName());
+		if(config.getBoolean("CleanOnBan",false)) Formatting.deletePlyrdat(victim.getName());
 		if(config.getBoolean("ClearWarnOnBan",false)) plugin.getUBDatabase().clearWarns(victim.getName());
 		plugin.bannedPlayers.add(victim.getName().toLowerCase());
 		final String fname = victim.getName();

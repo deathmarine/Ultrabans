@@ -1,6 +1,5 @@
 package com.modcrafting.ultrabans.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +17,7 @@ public class Inventory implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		if(sender instanceof Player){
@@ -27,14 +26,14 @@ public class Inventory implements CommandExecutor{
 			if(victim==null||!victim.isOnline()){
 				String msg = plugin.getConfig().getString("Messages.InvOf.Failed","Unable to find player.");
 				msg=Formatting.formatMessage(msg);
-				sender.sendMessage(ChatColor.RED + msg);
+				sender.sendMessage(msg);
 				return true;
 			}
-			((Player)sender).openInventory(victim.getPlayer().getInventory());			
+			((Player) sender).openInventory(victim.getPlayer().getInventory());			
 		}else{
 			String msg = plugin.getConfig().getString("Messages.InvOf.Console","This command must be executed by a player.");
 			msg=Formatting.formatMessage(msg);
-			sender.sendMessage(ChatColor.RED + msg);
+			sender.sendMessage(msg);
 		}
 		return true;
 	}

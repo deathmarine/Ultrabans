@@ -7,6 +7,7 @@
  */
 package com.modcrafting.ultrabans.util;
 
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -111,5 +112,13 @@ public class Formatting {
 			sec /= 60;
 		}
 		return sec;
+	}
+	
+
+	public static boolean deletePlyrdat(String name){
+		if(Bukkit.getServer().getOfflinePlayer(name)!=null&&!Bukkit.getServer().getOfflinePlayer(name).isOnline()){
+			 return new File(Bukkit.getServer().getWorlds().get(0).getName()+"/players/",name+".dat").delete();
+		}
+		return false;
 	}
 }

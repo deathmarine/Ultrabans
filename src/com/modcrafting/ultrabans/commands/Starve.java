@@ -29,7 +29,7 @@ public class Starve implements CommandExecutor{
 			admin = sender.getName();
 		}
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		if (args.length < 1) return false;

@@ -7,7 +7,6 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,14 +23,14 @@ public class Ipban implements CommandExecutor{
 	public Ipban(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
+	public boolean onCommand(final CommandSender sender, final Command command, String label, final String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		if (args.length < 1) return false;
 
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Ultrabans.getPlugin(),new Runnable(){
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable(){
 			@Override
 			public void run() {
 				boolean broadcast = true;
@@ -45,11 +44,13 @@ public class Ipban implements CommandExecutor{
 				}
 				String p = args[0];
 				if(args.length > 1){
-					if(args[1].equalsIgnoreCase("-s")){
+					if(args[1].equalsIgnoreCase("-s")
+							&&sender.hasPermission(command.getPermission()+".silent")){
 						broadcast = false;
 						reason = Formatting.combineSplit(2, args, " ");
 					}else{
-						if(args[1].equalsIgnoreCase("-a")){
+						if(args[1].equalsIgnoreCase("-a")
+								&&sender.hasPermission(command.getPermission()+".anon")){
 							admin = Ultrabans.DEFAULT_ADMIN;
 							reason = Formatting.combineSplit(2, args, " ");
 						}else{

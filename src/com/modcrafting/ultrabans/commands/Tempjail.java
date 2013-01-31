@@ -7,7 +7,6 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,16 +22,16 @@ public class Tempjail implements CommandExecutor{
 	public Tempjail(Ultrabans ultraBan) {
 		this.plugin = ultraBan;
 	}
-	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
+	public boolean onCommand(final CommandSender sender, final Command command, String label, final String[] args) {
     	
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		if (args.length < 3) return false;
 
 
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Ultrabans.getPlugin(),new Runnable(){
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable(){
 			@Override
 			public void run() {
 				YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
@@ -51,13 +50,15 @@ public class Tempjail implements CommandExecutor{
 				String amt="";
 				String mode="";
 				if(args.length > 3){
-					if(args[1].equalsIgnoreCase("-s")){
+					if(args[1].equalsIgnoreCase("-s")
+							&&sender.hasPermission(command.getPermission()+".silent")){
 						broadcast = false;
 						amt=args[2];
 						mode=args[3];
 						reason = Formatting.combineSplit(4, args, " ");
 						tempTime = Formatting.parseTimeSpec(amt,mode);
-					}else if(args[1].equalsIgnoreCase("-a")){
+					}else if(args[1].equalsIgnoreCase("-a")
+							&&sender.hasPermission(command.getPermission()+".anon")){
 						admin = Ultrabans.DEFAULT_ADMIN;
 						amt=args[2];
 						mode=args[3];

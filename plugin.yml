@@ -163,6 +163,24 @@ permissions:
       ultraban.tempipban: true
       ultraban.clean: true
       ultraban.ping: true
+      ultraban.tempjail.anon: true
+      ultraban.tempjail.silent: true
+      ultraban.jail.anon: true
+      ultraban.jail.silent: true
+      ultraban.warn.anon: true
+      ultraban.warn.silent: true
+      ultraban.kick.anon: true
+      ultraban.kick.silent: true
+      ultraban.permaban.anon: true
+      ultraban.permaban.silent: true
+      ultraban.ban.anon: true
+      ultraban.ban.silent: true
+      ultraban.tempban.anon: true
+      ultraban.tempban.silent: true
+      ultraban.ipban.anon: true
+      ultraban.ipban.silent: true
+      ultraban.tempipban.anon: true
+      ultraban.tempipban.silent: true
   ultraban.ping:
     description: Allows the user to check ping
   ultraban.clean:
@@ -283,3 +301,39 @@ permissions:
   ultraban.override.pingcheck:
     default: op
     description: Allows the Administration to override ping check
+  ultraban.tempjail.anon:
+    description: Anonymouse TempJail
+  ultraban.tempjail.silent:
+    description: Silent TempJail
+  ultraban.jail.anon:
+    description: Anonymouse Jail
+  ultraban.jail.silent:
+    description: Silent Jail
+  ultraban.warn.anon:
+    description: Anonymouse Warning
+  ultraban.warn.silent:
+    description: Silent Warning
+  ultraban.kick.anon:
+    description: Anonymouse Kick
+  ultraban.kick.silent:
+    description: Silent Kick
+  ultraban.permaban.anon:
+    description: Anonymouse Permanent Ban
+  ultraban.permaban.silent:
+    description: Silent PermaBan
+  ultraban.ban.anon:
+    description: Anonymouse Ban
+  ultraban.ban.silent:
+    description: Silent Ban
+  ultraban.tempban.anon:
+    description: Anonymouse TempBan
+  ultraban.tempban.silent:
+    description: Silent TempBan
+  ultraban.ipban.anon:
+    description: Anonymouse IpBan
+  ultraban.ipban.silent:
+    description: Silent IpBan
+  ultraban.tempipban.anon:
+    description: Anonymouse TempIpBan
+  ultraban.tempipban.silent:
+    description: Silent TempIpBan

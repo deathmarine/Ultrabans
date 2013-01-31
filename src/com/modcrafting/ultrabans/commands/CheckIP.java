@@ -26,7 +26,7 @@ public class CheckIP implements CommandExecutor{
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 		if (args.length < 1) return false;

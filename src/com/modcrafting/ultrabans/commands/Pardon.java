@@ -7,8 +7,6 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,11 +24,11 @@ public class Pardon implements CommandExecutor{
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
 
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Ultrabans.getPlugin(),new Runnable(){
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(Ultrabans.getPlugin(),new Runnable(){
 			@Override
 			public void run() {
 		    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();

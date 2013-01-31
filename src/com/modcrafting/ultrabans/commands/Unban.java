@@ -8,7 +8,6 @@
 package com.modcrafting.ultrabans.commands;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -25,6 +24,10 @@ public class Unban implements CommandExecutor{
 		this.plugin = ultraBan;
 	}
 	public boolean onCommand(final CommandSender sender, final Command command, String label, final String[] args) {
+		if(!sender.hasPermission(command.getPermission())){
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
+			return true;
+		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Ultrabans.getPlugin(),new Runnable(){
 			@Override
 			public void run() {
@@ -34,10 +37,6 @@ public class Unban implements CommandExecutor{
 				if (sender instanceof Player){
 					player = (Player)sender;
 					admin = player.getName();
-				}
-				if(!sender.hasPermission(command.getPermission())){
-					sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
-					return;
 				}
 				if (args.length < 1) return;
 				String p = args[0];

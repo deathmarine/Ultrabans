@@ -26,7 +26,7 @@ public class Kick implements CommandExecutor{
 	}
 	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
     	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
@@ -42,15 +42,17 @@ public class Kick implements CommandExecutor{
 
 		String p = args[0];
 		if(args.length > 1){
-			if(args[1].equalsIgnoreCase("-s")){
+			if(args[1].equalsIgnoreCase("-s")
+					&&sender.hasPermission(command.getPermission()+".silent")){
 				broadcast = false;
 				reason = Formatting.combineSplit(2, args, " ");
 			}else{
-				if(args[1].equalsIgnoreCase("-a")){
+				if(args[1].equalsIgnoreCase("-a")
+						&&sender.hasPermission(command.getPermission()+".anon")){
 					admin = Ultrabans.DEFAULT_ADMIN;
 					reason = Formatting.combineSplit(2, args, " ");
 				}else{
-				reason = Formatting.combineSplit(1, args, " ");
+					reason = Formatting.combineSplit(1, args, " ");
 				}
 			}
 		}

@@ -7,12 +7,9 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.PluginDescriptionFile;
-
 import com.modcrafting.ultrabans.Ultrabans;
 
 public class Version implements CommandExecutor{
@@ -22,12 +19,10 @@ public class Version implements CommandExecutor{
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(ChatColor.RED+Ultrabans.DEFAULT_DENY_MESSAGE);
+			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
 			return true;
 		}
-		PluginDescriptionFile pdfFile = plugin.getDescription();
-		sender.sendMessage(ChatColor.BLUE + "Thank you " + sender.getName() + " for using:");
-		sender.sendMessage(ChatColor.GRAY + pdfFile.getName() + " version " + pdfFile.getVersion() + " by " + pdfFile.getAuthors());
+		plugin.getServer().dispatchCommand(sender, "version Ultrabans");
 		return true;
 	}
 	
