@@ -102,12 +102,6 @@ public class Ultrabans extends JavaPlugin {
 		this.saveDefaultConfig();
 		FileConfiguration config = getConfig();
 		log=config.getBoolean("Log.Enabled",true);
-		if(config.getDouble("Config.Version")<Double.parseDouble(this.getDescription().getVersion().substring(0, 1))){
-			File file = new File(this.getDataFolder(),"/config.yml");
-			if(file.delete()){
-				this.saveDefaultConfig();
-			}
-		}
 		DEFAULT_ADMIN=config.getString("Label.Console", "Server");
 		DEFAULT_REASON=config.getString("Label.Reason", "Unsure");
 		DEFAULT_DENY_MESSAGE=ChatColor.RED+config.getString("Messages.Permission","You do not have the required permissions.");
