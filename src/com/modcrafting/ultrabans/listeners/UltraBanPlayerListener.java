@@ -22,10 +22,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.Formatting;
@@ -360,5 +362,11 @@ public class UltraBanPlayerListener implements Listener{
 				 plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), fakecmd);
 			 }
 		 }		
+	}
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent event){
+		if(plugin.jailed.contains(event.getPlayer().getName())){
+			event.setRespawnLocation(plugin.jail.getJail("jail"));
+		}
 	}
 }
