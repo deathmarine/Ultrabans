@@ -26,6 +26,7 @@ import com.modcrafting.ultrabans.util.EditBan;
 public class SQLite implements Database{
 	Ultrabans plugin;
 	String dbname;
+	Connection connection;
 	public SQLite(Ultrabans instance){
 		plugin = instance;
 		dbname = plugin.getConfig().getString("SQLite.Filename", "banlist");
@@ -54,9 +55,12 @@ public class SQLite implements Database{
 			}
 		}
 		try {
+			if(connection!=null&&!connection.isClosed()){
+				return connection;
+			}
 			Class.forName("org.sqlite.JDBC");
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
-    		return conn;
+			connection = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
+    		return connection;
 		} catch (SQLException ex) {
 			plugin.getLogger().log(Level.SEVERE,"SQLite exception on initialize", ex);
 	    } catch (ClassNotFoundException ex) {
@@ -86,7 +90,7 @@ public class SQLite implements Database{
 			
 					}
 				}
-				close(conn,ps,rs);
+				close(ps,rs);
 			} catch (SQLException ex) {
 				plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
 			}
@@ -121,7 +125,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				list.add(rs.getString("name"));
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return list;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -138,7 +142,7 @@ public class SQLite implements Database{
 			ps.setString(1, pName);
 			ps.setString(2, logIp);
 			ps.executeUpdate();
-			close(conn,ps,null);
+			close(ps,null);
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
 		}
@@ -158,7 +162,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				ip = rs.getString("lastip");
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return ip;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -179,7 +183,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				name = rs.getString("name");
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return name;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -196,7 +200,7 @@ public class SQLite implements Database{
 			ps.setString(1, player);
 			ps.setString(2, player);
 			ps.executeUpdate();
-			close(conn,ps,null);
+			close(ps,null);
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
 			return false;
@@ -218,7 +222,7 @@ public class SQLite implements Database{
 			while(rs.next()){
 				if(rs.getInt("type") == 9)	set = true;
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return set;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -239,7 +243,7 @@ public class SQLite implements Database{
 			ps.setLong(4, System.currentTimeMillis()/1000);
 			ps.setLong(6, type);
 			ps.executeUpdate();
-			close(conn,ps,null);
+			close(ps,null);
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
 		}
@@ -258,7 +262,7 @@ public class SQLite implements Database{
 			ps.setLong(4, time);
 			ps.setLong(6, type);
 			ps.executeUpdate();
-			close(conn,ps,null);
+			close(ps,null);
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
 		}
@@ -276,7 +280,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				reason = rs.getString("reason");
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return reason;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -298,7 +302,7 @@ public class SQLite implements Database{
 			while(rs.next()){
 				set = true;
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return set;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -315,7 +319,7 @@ public class SQLite implements Database{
 			ps.setString(1, ip);
 			ps.setString(2, p);
 			ps.executeUpdate();
-			close(conn,ps,null);
+			close(ps,null);
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
 		}
@@ -334,7 +338,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return bans;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -356,7 +360,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return bans;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -380,7 +384,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return bans;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -403,7 +407,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				eb = new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return eb;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -425,7 +429,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return bans;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -446,7 +450,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				eb = new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return eb;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -468,7 +472,7 @@ public class SQLite implements Database{
 			ps.setLong(6, ban.type);
 			ps.setInt(7, ban.id);
 			ps.executeUpdate();
-			close(conn,ps,null);
+			close(ps,null);
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
 		}
@@ -485,7 +489,7 @@ public class SQLite implements Database{
 			ps.setString(3, player);
 			ps.setInt(4, 6);
 			ps.executeUpdate();
-			close(conn,ps,null);
+			close(ps,null);
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
 			return false;
@@ -506,7 +510,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				reason = rs.getString("reason");
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return reason;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -530,7 +534,7 @@ public class SQLite implements Database{
 				plugin.tempJail.put(pName,pTime);
 			}
 		}
-			close(conn,ps,rs);
+			close(ps,rs);
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
 		}
@@ -548,7 +552,7 @@ public class SQLite implements Database{
 			while (rs.next()){
 				admin = rs.getString("admin");
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return admin;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -570,7 +574,7 @@ public class SQLite implements Database{
 			while(rs.next()){
 				bans.add(rs.getString("name"));
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 			return bans;
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
@@ -578,12 +582,10 @@ public class SQLite implements Database{
 		return null;
 	}
 
-	public void close(Connection conn,PreparedStatement ps,ResultSet rs){
+	public void close(PreparedStatement ps,ResultSet rs){
 		try {
 			if (ps != null)
 				ps.close();
-			if (conn != null)
-				conn.close();
 			if (rs != null)
 				rs.close();
 		} catch (SQLException ex) {
@@ -606,7 +608,7 @@ public class SQLite implements Database{
 				ps.setInt(1, i);
 				ps.executeUpdate();
 			}
-			close(conn,ps,rs);
+			close(ps,rs);
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
 		}
