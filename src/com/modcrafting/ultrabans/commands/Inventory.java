@@ -1,41 +1,29 @@
 package com.modcrafting.ultrabans.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.Formatting;
 
-public class Inventory implements CommandExecutor{
-	Ultrabans plugin;
-	public Inventory(Ultrabans instance){
-		plugin = instance;
+public class Inventory extends CommandHandler{
+	public Inventory(Ultrabans instance) {
+		super(instance);
 	}
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
-			return true;
-		}
+	
+	public String command(CommandSender sender, Command command, String[] args) {
 		if(sender instanceof Player){
-			if(args.length<1)return false;
+			if (args.length < 1) 
+				return lang.getString("InvOf.Arguments");
 			OfflinePlayer victim = plugin.getServer().getOfflinePlayer(args[0]);
 			if(victim==null||!victim.isOnline()){
-				String msg = plugin.getConfig().getString("Messages.InvOf.Failed","Unable to find player.");
-				msg=Formatting.formatMessage(msg);
-				sender.sendMessage(msg);
-				return true;
+				return ChatColor.translateAlternateColorCodes('&', lang.getString("InvOf.Failed"));
 			}
-			((Player) sender).openInventory(victim.getPlayer().getInventory());			
-		}else{
-			String msg = plugin.getConfig().getString("Messages.InvOf.Console","This command must be executed by a player.");
-			msg=Formatting.formatMessage(msg);
-			sender.sendMessage(msg);
+			((Player) sender).openInventory(victim.getPlayer().getInventory());
+			return null;
 		}
-		return true;
+		return ChatColor.translateAlternateColorCodes('&', lang.getString("InvOf.Console"));
 	}
-
 }

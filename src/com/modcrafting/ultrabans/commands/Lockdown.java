@@ -1,77 +1,58 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.Formatting;
 
-public class Lockdown implements CommandExecutor {
-	Ultrabans plugin;
-	public Lockdown(Ultrabans ultraBan) {
-		this.plugin = ultraBan;
+public class Lockdown extends CommandHandler{
+	public Lockdown(Ultrabans instance) {
+		super(instance);
 	}
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
-			return true;
-		}
-    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		Player player = null;
+	
+	public String command(CommandSender sender, Command command, String[] args) {
+		if (args.length < 1) 
+			return lang.getString("Lockdown.Arguments");
 		String admin = Ultrabans.DEFAULT_ADMIN;
-		if (sender instanceof Player){
-			player = (Player)sender;
-			admin = player.getName();
-		}
-		boolean lock = config.getBoolean("Lockdown", false);
-		if (args.length < 1) return false;
+		if (sender instanceof Player)
+			admin = sender.getName();
+		boolean locked = config.getBoolean("Lockdown", false);
 		String toggle = args[0];
 		if (toggle.equalsIgnoreCase("on")){ 
-			if(!lock){ 
-				lockdownOn();
-				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.Start","Lockdown initiated. PlayerLogin disabled.")));
-				plugin.getLogger().info(admin + " initiated lockdown.");
-			}else{
-				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.LoginMsg","Server is under a lockdown, Try again later! Sorry.")));
+			if(!locked){ 
+				plugin.getConfig().set("Lockdown",(boolean) true);
+		        plugin.saveConfig();
+				if(plugin.getLog())
+					plugin.getLogger().info(admin + " initiated lockdown.");
+				return lang.getString("Lockdown.Start");
 			}
+			return lang.getString("Lockdown.LoginMsg");
 		}
 		if (toggle.equalsIgnoreCase("off")){
-			if(lock){
-				lockdownEnd();
-				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.End","Lockdown ended.PlayerLogin reenabled.")));
-				plugin.getLogger().info(admin + " disabled lockdown.");
-			}else{
-				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.Status","Lockdown is disabled.")));
+			if(locked){
+				plugin.getConfig().set("Lockdown",(boolean) false);
+		        plugin.saveConfig();
+				if(plugin.getLog())
+					plugin.getLogger().info(admin + " disabled lockdown.");
+				return lang.getString("Lockdown.End");
 			}
+			return lang.getString("Lockdown.Status");
 		}
-		if (toggle.equalsIgnoreCase("status")){
-			if(lock){
-				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.LoginMsg","Server is under a lockdown, Try again later! Sorry.")));
-			}else{
-				sender.sendMessage(ChatColor.GRAY + Formatting.formatMessage(config.getString("Messages.Lockdown.Status","Lockdown is disabled.")));
-			}
-		}
-		
-		return true;
+		return locked?lang.getString("Lockdown.LoginMsg"):lang.getString("Lockdown.Status");
 	}
-	private void lockdownOn(){
-		plugin.getConfig().set("Lockdown",(boolean) true);
-        plugin.saveConfig();
-    }
-	private void lockdownEnd(){
-		plugin.getConfig().set("Lockdown",(boolean) false);
-        plugin.saveConfig();
-    }
-
 }

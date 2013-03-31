@@ -1,160 +1,106 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-
 import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.Formatting;
 
-public class Tempban implements CommandExecutor{
-	Ultrabans plugin;
-	public Tempban(Ultrabans ultraBan) {
-		this.plugin = ultraBan;
+public class Tempban extends CommandHandler {
+	public Tempban(Ultrabans instance) {
+		super(instance);
 	}
-	public boolean onCommand(final CommandSender sender, final Command command, String label, final String[] args) {
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
-			return true;
-		}
 
-		Bukkit.getScheduler().scheduleSyncDelayedTask(Ultrabans.getPlugin(),new Runnable(){
-			@Override
-			public void run() {
-		    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-				boolean broadcast = true;
-				Player player = null;
-				String admin = Ultrabans.DEFAULT_ADMIN;
-				String reason = Ultrabans.DEFAULT_REASON;
-				if (sender instanceof Player){
-					player = (Player)sender;
-					admin = player.getName();
-				}
-				if (args.length < 3) return;
-				long tempTime = 0;
-				String amt="";
-				String mode="";
-				if(args.length > 3){
-					if(args[1].equalsIgnoreCase("-s")
-							&&sender.hasPermission(command.getPermission()+".silent")){
-						broadcast = false;
-						amt=args[2];
-						mode=args[3];
-						reason = Formatting.combineSplit(4, args, " ");
-						tempTime = Formatting.parseTimeSpec(amt,mode);
-					}else if(args[1].equalsIgnoreCase("-a")
-							&&sender.hasPermission(command.getPermission()+".anon")){
-						admin = Ultrabans.DEFAULT_ADMIN;
-						amt=args[2];
-						mode=args[3];
-						reason = Formatting.combineSplit(4, args, " ");
-						tempTime = Formatting.parseTimeSpec(amt,mode);
-					}else{
-						amt=args[1];
-						mode=args[2];
-						tempTime = Formatting.parseTimeSpec(amt,mode);
-						reason = Formatting.combineSplit(3, args, " ");
-					}
-				}
-				if(tempTime == 0) return;
-				
-				String p = args[0];
-				p = Formatting.expandName(p);
-				Player victim = plugin.getServer().getPlayer(p);
-				long temp = System.currentTimeMillis()/1000+tempTime; //epoch time
-				
-				if(victim != null){
-					if(victim.getName().equalsIgnoreCase(admin)){
-						String bcmsg = config.getString("Messages.TempBan.Emo","You cannot tempban yourself!");
-						bcmsg = Formatting.formatMessage(bcmsg);
-						sender.sendMessage(bcmsg);
-						return;
-					}
-					if(victim.hasPermission("ultraban.override.tempban")&&!admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN)){
-						String bcmsg = config.getString("Messages.TempBan.Denied","Your tempban has been denied!");
-						bcmsg = Formatting.formatMessage(bcmsg);
-						sender.sendMessage(bcmsg);
-						return;
-					}	
-					if(plugin.bannedPlayers.contains(victim.getName().toLowerCase())){
-						String failed = config.getString("Messages.TempBan.Failed", "%victim% is already tempbanned!");
-						if(failed.contains(Ultrabans.VICTIM)) failed = failed.replaceAll(Ultrabans.VICTIM, p);
-						failed = Formatting.formatMessage(failed);
-						sender.sendMessage(failed);
-						return;
-					}
-					String msgvic = config.getString("Messages.TempBan.MsgToVictim", "You have been tempbanned by %admin% for %amt% %mode%s. Reason: %reason%!");
-					if(msgvic.contains(Ultrabans.ADMIN)) msgvic = msgvic.replaceAll(Ultrabans.ADMIN, admin);
-					if(msgvic.contains(Ultrabans.REASON)) msgvic = msgvic.replaceAll(Ultrabans.REASON, reason);
-					if(msgvic.contains(Ultrabans.AMOUNT)) msgvic = msgvic.replaceAll(Ultrabans.AMOUNT, amt);
-					if(msgvic.contains(Ultrabans.MODE)) msgvic = msgvic.replaceAll(Ultrabans.MODE, mode);
-					msgvic=Formatting.formatMessage(msgvic);
-					victim.kickPlayer(msgvic);
-					
-					String bcmsg = config.getString("Messages.TempBan.MsgToBroadcast","%victim% was tempbanned by %admin% for %amt% %mode%s. Reason: %reason%!");
-					if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
-					if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replaceAll(Ultrabans.REASON, reason);
-					if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, p);
-					if(bcmsg.contains(Ultrabans.AMOUNT)) bcmsg = bcmsg.replaceAll(Ultrabans.AMOUNT, amt);
-					if(bcmsg.contains(Ultrabans.MODE)) bcmsg = bcmsg.replaceAll(Ultrabans.MODE, mode);
-					bcmsg = Formatting.formatMessage(bcmsg);
-					if(broadcast){
-						plugin.getServer().broadcastMessage(bcmsg);
-					}else{
-						sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
-					}
-					plugin.tempBans.put(victim.getName().toLowerCase(), temp);
-					plugin.getUBDatabase().addPlayer(victim.getName(), reason, admin, temp, 0);
-					if(plugin.getLog())
-						plugin.getLogger().info(bcmsg);
-					return;
-				}else{
-					victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
-					if(victim != null){
-						if(victim.hasPermission("ultraban.override.tempban")&&!admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN)){
-							String bcmsg = config.getString("Messages.TempBan.Denied","Your tempban has been denied!");
-							bcmsg = Formatting.formatMessage(bcmsg);
-							sender.sendMessage(bcmsg);
-							return;
-						}
-					}
-					if(plugin.bannedPlayers.contains(p.toLowerCase())){
-						String failed = config.getString("Messages.TempBan.Failed", "%victim% is already tempbanned!");
-						if(failed.contains(Ultrabans.VICTIM)) failed = failed.replaceAll(Ultrabans.VICTIM, p);
-						failed = Formatting.formatMessage(failed);
-						sender.sendMessage(failed);
-						return;
-					}
-					String bcmsg = config.getString("Messages.TempBan.MsgToBroadcast","%victim% was tempbanned by %admin% for %amt% %mode%s. Reason: %reason%!");
-					if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
-					if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replaceAll(Ultrabans.REASON, reason);
-					if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, p);
-					if(bcmsg.contains(Ultrabans.AMOUNT)) bcmsg = bcmsg.replaceAll(Ultrabans.AMOUNT, amt);
-					if(bcmsg.contains(Ultrabans.MODE)) bcmsg = bcmsg.replaceAll(Ultrabans.MODE, mode);
-					bcmsg = Formatting.formatMessage(bcmsg);
-					if(broadcast){
-						plugin.getServer().broadcastMessage(bcmsg);
-					}else{
-						sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
-					}
-					plugin.tempBans.put(p.toLowerCase(), temp);
-					plugin.getUBDatabase().addPlayer(p, reason, admin, temp, 0);
-					if(plugin.getLog())
-						plugin.getLogger().info(bcmsg);
-				}
+	public String command(CommandSender sender, Command command, String[] args) {
+		if (args.length < 3)
+			return lang.getString("Tempban.Arguments");
+		boolean broadcast = true;
+		String admin = Ultrabans.DEFAULT_ADMIN;
+		String reason = Ultrabans.DEFAULT_REASON;
+		if (sender instanceof Player)
+			admin = sender.getName();
+		String name = args[0];
+		name = Formatting.expandName(name);
+		if(name.equalsIgnoreCase(admin))
+			return lang.getString("Tempban.Emo");
+		long tempTime = 0;
+		String amt = new String();
+		String mode = new String();
+			if(args.length > 3){
+				if(args[1].equalsIgnoreCase("-s")
+						&&sender.hasPermission(command.getPermission()+".silent"))
+					broadcast = false;
+				if(args[1].equalsIgnoreCase("-a")
+						&&sender.hasPermission(command.getPermission()+".anon"))
+					admin = Ultrabans.DEFAULT_ADMIN;
+				amt=args[2];
+				mode=args[3];
+				reason = Formatting.combineSplit(4, args);
+				tempTime = Formatting.parseTimeSpec(amt,mode);
+			}else if(args.length > 2){
+				amt=args[1];
+				mode=args[2];
+				tempTime = Formatting.parseTimeSpec(amt, mode);
+				reason = Formatting.combineSplit(3, args);
 			}
-		});
-		return true;
+		if(tempTime == 0) 
+			return lang.getString("Tempban.TimeFail");
+		long temp = System.currentTimeMillis()/1000+tempTime;
+
+		if(plugin.bannedPlayers.containsKey(name.toLowerCase())){
+			String failed = lang.getString("Tempban.Failed");
+			if(failed.contains(Ultrabans.VICTIM))
+				failed = failed.replace(Ultrabans.VICTIM, name);
+			return failed;
+		}
+		
+		OfflinePlayer victim = plugin.getServer().getOfflinePlayer(name);
+		if(victim != null){
+			if(victim.isOnline()){
+				if(victim.getPlayer().hasPermission("ultraban.override.tempban") &&
+						!admin.equalsIgnoreCase(Ultrabans.ADMIN))
+					return lang.getString("Tempban.Denied");
+				String vicmsg = lang.getString("Tempban.MsgToVictim");
+				if(vicmsg.contains(Ultrabans.ADMIN))
+					vicmsg = vicmsg.replace(Ultrabans.ADMIN, admin);
+				if(vicmsg.contains(Ultrabans.REASON)) 
+					vicmsg = vicmsg.replace(Ultrabans.REASON, reason);
+				victim.getPlayer().kickPlayer(ChatColor.translateAlternateColorCodes('&', vicmsg));
+			}
+			name = victim.getName();
+		}
+		plugin.getAPI().tempbanPlayer(name, reason, temp, admin);
+		String bcmsg = ChatColor.translateAlternateColorCodes('&', lang.getString("Tempban.MsgToBroadcast"));
+		if(bcmsg.contains(Ultrabans.ADMIN)) 
+			bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);
+		if(bcmsg.contains(Ultrabans.REASON)) 
+			bcmsg = bcmsg.replace(Ultrabans.REASON, reason);
+		if(bcmsg.contains(Ultrabans.VICTIM)) 
+			bcmsg = bcmsg.replace(Ultrabans.VICTIM, name);
+		if(broadcast){
+			plugin.getServer().broadcastMessage(bcmsg);
+		}else{
+			sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
+		}
+		if(plugin.getLog())
+			plugin.getLogger().info(ChatColor.stripColor(bcmsg));
+		return null;
 	}
 }

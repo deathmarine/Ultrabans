@@ -1,192 +1,135 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
-public class Ipban implements CommandExecutor{
-	Ultrabans plugin;
-	public Ipban(Ultrabans ultraBan) {
-		this.plugin = ultraBan;
+public class Ipban extends CommandHandler{
+	public Ipban(Ultrabans instance) {
+		super(instance);
 	}
-	public boolean onCommand(final CommandSender sender, final Command command, String label, final String[] args) {
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
-			return true;
-		}
-		if (args.length < 1) return false;
 
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable(){
-			@Override
-			public void run() {
-				boolean broadcast = true;
-		    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-				Player player = null;
-				String admin = Ultrabans.DEFAULT_ADMIN;
-				String reason = Ultrabans.DEFAULT_REASON;
-				if (sender instanceof Player){
-					player = (Player)sender;
-					admin = player.getName();
-				}
-				String p = args[0];
-				if(args.length > 1){
-					if(args[1].equalsIgnoreCase("-s")
-							&&sender.hasPermission(command.getPermission()+".silent")){
-						broadcast = false;
-						reason = Formatting.combineSplit(2, args, " ");
-					}else{
-						if(args[1].equalsIgnoreCase("-a")
-								&&sender.hasPermission(command.getPermission()+".anon")){
-							admin = Ultrabans.DEFAULT_ADMIN;
-							reason = Formatting.combineSplit(2, args, " ");
-						}else{
-							reason = Formatting.combineSplit(1, args, " ");
-						}
-					}
-				}
-				//IPv4 Check
-				if(Formatting.validIP(p)){
-					plugin.bannedIPs.add(p);
-					String pname = plugin.getUBDatabase().getName(p);
-					if (pname != null){
-						plugin.getUBDatabase().addPlayer(pname, reason, admin, 0, 1);
-						plugin.bannedPlayers.add(pname);
-					}else{
-						plugin.getUBDatabase().setAddress(p, p);
-						plugin.getUBDatabase().addPlayer(p, reason, admin, 0, 1);
-					}
-					String bcmsg = config.getString("Messages.IPBan.MsgToBroadcast","%victim% was ipbanned by %admin%. Reason: %reason%!");
-					if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
-					if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replaceAll(Ultrabans.REASON, reason);
-					if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, p);
-					bcmsg=Formatting.formatMessage(bcmsg);
-					if(broadcast){
-						plugin.getServer().broadcastMessage(bcmsg);
-					}else{
-						sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
-					}
-					plugin.getLogger().info(bcmsg);
-					return;
-				}
-				p = Formatting.expandName(p);
-				Player victim = plugin.getServer().getPlayer(p); 
-				String victimip = null;
-				if(victim == null){
-					victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
-					if(victim != null){
-						if(victim.hasPermission("ultraban.override.ipban")&&!admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN)){
-							String bcmsg = config.getString("Messages.IPBan.Denied","Your ipban has been denied!");
-							bcmsg = Formatting.formatMessage(bcmsg);
-							sender.sendMessage(bcmsg);
-							return;
-						}
-					}else{
-						victimip = plugin.getUBDatabase().getAddress(p);
-						if(victimip == null){
-							String failed = config.getString("Messages.IPBan.IPNotFound", "IP address not found. Processed as a normal ban for %victim%!");
-							if(failed.contains(Ultrabans.VICTIM)) failed = failed.replaceAll(Ultrabans.VICTIM, p);
-							failed = Formatting.formatMessage(failed);
-							sender.sendMessage(failed);
-							StringBuilder sb = new StringBuilder();
-							sb.append("ban");
-							sb.append(" ");
-							sb.append(p);
-							sb.append(" ");
-							if(!broadcast){
-								sb.append("-s");
-								sb.append(" ");
-							}
-							sb.append(reason);
-							if(player != null){
-								player.getPlayer().performCommand(sb.toString());
-							}else{
-								plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), sb.toString());
-							}
-							return;
-						}
-					}
-				}else{
-					if(victim.getName().equalsIgnoreCase(admin)){
-						String bcmsg = config.getString("Messages.IPBan.Emo","You cannot ipban yourself!");
-						bcmsg = Formatting.formatMessage(bcmsg);
-						sender.sendMessage(bcmsg);
-						return;
-					}
-					if(victim.hasPermission("ultraban.override.ipban")&&!admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN)){
-						String bcmsg = config.getString("Messages.IPBan.Denied","Your ipban has been denied!");
-						bcmsg = Formatting.formatMessage(bcmsg);
-						sender.sendMessage(bcmsg);
-						return;
-					}	
-					victimip = plugin.getUBDatabase().getAddress(victim.getName().toLowerCase());
-				}
-				if(plugin.bannedIPs.contains(victimip)){
-					String failed = config.getString("Messages.IPBan.Failed", "%victim% is already ipbanned.");
-					if(failed.contains(Ultrabans.VICTIM)) failed = failed.replaceAll(Ultrabans.VICTIM, p);
-					failed = Formatting.formatMessage(failed);
-					sender.sendMessage(failed);
-					return;
-				}
-				if(victimip == null){
-					String failed = config.getString("Messages.IPBan.IPNotFound", "IP address not found. Processed as a normal ban for %victim%!");
-					if(failed.contains(Ultrabans.VICTIM)) failed = failed.replaceAll(Ultrabans.VICTIM, p);
-					failed = Formatting.formatMessage(failed);
-					sender.sendMessage(failed);
-					StringBuilder sb = new StringBuilder();
-					sb.append("ban");
-					sb.append(" ");
-					sb.append(p);
-					sb.append(" ");
-					if(!broadcast){
-						sb.append("-s");
-						sb.append(" ");
-					}
-					sb.append(reason);
-					if(player != null){
-						player.getPlayer().performCommand(sb.toString());
-					}else{
-						plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), sb.toString());
-					}
-					return;
-				}
-				String msgvic = config.getString("Messages.IPBan.MsgToVictim", "You have been ipbanned by %admin%. Reason: %reason%!");
-				if(msgvic.contains(Ultrabans.ADMIN)) msgvic = msgvic.replaceAll(Ultrabans.ADMIN, admin);
-				if(msgvic.contains(Ultrabans.REASON)) msgvic = msgvic.replaceAll(Ultrabans.REASON, reason);
-				msgvic=Formatting.formatMessage(msgvic);
-				if(victim != null && victim.isOnline()) victim.kickPlayer(msgvic);
-				
-				String bcmsg = config.getString("Messages.IPBan.MsgToBroadcast","%victim% was ipbanned by %admin%. Reason: %reason%!");
-				if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
-				if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replaceAll(Ultrabans.REASON, reason);
-				if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, p);
-				bcmsg=Formatting.formatMessage(bcmsg);
-				if(broadcast){
-					plugin.getServer().broadcastMessage(bcmsg);
-				}else{
-					sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
-				}
-				plugin.bannedPlayers.add(p.toLowerCase());
-				plugin.bannedIPs.add(victimip);
-				plugin.getUBDatabase().addPlayer(p.toLowerCase(), reason, admin, 0, BanType.IPBAN.getId());
-				plugin.getLogger().info(bcmsg);
+	public String command(CommandSender sender, Command command,  String[] args) {
+		if (args.length < 1) 
+			return lang.getString("IPBan.Arguments");
+		boolean broadcast = true;
+		String admin = Ultrabans.DEFAULT_ADMIN;
+		String reason = Ultrabans.DEFAULT_REASON;
+		if (sender instanceof Player)
+			admin = sender.getName();
+		String name = Formatting.expandName(args[0]);
+		if(name.equalsIgnoreCase(admin))
+			return lang.getString("IPBan.Emo");
+		if (args.length > 1) {
+			if (args[1].equalsIgnoreCase("-s")){
+				if(	sender.hasPermission(command.getPermission() + ".silent"))
+					broadcast = false;
+				reason = Formatting.combineSplit(2, args);	
+			} else if (args[1].equalsIgnoreCase("-a")){
+				if(sender.hasPermission(command.getPermission() + ".anon"))
+					admin = Ultrabans.DEFAULT_ADMIN;
+				reason = Formatting.combineSplit(2, args);	
+			} else {
+				reason = Formatting.combineSplit(1, args);
 			}
-		});
-		return true;
+		}
+		if(Formatting.validIP(name)){
+			plugin.bannedIPs.put(name, Long.MIN_VALUE);
+			String pname = plugin.getUBDatabase().getName(name);
+			if (pname != null){
+				plugin.getUBDatabase().addPlayer(pname, reason, admin, 0, 1);
+				plugin.bannedPlayers.put(pname, Long.MIN_VALUE);
+			}else{
+				plugin.getUBDatabase().setAddress(name, name);
+				plugin.getUBDatabase().addPlayer(name, reason, admin, 0, 1);
+			}
+			String bcmsg = lang.getString("IPBan.MsgToBroadcast");
+			if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);
+			if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replace(Ultrabans.REASON, reason);
+			if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replace(Ultrabans.VICTIM, name);
+			if(broadcast){
+				plugin.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&',bcmsg));
+			}else{
+				sender.sendMessage(ChatColor.ITALIC + "Silent: " + ChatColor.translateAlternateColorCodes('&',bcmsg));
+			}
+			if(plugin.getLog())
+				plugin.getLogger().info(admin + " banned player " + name + ".");
+			return null;
+		}
+		OfflinePlayer victim = plugin.getServer().getOfflinePlayer(name);
+		if(victim != null){
+			if(victim.isOnline() 
+					&& victim.getPlayer().hasPermission("ultraban.override.ipban")
+					&& !admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN))
+				return lang.getString("IPBan.Denied");
+			name = victim.getName();
+		}
+		String victimip = plugin.getUBDatabase().getAddress(name);
+		if(victimip == null){
+			String failed = lang.getString("IPBan.IPNotFound");
+			if(failed.contains(Ultrabans.VICTIM)) 
+				failed = failed.replace(Ultrabans.VICTIM, name);
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', failed));
+			StringBuilder sb = new StringBuilder();
+			sb.append("ban").append(" ").append(name).append(" ");
+			if(!broadcast)
+				sb.append("-s").append(" ");
+			sb.append(reason);
+			plugin.getServer().dispatchCommand(sender, sb.toString());
+			return null;
+		}
+		if(plugin.bannedIPs.containsKey(victimip)){
+			String failed = lang.getString("IPBan.Failed");
+			if(failed.contains(Ultrabans.VICTIM)) 
+				failed = failed.replace(Ultrabans.VICTIM, name);
+			return failed;
+		}
+		plugin.getAPI().ipbanPlayer(name, victimip, reason, admin);	
+		if(victim != null && victim.isOnline()){
+			String msgvic = lang.getString("IPBan.MsgToVictim");
+			if(msgvic.contains(Ultrabans.ADMIN)) 
+				msgvic = msgvic.replace(Ultrabans.ADMIN, admin);
+			if(msgvic.contains(Ultrabans.REASON)) 
+				msgvic = msgvic.replace(Ultrabans.REASON, reason);
+			victim.getPlayer().kickPlayer(ChatColor.translateAlternateColorCodes('&', msgvic));
+		}			
+		String bcmsg = ChatColor.translateAlternateColorCodes('&', lang.getString("IPBan.MsgToBroadcast"));
+		if(bcmsg.contains(Ultrabans.ADMIN)) 
+			bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);
+		if(bcmsg.contains(Ultrabans.REASON)) 
+			bcmsg = bcmsg.replace(Ultrabans.REASON, reason);
+		if(bcmsg.contains(Ultrabans.VICTIM)) 
+			bcmsg = bcmsg.replace(Ultrabans.VICTIM, name);
+		if(config.getBoolean("CleanOnBan")) 
+			Formatting.deletePlyrdat(name);
+		if(config.getBoolean("ClearWarnOnBan",false)) 
+			plugin.getAPI().clearWarn(name);
+		if(broadcast){
+			plugin.getServer().broadcastMessage(bcmsg);
+		}else{
+			sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
+		}
+		if(plugin.getLog())
+			plugin.getLogger().info(ChatColor.stripColor(bcmsg));
+		return null;
 	}	
-	
-	
 }

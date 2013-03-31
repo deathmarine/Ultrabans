@@ -1,9 +1,17 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans.listeners;
 
@@ -49,7 +57,7 @@ public class UltraBanPlayerListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerLogin(PlayerLoginEvent event){
 		Player player = event.getPlayer();
-		if(plugin.bannedPlayers.contains(player.getName().toLowerCase())){
+		if(plugin.bannedPlayers.containsKey(player.getName().toLowerCase())){
 			String reason = plugin.getUBDatabase().getBanReason(player.getName());
 			String admin = plugin.getUBDatabase().getAdmin(player.getName());
 			if(admin==null) admin = Ultrabans.DEFAULT_ADMIN;
@@ -57,23 +65,23 @@ public class UltraBanPlayerListener implements Listener{
 			String bcmsg = config.getString("Messages.Ban.Login", "%admin% banned you from this server! Reason: %reason%!");
 			if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
 			if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replaceAll(Ultrabans.REASON, reason);
-			bcmsg=Formatting.formatMessage(bcmsg);
+			//bcmsg=Formatting.formatMessage(bcmsg);
 			event.disallow(PlayerLoginEvent.Result.KICK_BANNED, bcmsg);
 		}
-		if(plugin.tempBans.get(player.getName().toLowerCase()) != null){
+		if(plugin.bannedPlayers.get(player.getName().toLowerCase()) != null){
 			String reason = plugin.getUBDatabase().getBanReason(player.getName());
 			String admin = plugin.getUBDatabase().getAdmin(player.getName());
 			if(admin==null) admin = Ultrabans.DEFAULT_ADMIN;
 			if(reason==null) reason = Ultrabans.DEFAULT_REASON;
-			long tempTime = plugin.tempBans.get(player.getName().toLowerCase());
+			long tempTime = plugin.bannedPlayers.get(player.getName().toLowerCase());
 			long diff = tempTime - (System.currentTimeMillis()/1000);
 			if(diff <= 0){
 				String ip = plugin.getUBDatabase().getAddress(player.getName());
-				if(plugin.bannedIPs.contains(ip)){
+				if(plugin.bannedIPs.containsKey(ip)){
 					plugin.bannedIPs.remove(ip);
 					Bukkit.unbanIP(ip);
 				}
-				plugin.tempBans.remove(player.getName().toLowerCase());
+				//plugin.tempBans.remove(player.getName().toLowerCase());
 				plugin.bannedPlayers.remove(player.getName().toLowerCase());
 				plugin.getUBDatabase().removeFromBanlist(player.getName().toLowerCase());
 				plugin.getUBDatabase().addPlayer(player.getName(), "Untempbanned: " + reason, admin, 0, 5);
@@ -86,13 +94,13 @@ public class UltraBanPlayerListener implements Listener{
 			if(msgvic.contains(Ultrabans.ADMIN)) msgvic = msgvic.replaceAll(Ultrabans.ADMIN, admin);
 			if(msgvic.contains(Ultrabans.REASON)) msgvic = msgvic.replaceAll(Ultrabans.REASON, reason);
 			if(msgvic.contains(Ultrabans.TIME)) msgvic = msgvic.replaceAll(Ultrabans.TIME, dateStr.substring(4, 19));
-			msgvic=Formatting.formatMessage(msgvic);
+			//msgvic=Formatting.formatMessage(msgvic);
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, msgvic);
 			return;
 		}
 		if(config.getBoolean("Lockdown", false)&&!player.hasPermission("ultraban.override.lockdown")){
 			String lockMsgLogin = config.getString("Messages.Lockdown.LoginMsg", "Server is under a lockdown, Try again later!");
-			lockMsgLogin=Formatting.formatMessage(lockMsgLogin);
+			//lockMsgLogin=Formatting.formatMessage(lockMsgLogin);
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
 			plugin.getLogger().info(player.getName() + " attempted to join during lockdown.");
 		}
@@ -102,10 +110,10 @@ public class UltraBanPlayerListener implements Listener{
 		final Player player = event.getPlayer();
 		final String ip = player.getAddress().getAddress().getHostAddress();
 		plugin.getUBDatabase().setAddress(player.getName().toLowerCase(), ip);
-		if(plugin.bannedIPs.contains(ip)){
+		if(plugin.bannedIPs.containsKey(ip)){
 			event.setJoinMessage(null);
 			String adminMsg = config.getString("Messages.IPBan.Login", "Your IP is banned!");
-			adminMsg=Formatting.formatMessage(adminMsg);
+			//adminMsg=Formatting.formatMessage(adminMsg);
 			player.kickPlayer(adminMsg);
 		}
 		if(!plugin.getUBDatabase().matchAddress(player.getName(), ip)){
@@ -181,27 +189,27 @@ public class UltraBanPlayerListener implements Listener{
 				
 			});
 		}
-	 	if(plugin.tempJail.get(player.getName().toLowerCase()) != null)tempjailCheck(player);
+	 	if(plugin.jailed.get(player.getName().toLowerCase()) != null)tempjailCheck(player);
 		plugin.getLogger().info("Logged " + player.getName() + " connecting from ip:" + ip);
 	}
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){
 		Player player = event.getPlayer();
 		String adminMsg = config.getString("Messages.Mute.Chat", "Your cry falls on deaf ears.");
-		if(plugin.jailed.contains(player.getName().toLowerCase())&&config.getBoolean("Jail.Vannila", true)){
+		if(plugin.jailed.containsKey(player.getName().toLowerCase())&&config.getBoolean("Jail.Vannila", true)){
 			String args[] = event.getMessage().split(" ");
 			if(config.getStringList("Jail.AllowedCommands").contains(args[0])) return;
-		 	if(plugin.tempJail.get(player.getName().toLowerCase()) != null){
+		 	if(plugin.jailed.get(player.getName().toLowerCase()) != null){
 		 		if(tempjailCheck(player)) return;
 
 		 	}
-			player.sendMessage(Formatting.formatMessage(adminMsg));
+			//player.sendMessage(Formatting.formatMessage(adminMsg));
 			event.setCancelled(true);
 		 }	
 		if(plugin.muted.contains(player.getName().toLowerCase())&&config.getBoolean("Muted.Vannila", true)){
 			String args[] = event.getMessage().split(" ");
 			if(config.getStringList("Mute.AllowedCommands").contains(args[0])) return;
-			player.sendMessage(Formatting.formatMessage(adminMsg));
+			//player.sendMessage(Formatting.formatMessage(adminMsg));
 			event.setCancelled(true);
 		}
 			
@@ -212,12 +220,12 @@ public class UltraBanPlayerListener implements Listener{
 		String message = event.getMessage();
 		String adminMsg = config.getString("Messages.Mute.Chat", "Your cry falls on deaf ears.");
 		if(plugin.muted.contains(player.getName().toLowerCase())){;
-			player.sendMessage(Formatting.formatMessage(adminMsg));
+			//player.sendMessage(Formatting.formatMessage(adminMsg));
 			event.setCancelled(true);
 		}
-		if(plugin.jailed.contains(player.getName().toLowerCase())&&config.getBoolean("Jail.Mute",true)){
-			if(plugin.tempJail.get(player.getName().toLowerCase())!=null&&tempjailCheck(player)) return;
-			player.sendMessage(Formatting.formatMessage(adminMsg));
+		if(plugin.jailed.containsKey(player.getName().toLowerCase())&&config.getBoolean("Jail.Mute",true)){
+			if(plugin.jailed.get(player.getName().toLowerCase())!=null&&tempjailCheck(player)) return;
+			//player.sendMessage(Formatting.formatMessage(adminMsg));
 			event.setCancelled(true);
 		}
 		if(config.getBoolean("Chat.IPCheck.Enable", true)){
@@ -246,11 +254,11 @@ public class UltraBanPlayerListener implements Listener{
 	}
 	*/
 	private boolean tempjailCheck(Player player){
-		long tempTime = plugin.tempJail.get(player.getName().toLowerCase());
+		long tempTime = plugin.jailed.get(player.getName().toLowerCase());
 		long now = System.currentTimeMillis()/1000;
 		long diff = tempTime - now;
 		if(diff <= 0){
-			plugin.tempJail.remove(player.getName().toLowerCase());
+			plugin.jailed.remove(player.getName().toLowerCase());
 			plugin.jailed.remove(player.getName().toLowerCase());
 			plugin.getUBDatabase().removeFromJaillist(player.getName().toLowerCase());
 			plugin.getUBDatabase().addPlayer(player.getName(), "Released From Jail", "Served Time", 0, 8);
@@ -259,7 +267,7 @@ public class UltraBanPlayerListener implements Listener{
 			String bcmsg = config.getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
 			if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, Ultrabans.DEFAULT_ADMIN);
 			if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, player.getName());
-			bcmsg=Formatting.formatMessage(bcmsg);
+			//bcmsg=Formatting.formatMessage(bcmsg);
 			player.sendMessage(bcmsg);
 			return true;
 		}
@@ -365,7 +373,7 @@ public class UltraBanPlayerListener implements Listener{
 	}
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event){
-		if(plugin.jailed.contains(event.getPlayer().getName())){
+		if(plugin.jailed.containsKey(event.getPlayer().getName())){
 			event.setRespawnLocation(plugin.jail.getJail("jail"));
 		}
 	}

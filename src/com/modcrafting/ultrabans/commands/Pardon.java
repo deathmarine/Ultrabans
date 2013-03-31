@@ -1,90 +1,61 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans.commands;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.Formatting;
 
-public class Pardon implements CommandExecutor{
-	Ultrabans plugin;
-    public Pardon(Ultrabans ultraBan) {
-		this.plugin = ultraBan;
+public class Pardon extends CommandHandler{
+	public Pardon(Ultrabans instance) {
+		super(instance);
 	}
-	public boolean onCommand(final CommandSender sender, Command command, String label, final String[] args) {
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
-			return true;
-		}
-
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(Ultrabans.getPlugin(),new Runnable(){
-			@Override
-			public void run() {
-		    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-				Player player = null;
-				String admin = Ultrabans.DEFAULT_ADMIN;
-				if (sender instanceof Player){
-					player = (Player)sender;
-					admin = player.getName();
-				}
-				if (args.length < 1) return;
-				String p = args[0];
-				p = Formatting.expandName(p);
-				Player victim = plugin.getServer().getPlayer(p);
-				if(victim == null){
-					victim = plugin.getServer().getOfflinePlayer(p).getPlayer();
-					if(victim == null){
-						if(plugin.jailed.contains(p.toLowerCase())||plugin.tempJail.containsKey(p.toLowerCase())){
-
-							if(plugin.jailed.contains(p.toLowerCase()))plugin.jailed.remove(p.toLowerCase());
-							plugin.getUBDatabase().removeFromJaillist(p);
-							plugin.getUBDatabase().addPlayer(p, "Released From Jail", admin, 0, 8);
-							if(plugin.tempJail.containsKey(p.toLowerCase()))plugin.tempJail.remove(p.toLowerCase());
-							String bcmsg = config.getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
-							if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
-							if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, p);
-							bcmsg=Formatting.formatMessage(bcmsg);
-							sender.sendMessage(bcmsg);
-						}else{
-							//TODO Make config Fail.
-							sender.sendMessage("Player not found.");
-						}
-						return;
-					}
-				}
-				plugin.getUBDatabase().removeFromJaillist(victim.getName());
-				plugin.getUBDatabase().addPlayer(victim.getName(), "Released From Jail", admin, 0, 8);
-				if(plugin.jailed.contains(victim.getName().toLowerCase())){
-					plugin.jailed.remove(victim.getName().toLowerCase());
-				}
-				if(plugin.tempJail.containsKey(victim.getName().toLowerCase())){
-					plugin.tempJail.remove(victim.getName().toLowerCase());
-				}
-				String bcmsg = config.getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
-				if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
-				if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, victim.getName());
-				bcmsg=Formatting.formatMessage(bcmsg);
-				victim.sendMessage(bcmsg);
-				sender.sendMessage(bcmsg);
+	
+	public String command(CommandSender sender, Command command, String[] args) {
+		if (args.length < 1) 
+			return lang.getString("Pardon.Arguments");
+		String admin = Ultrabans.DEFAULT_ADMIN;
+		if (sender instanceof Player)
+			admin = sender.getName();
+		String name = Formatting.expandName(args[0]);
+		if(plugin.jailed.containsKey(name.toLowerCase())){
+			if(plugin.jailed.containsKey(name.toLowerCase()))
+				plugin.jailed.remove(name.toLowerCase());
+			String bcmsg = lang.getString("Pardon.Msg");
+			if(bcmsg.contains(Ultrabans.ADMIN)) 
+				bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
+			if(bcmsg.contains(Ultrabans.VICTIM)) 
+				bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, name);
+			plugin.getAPI().pardonPlayer(name, admin);
+			Player victim = plugin.getServer().getPlayer(name);
+			if(victim != null){
 				Location stlp = plugin.jail.getJail("release");
 				if(stlp != null){
 					victim.teleport(stlp);
 				}else{
-					victim.teleport(victim.getWorld().getSpawnLocation());
+					victim.teleport(victim.getBedSpawnLocation());
 				}
+				victim.sendMessage(bcmsg);
 			}
-		});
-		return true;
+			return bcmsg;
+		}
+		return lang.getString("Pardon.Failed");
 	}
 }

@@ -1,12 +1,10 @@
 name: Ultrabans
-version: 3.1.@VERSION@
+version: ${version}
 website: http://modcrafting.com
 author: Deathmarine
 description: >
              Administration Plugin for Bukkit.
 main: com.modcrafting.ultrabans.Ultrabans
-softdepend: [Essentials]
-
 commands:
 #Actions#
   ban:
@@ -55,7 +53,7 @@ commands:
     permission: ultraban.pardon
   lockdown:
     description: Lockdown the Server
-    usage: /<command> <on/off/status> 
+    usage: /<command> {on/off/status}
     permission: ultraban.lockdown
 #Information#
   checkban:
@@ -91,10 +89,6 @@ commands:
     description: Reload the banlist
     usage: /<command>
     permission: ultraban.reload
-  editban:
-    description: Edit a ban
-    usage: /<command> <list/load/id/save/view/reason/time/cancel/help>
-    permission: ultraban.editban
   exportbans:
     description: Export bans to default text files
     usage: /<command>
@@ -141,7 +135,6 @@ permissions:
       ultraban.empty: true
       ultraban.import: true
       ultraban.export: true
-      ultraban.editban: true
       ultraban.reload: true
       ultraban.status: true
       ultraban.version: true
@@ -232,8 +225,6 @@ permissions:
     description: Allows the user to check the status of the plugin.
   ultraban.reload:
     description: Allows the use of the reload function
-  ultraban.editban:
-    description: Allows the user to edit a previous ban
   ultraban.import:
     description: Allows the user to import a banlist
   ultraban.export:
@@ -261,7 +252,6 @@ permissions:
       ultraban.override.fine: true
       ultraban.override.mute: true
       ultraban.override.permaban: true
-      ultraban.override.starve: true
       ultraban.override.tempban: true
       ultraban.override.tempipban: true
       ultraban.override.tempjail: true
@@ -282,8 +272,6 @@ permissions:
     description: Allows the Administration to override mute
   ultraban.override.permaban:
     description: Allows the Administration to override permabans
-  ultraban.override.starve:
-    description: Allows the Administration to override starve command
   ultraban.override.tempban:
     description: Allows the Administration to override tempban
   ultraban.override.tempipban:

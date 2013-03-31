@@ -41,17 +41,6 @@ Login:
 #Check for duplicates on Login#
   DupeCheck:
     Enable: true
-#PingBack joining players, and kick if unreachable. //Experimental#
-  ProxyPingBack:
-    Enable: false
-    #How long in milliseconds to Timeout#
-    Timeout: 10000
-#This will set the server to sync the database if multiple servers are in place.#
-Sync:
-  Enabled: false
-  #Timing is in Long format Example:#
-  #1 Hour = 60 Seconds * 60 Minutes * 20 ServerTickRatePerSec = 72000L
-  Timing: 72000L
 #Auto Updater#
 AutoUpdater:
   Enabled: true
@@ -106,104 +95,6 @@ Jail:
   - '/login'
   - '/register'
 Messages:
-  Ban:
-    MsgToVictim: '&6You have been banned by &7%admin%&6. Reason: &7%reason%&6!'
-    MsgToBroadcast: '&7%victim%&6 was banned by &7%admin%&6. Reason: &7%reason%&6!'
-    Failed: '&4%victim%&c is already in banned.'
-    Denied: '&cYour ban attempt has been denied!'
-    Emo: '&cYou cannot ban yourself!'
-    Login: '&7%admin%&6 banned you from this server! Reason: &7%reason%&6!'
-  CheckBan:
-    Header: '&6Found &7%amt%&6 records for &7%victim%&6.'
-    None: '&cNo records found for &4%victim%&c.'
-  Clean:
-    Complete: '&6Deleted &7%amt%&6 player.dat files.'
-  DupeIP:
-    Failed: '&cUnable to view ip for &4%victim% &c!'
-    Header: '&6Scanning Current IP of &7%victim%&6: &7%ip% !'
-    Completed: '&aScanning Complete!'
-  Empty:
-    MsgToVictim: '&7%admin%&6 has cleared your inventory!'
-    MsgToSender: '&7%admin%&6 has cleared the inventory of &7%victim%&6!'
-    Online: '&4%victim%&c must be online.'
-  Export:
-    Failed: '&cCould not export ban lists.'
-    Completed: '&aExported banlists.'
-  History:
-    Header: '&6Ultrabans Listing &7%amt%&6 Records.'
-    Failed: '&cUnable to find any bans.'
-  Import:
-    Loading: '&cBe patient. Loading...'
-    Failed: '&cCould not import ban list.'
-    Completed: '&aSystem imported the banlist to the database.'
-  InvOf:
-    Failed: '&cUnable to find player.'
-    Console: '&cThis command must be executed by a &4player&c.'
-  IPBan:
-    MsgToVictim: '&6You have been ipbanned by &7%admin%&6. Reason: &7%reason%&6!'
-    MsgToBroadcast: '&7%victim%&6 was ipbanned by &7%admin%&6. Reason: &7%reason%&6!'
-    IPNotFound: '&cIP address not found. &6Processed as a normal ban for &7%victim%&6!'
-    Failed: '&4%victim%&c is already in banned.'
-    Denied: '&cYour ipban attempt has been denied!'
-    Emo: '&cYou cannot ipban yourself!'
-    Login: '&7Your IP is banned!'
-  Jail:
-    MsgToVictim: '&6You have been jailed by &7%admin%&6. Reason: &7%reason%&6!'
-    MsgToBroadcast: '&7%victim%&6 was jailed by &7%admin%&6. Reason: &7%reason%&6!'
-    SetJail: '&aJail has been set!'
-    SetRelease: '&aRelease has been set!'
-    Failed: '&4%victim%&c is already in jail.'
-    Online: '&4%victim%&c must be online to be jailed.'
-    Denied: '&cYour jail attempt has been denied!'
-    Emo: '&cYou cannot jail yourself!'
-    PlaceMsg: '&cYou cannot place blocks while you are jailed!'
-    BreakMsg: '&cYou cannot break blocks while you are jailed!'
-  Kick:
-    MsgToAll: '&6Everyone has been kicked by &7%admin%&6. Reason: &7%reason%&6!'
-    MsgToVictim: '&6You have been kicked by &7%admin%&6. Reason: &7%reason%&6!'
-    MsgToBroadcast: '&7%victim%&6 was kicked by &7%admin%&6. Reason: &7%reason%&6!'
-    Online: '&4%victim%&c must be online.'
-    Denied: '&cYour kick has been denied!'
-    Emo: '&cYou cannot kick yourself!'
-  Lockdown:
-    Start: '&cLockdown initiated. &4Player Login&c disabled.'
-    End: '&aLockdown ended. &2Player Login&a reenabled.'
-    Status: '&cLockdown is disabled.'
-    LoginMsg: '&4Server is under a lockdown, Try again later!&c Sorry.'
-  Mute:
-    MuteMsgToSender: '&6You have muted &7%victim%&6.'
-    MuteMsgToVictim: '&4You have been muted!'
-    UnmuteMsgToSender: '&6You have unmuted &7%victim%&6.'
-    UnmuteMsgToVictim: '&aYou have been unmuted.'
-    Denied: '&cYour mute has been denied!'
-    Emo: '&cYou cannot mute yourself!'
-    Chat: '&cYour cry falls on deaf ears.'
-  Pardon:
-    Msg: '&7%victim%&6 was released from jail by &7%admin%&6!'
-  PermaBan:
-    MsgToVictim: '&6You have been permabanned by &7%admin%&6. Reason: &7%reason%&6!'
-    MsgToBroadcast: '&7%victim%&6 was permabanned by &7%admin%&6. Reason: &7%reason%&6!'
-    Failed: '&4%victim%&c is already banned.'
-    Online: '&4%victim%&c must be online.'
-    Denied: '&cYour permaban has been denied!'
-    Emo: '&cYou cannot permaban yourself!'
-  Spawn:
-    MsgToVictim: '&cYou have been sent to spawn!'
-    MsgToSender: '&7%victim%&6 is now at spawn!'
-    Failed: '&4%victim%&c is not online.'
-  Starve:
-    MsgToVictim: '&cYou are now starving!'
-    MsgToSender: '&6%victim%&7 is now starving!'
-    Failed: '&4%victim%&c is not online.'
-    Denied: '&cYour starve attempt has been denied!'
-    Emo: '&cYou cannot starve yourself!'
-  TempBan:
-    MsgToVictim: '&6You have been tempbanned by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'
-    MsgToBroadcast: '&7%victim%&6 was tempbanned by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'
-    Failed: '&4%victim%&c is already tempbanned!'
-    Denied: '&cYour tempban has been denied!'
-    Emo: '&cYou cannot tempban yourself!'
-    Login: '&6You have been tempbanned by &7%admin%&6 for &7%time%&6. Reason: &7%reason%&6!'
   TempIpBan:
     MsgToVictim: '&6You have been tempipbanned by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'
     MsgToBroadcast: '&7%victim%&6 was tempipbanned by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'
@@ -237,6 +128,3 @@ Mode:
   Week: Week
   Month: Month
   Year: Year
-#Do Not Change Values Below#
-Config:
-  Version: 3.0

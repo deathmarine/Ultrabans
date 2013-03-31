@@ -1,9 +1,17 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans.commands;
 
@@ -14,68 +22,53 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.Formatting;
 
-public class Import implements CommandExecutor{
-	Ultrabans plugin;
-	public Import(Ultrabans ultraBan) {
-		this.plugin = ultraBan;
+public class Import extends CommandHandler{
+	public Import(Ultrabans instance) {
+		super(instance);
 	}
-	public boolean onCommand(final CommandSender sender, Command command, String label, String[] args) {
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
-			return true;
-		}
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable(){
-			@Override
-			public void run() {
-				String msg = plugin.getConfig().getString("Messages.Import.Loading","Be patient. Loading...");
-				msg=Formatting.formatMessage(msg);
-				sender.sendMessage(ChatColor.GRAY + msg);
-				try {
-					BufferedReader banlist = new BufferedReader(new FileReader("banned-players.txt"));
-					String p;
-					while ((p = banlist.readLine()) != null){
-						if(!p.contains("#")&&p.length()>0){
-							g(p);
-						}
-					}
-					banlist.close();
-					BufferedReader bannedIP = new BufferedReader(new FileReader("banned-ips.txt"));
-					String ip;
-					while ((ip = bannedIP.readLine()) != null){
-						if(ip!=null&&!ip.contains("#")&&ip.length()>0){
-						    String[] args = ip.split("\\|");
-						    String name = args[0].trim();
-							if(!plugin.bannedIPs.contains(name)) plugin.bannedIPs.add(name);
-							String cknullIP = plugin.getUBDatabase().getName(name);
-							if (cknullIP != null){
-								plugin.getUBDatabase().addPlayer(plugin.getUBDatabase().getName(name), "imported", args[2].trim(), 0, 1);
-							}else{
-								plugin.getUBDatabase().setAddress("import", name);
-								plugin.getUBDatabase().addPlayer("import", "imported", args[2].trim(), 0, 1);
-							}
-						}
-					}
-					bannedIP.close();
-					msg = plugin.getConfig().getString("Messages.Import.Completed","System imported the banlist to the database.");
-					msg=Formatting.formatMessage(msg);
-					sender.sendMessage(msg);
-					if(plugin.getLog())
-						plugin.getLogger().info(msg);
-				} catch (IOException e) {
-					msg = plugin.getConfig().getString("Messages.Import.Failed","Could not import ban list.");
-					msg=Formatting.formatMessage(msg);
-					sender.sendMessage(msg);
-					if(plugin.getLog())
-						plugin.getLogger().severe(msg);
+
+	public String command(final CommandSender sender, Command command, String[] args) {
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Import.Loading")));
+		try {
+			BufferedReader banlist = new BufferedReader(new FileReader("banned-players.txt"));
+			String p;
+			while ((p = banlist.readLine()) != null){
+				if(!p.contains("#")&&p.length()>0){
+					g(p);
 				}
 			}
-		});	
-		return true;
+			banlist.close();
+			BufferedReader bannedIP = new BufferedReader(new FileReader("banned-ips.txt"));
+			String ip;
+			while ((ip = bannedIP.readLine()) != null){
+				if(ip!=null&&!ip.contains("#")&&ip.length()>0){
+				    String[] args1 = ip.split("\\|");
+				    String name = args1[0].trim();
+					if(!plugin.bannedIPs.containsKey(name)) 
+						plugin.bannedIPs.put(name, Long.MIN_VALUE);
+					String cknullIP = plugin.getUBDatabase().getName(name);
+					if (cknullIP != null){
+						plugin.getUBDatabase().addPlayer(plugin.getUBDatabase().getName(name), "imported", args1[2].trim(), 0, 1);
+					}else{
+						plugin.getUBDatabase().setAddress("import", name);
+						plugin.getUBDatabase().addPlayer("import", "imported", args1[2].trim(), 0, 1);
+					}
+				}
+			}
+			bannedIP.close();
+		}catch(IOException e){
+			String msg = ChatColor.translateAlternateColorCodes('&', lang.getString("Import.Failed"));
+			sender.sendMessage(msg);
+			if(plugin.getLog())
+				plugin.getLogger().severe(ChatColor.stripColor(msg));
+		}
+		String msg = ChatColor.translateAlternateColorCodes('&', lang.getString("Import.Completed"));
+		if(plugin.getLog())
+			plugin.getLogger().severe(ChatColor.stripColor(msg));
+		return msg;
 	}
 
 	public void g(String line) {
@@ -94,6 +87,7 @@ public class Import implements CommandExecutor{
 		}
 	    String admin = args[2].trim();
 	    String reason = args[4];
+	    plugin.bannedPlayers.put(name, Long.MIN_VALUE);
 		plugin.getUBDatabase().addPlayer(name, reason, admin, temp, type);
 	}
 }

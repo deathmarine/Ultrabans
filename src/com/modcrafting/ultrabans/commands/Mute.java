@@ -1,91 +1,73 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans.commands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
-public class Mute implements CommandExecutor {
-	Ultrabans plugin;
-	public Mute(Ultrabans ultraBan) {
-		this.plugin = ultraBan;
+public class Mute extends CommandHandler{
+	public Mute(Ultrabans instance) {
+		super(instance);
 	}
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
-			return true;
-		}
-    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		Player player = null;
+	
+	public String command(CommandSender sender, Command command, String[] args) {
+		if (args.length < 1) 
+			return lang.getString("Mute.Arguments");
 		String admin = Ultrabans.DEFAULT_ADMIN;
-		if (sender instanceof Player){
-			player = (Player)sender;
-			admin = player.getName();
+		String reason = Ultrabans.DEFAULT_REASON;
+		if (sender instanceof Player)
+			admin = sender.getName();
+		String name = Formatting.expandName(args[0]);
+		if (args.length > 1) {
+			reason = Formatting.combineSplit(1, args);
 		}
-		if (args.length < 1) return false;
-		String p = Formatting.expandName(args[0]); 
-		Player victim = plugin.getServer().getPlayer(p);
+		if(name.equalsIgnoreCase(admin))
+			return lang.getString("Mute.Emo");
+		Player victim = plugin.getServer().getPlayer(name);
 		if(victim != null){
-			if(victim.getName().equalsIgnoreCase(admin)){
-				String bcmsg = config.getString("Messages.Mute.Emo","You cannot mute yourself!");
-				bcmsg = Formatting.formatMessage(bcmsg);
-				sender.sendMessage(bcmsg);
-				return true;
+			if(victim.hasPermission("ultraban.override.mute"))
+				return lang.getString("Messages.Mute.Denied");
+			if (plugin.muted.contains(name.toLowerCase())){
+				plugin.muted.remove(name.toLowerCase());
+		 		victim.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Mute.UnmuteMsgToVictim")));
+				String adminMsgs = lang.getString("Messages.Mute.UnmuteMsgToSender","You have unmuted %victim%.");
+				if(adminMsgs.contains(Ultrabans.VICTIM)) 
+					adminMsgs = adminMsgs.replaceAll(Ultrabans.VICTIM, name);
+				return adminMsgs;
 			}
-			if(victim.hasPermission("ultraban.override.mute")&&!admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN)){
-				String bcmsg = config.getString("Messages.Mute.Denied","Your mute has been denied!");
-				bcmsg = Formatting.formatMessage(bcmsg);
-				sender.sendMessage(bcmsg);
-				return true;
-			}
-			if (plugin.muted.contains(p.toLowerCase())){
-				plugin.muted.remove(p.toLowerCase());
-		 		victim.sendMessage(Formatting.formatMessage(config.getString("Messages.Mute.UnmuteMsgToVictim","You have been unmuted.")));
-				String adminMsgs = config.getString("Messages.Mute.UnmuteMsgToSender","You have unmuted %victim%.");
-				if(adminMsgs.contains(Ultrabans.VICTIM)) adminMsgs = adminMsgs.replaceAll(Ultrabans.VICTIM, p);
-		 		sender.sendMessage(Formatting.formatMessage(adminMsgs));
-				return true;
-			}
-			plugin.muted.add(p.toLowerCase());
-	 		victim.sendMessage(Formatting.formatMessage(config.getString("Messages.Mute.MuteMsgToVictim","You have been muted!")));
-	 		String adminMsgs = config.getString("Messages.Mute.MuteMsgToSender","You have muted %victim%.");
-			if(adminMsgs.contains(Ultrabans.VICTIM)) adminMsgs = adminMsgs.replaceAll(Ultrabans.VICTIM, p);
-			adminMsgs=Formatting.formatMessage(adminMsgs);
-	 		sender.sendMessage(adminMsgs);
-	 		final String fname = p;
-	 		final String fadmin = admin;
-			Bukkit.getScheduler().runTaskAsynchronously(Ultrabans.getPlugin(),new Runnable(){
-				@Override
-				public void run() {
-					Ultrabans.getPlugin().getUBDatabase().addPlayer(fname, "Muted", fadmin, 0, BanType.MUTE.getId());
-				}	
-			});
-			plugin.getLogger().info(fadmin + " muted player " + p + ".");
-		}else{
-			if (plugin.muted.contains(p.toLowerCase())){
-				plugin.muted.remove(p.toLowerCase());
-				String adminMsgs = config.getString("Messages.Mute.UnmuteMsgToSender","You have unmuted %victim%.");
-				if(adminMsgs.contains(Ultrabans.VICTIM)) adminMsgs = adminMsgs.replaceAll(Ultrabans.VICTIM, p);
-		 		sender.sendMessage(Formatting.formatMessage(adminMsgs));
-			}else{
-				sender.sendMessage(ChatColor.RED + "Player must be online!");				
-			}
-		}	
-		return true;	
+			plugin.getAPI().mutePlayer(name, reason, admin);
+	 		victim.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Mute.MuteMsgToVictim")));
+	 		String adminMsgs = ChatColor.translateAlternateColorCodes('&', lang.getString("Mute.MuteMsgToSender"));
+			if(adminMsgs.contains(Ultrabans.VICTIM)) 
+				adminMsgs = adminMsgs.replaceAll(Ultrabans.VICTIM, name);
+			plugin.getLogger().info(ChatColor.stripColor(adminMsgs));
+			return adminMsgs;
+		}
+		if (plugin.muted.contains(name.toLowerCase())){
+			plugin.muted.remove(name.toLowerCase());
+			String adminMsgs = lang.getString("Mute.UnmuteMsgToSender");
+			if(adminMsgs.contains(Ultrabans.VICTIM)) 
+				adminMsgs = adminMsgs.replaceAll(Ultrabans.VICTIM, name);
+	 		return adminMsgs;
+		}				
+		return lang.getString("Mute.Failed");	
 	}
 
 }

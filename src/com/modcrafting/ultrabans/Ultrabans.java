@@ -1,12 +1,23 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans;
+
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -16,16 +27,15 @@ import net.h31ix.updater.Updater.UpdateType;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.modcrafting.ultrabans.commands.Ban;
-import com.modcrafting.ultrabans.commands.Check;
 import com.modcrafting.ultrabans.commands.CheckIP;
+import com.modcrafting.ultrabans.commands.Checkban;
 import com.modcrafting.ultrabans.commands.Clean;
 import com.modcrafting.ultrabans.commands.DupeIP;
-import com.modcrafting.ultrabans.commands.Edit;
 import com.modcrafting.ultrabans.commands.Export;
 import com.modcrafting.ultrabans.commands.Help;
 import com.modcrafting.ultrabans.commands.History;
@@ -54,21 +64,24 @@ import com.modcrafting.ultrabans.db.SQL;
 import com.modcrafting.ultrabans.db.SQLite;
 import com.modcrafting.ultrabans.listeners.UltraBanBlockListener;
 import com.modcrafting.ultrabans.listeners.UltraBanPlayerListener;
-import com.modcrafting.ultrabans.util.EditBan;
-import com.modcrafting.ultrabans.util.Formatting;
+import com.modcrafting.ultrabans.util.BanInfo;
 import com.modcrafting.ultrabans.util.Jailtools;
 
 public class Ultrabans extends JavaPlugin {
-	public HashSet<String> bannedPlayers = new HashSet<String>();
-	public HashSet<String> bannedIPs = new HashSet<String>();
-	public HashSet<String> jailed = new HashSet<String>();
-	public HashSet<String> muted = new HashSet<String>();
-	public Map<String, Long> tempBans = new HashMap<String, Long>();
-	public Map<String, Long> tempJail = new HashMap<String, Long>();
-	public Map<String, EditBan> banEditors = new HashMap<String, EditBan>();
 	
-	public Formatting util = new Formatting();
+	//public HashSet<String> bannedPlayers = new HashSet<String>();
+	//public HashSet<String> bannedIPs = new HashSet<String>();
+	//public HashSet<String> jailed = new HashSet<String>();
+	public HashSet<String> muted = new HashSet<String>();
+	public Map<String, Long> bannedPlayers = new HashMap<String, Long>();
+	public Map<String, Long> bannedIPs = new HashMap<String, Long>();
+	public Map<String, Long> jailed = new HashMap<String, Long>();
+	public Map<String, BanInfo> banEditors = new HashMap<String, BanInfo>();
+
 	public Jailtools jail = new Jailtools(this);
+	public UltrabansAPI api = new UltrabansAPI(this);
+	
+	public YamlConfiguration lang;
 	private Database db;
 	
 	public static final String ADMIN = "%admin%";
@@ -77,6 +90,7 @@ public class Ultrabans extends JavaPlugin {
 	public static final String AMOUNT = "%amt%";
 	public static final String MODE = "%mode%";
 	public static final String TIME = "%time%";
+	
 	public static String DEFAULT_ADMIN;
 	public static String DEFAULT_REASON;
 	public static String DEFAULT_DENY_MESSAGE;
@@ -86,8 +100,8 @@ public class Ultrabans extends JavaPlugin {
 	
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
-		tempBans.clear();
-		tempJail.clear();
+		//tempBans.clear();
+		//tempJail.clear();
 		bannedPlayers.clear();
 		bannedIPs.clear();
 		jailed.clear();
@@ -96,22 +110,41 @@ public class Ultrabans extends JavaPlugin {
 	}
 	
 	public void onEnable() {
-		setConstant(this);
 		long time = System.currentTimeMillis();
+		setConstant(this);
 		this.getDataFolder().mkdir();
 		this.saveDefaultConfig();
 		FileConfiguration config = getConfig();
-		log=config.getBoolean("Log.Enabled",true);
-		DEFAULT_ADMIN=config.getString("Label.Console", "Server");
-		DEFAULT_REASON=config.getString("Label.Reason", "Unsure");
-		DEFAULT_DENY_MESSAGE=ChatColor.RED+config.getString("Messages.Permission","You do not have the required permissions.");
+		log = config.getBoolean("Log.Enabled",true);
+		
+		String la = config.getString("Language", "en-us");
+		File fl = new File(this.getDataFolder(),"/lang/"+la+".yml");
+		if(!fl.exists()){
+			try{
+	            BufferedInputStream in = new BufferedInputStream(this.getResource(la+".yml"));
+	            FileOutputStream fout = new FileOutputStream(fl);
+	            byte[] data = new byte[1024];
+	            int c;
+	            while ((c = in.read(data, 0, 1024)) != -1)
+	                fout.write(data, 0, c);
+	            in.close();
+	            fout.close();
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+		}
+		lang = YamlConfiguration.loadConfiguration(fl);
+		
+		DEFAULT_ADMIN = config.getString("Label.Console", "Server");
+		DEFAULT_REASON = config.getString("Label.Reason", "Unsure");
+		DEFAULT_DENY_MESSAGE = ChatColor.RED + lang.getString("Permission");
 		
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new UltraBanPlayerListener(this), this);
 		pm.registerEvents(new UltraBanBlockListener(this), this);
+		
 		loadCommands();
 
-		PluginDescriptionFile pdf = this.getDescription();
 		//Storage
 		if(config.getString("Database").equalsIgnoreCase("mysql")){
 			db = new SQL(this);
@@ -120,21 +153,9 @@ public class Ultrabans extends JavaPlugin {
 		}
 		db.load();
 		db.loadJailed();
-		//Sync
-		if(config.getBoolean("Sync.Enabled", false)){
-			long t = config.getLong("Sync.Timing", 72000L); 
-			this.getServer().getScheduler().scheduleSyncRepeatingTask(this,new Runnable(){
-				@Override
-				public void run(){
-					onDisable();
-					db.load();
-					db.loadJailed();
-				}
-			},1,t);	
-		}
 		//Updater
 		if(config.getBoolean("AutoUpdater.Enabled",true)){
-			Updater up = new Updater(this,pdf.getName().toLowerCase(),this.getFile(),UpdateType.DEFAULT,true);
+			Updater up = new Updater(this,this.getDescription().getName().toLowerCase(),this.getFile(),UpdateType.DEFAULT,true);
 			if(!up.getResult().equals(UpdateResult.SUCCESS)||up.pluginFile(this.getFile().getName())){
 				if(up.getResult().equals(UpdateResult.FAIL_NOVERSION)){
 					this.getLogger().info("Unable to connect to dev.bukkit.org.");
@@ -145,17 +166,18 @@ public class Ultrabans extends JavaPlugin {
 				this.getLogger().info("Update "+up.getLatestVersionString()+" found please restart your server.");
 			}
 		}
+		
 		this.getLogger().info("Loaded. "+((long) (System.currentTimeMillis()-time)/1000)+" secs.");
 	}
+	
 	public void loadCommands(){
 		getCommand("ban").setExecutor(new Ban(this));
-		getCommand("checkban").setExecutor(new Check(this));
+		getCommand("checkban").setExecutor(new Checkban(this));
 		getCommand("checkip").setExecutor(new CheckIP(this));
 		getCommand("dupeip").setExecutor(new DupeIP(this));
-		getCommand("editban").setExecutor(new Edit(this));
 		getCommand("importbans").setExecutor(new Import(this));
 		getCommand("exportbans").setExecutor(new Export(this));
-		getCommand("uhelp").setExecutor(new Help());
+		getCommand("uhelp").setExecutor(new Help(this));
 		getCommand("ipban").setExecutor(new Ipban(this));
 		getCommand("kick").setExecutor(new Kick(this));
 		getCommand("ureload").setExecutor(new Reload(this));
@@ -193,6 +215,14 @@ public class Ultrabans extends JavaPlugin {
 
 	public boolean getLog() {
 		return log;
+	}
+
+	public YamlConfiguration getLangConfig() {
+		return lang;
+	}
+
+	public UltrabansAPI getAPI() {
+		return api;
 	}
 	
 }

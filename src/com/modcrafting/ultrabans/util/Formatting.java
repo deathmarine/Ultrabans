@@ -1,66 +1,63 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans.util;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-
 import com.modcrafting.ultrabans.Ultrabans;
 
 public class Formatting {
 	public static String expandName(String p) {
-		int m = 0;
-		String Result = "";
+		HashSet<String> set = new HashSet<String>();
 		for (int n = 0; n < Bukkit.getOnlinePlayers().length; n++) {
-			String str = Bukkit.getOnlinePlayers()[n].getName();
-			if (StringUtils.containsIgnoreCase(str, p)) {
-				m++;
-				Result = str;
-				if(m==2) {
-					return null;
-				}
+			String name = Bukkit.getOnlinePlayers()[n].getName();
+			if (name.equalsIgnoreCase(p))
+				return name;
+			if(containsIgnoreCase(name, p)){
+				set.add(name);
 			}
-			if (str.equalsIgnoreCase(p))
-				return str;
 		}
-		if (m == 1)
-			return Result;
-		if (m > 1) {
-			return null;
-		}
-		if (m < 1) {
-			return p;
+		if(set.size()==1){
+			return (String) set.toArray()[0];
 		}
 		return p;
 	}
-	public static String combineSplit(int startIndex, String[] string, String seperator) {
+	
+	private static boolean containsIgnoreCase(String search, String entry){
+		return search.toLowerCase().contains(entry.toLowerCase());
+	}
+	
+	public static String combineSplit(int startIndex, String[] string) {
 		StringBuilder builder = new StringBuilder();
 		if(string.length >= 1){
 			for (int i = startIndex; i < string.length; i++) {
 				builder.append(string[i]);
-				builder.append(seperator);
+				builder.append(" ");
 			}
 
-			if(builder.length() > seperator.length()){
-				builder.deleteCharAt(builder.length() - seperator.length()); // remove
+			if(builder.length() > 1){
+				builder.deleteCharAt(builder.length()-1);
 				return builder.toString();
 			}
 		}
 		return Ultrabans.DEFAULT_REASON;
-	}
-	public static String formatMessage(String str){
-		return ChatColor.translateAlternateColorCodes('&', str);
 	}
 	public static String banType(int num){
 		switch(num){

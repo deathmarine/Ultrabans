@@ -1,73 +1,51 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-
 import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.Formatting;
 
-public class Starve implements CommandExecutor{
-	Ultrabans plugin;
-	public Starve(Ultrabans ultraBan) {
-		this.plugin = ultraBan;
+public class Starve extends CommandHandler{
+	public Starve(Ultrabans instance) {
+		super(instance);
 	}
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-    	YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
+
+	public String command(final CommandSender sender, Command command, String[] args) {
+		if (args.length < 1)
+			return lang.getString("Starve.Arguments");
 		String admin = Ultrabans.DEFAULT_ADMIN;
-		if (sender instanceof Player){
+		if(sender instanceof Player)
 			admin = sender.getName();
+		String name = Formatting.expandName(args[0]); 
+		Player victim = plugin.getServer().getPlayer(name);
+		if(victim == null){
+			return lang.getString("Starve.Failed");
 		}
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
-			return true;
-		}
-		if (args.length < 1) return false;
-		String p = args[0];
-		p = Formatting.expandName(p); 
-		Player victim = plugin.getServer().getPlayer(p);
-		String idoit = null;
-		if (victim != null){
-			idoit = victim.getName();
-			if(victim.getName() == admin){
-				String bcmsg = config.getString("Messages.Starve.Emo","You cannot starve yourself!");
-				bcmsg = Formatting.formatMessage(bcmsg);
-				sender.sendMessage(bcmsg);
-				return true;
-			}
-			if(victim.hasPermission( "ultraban.override.starve")&&!admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN)){
-				String bcmsg = config.getString("Messages.Starve.Denied","Your starve attempt has been denied!");
-				bcmsg = Formatting.formatMessage(bcmsg);
-				sender.sendMessage(bcmsg);
-				return true;
-			}
-		}else{
-			String smvic = config.getString("Messages.Starve.Failed","%victim% is not online.");
-			if(smvic.contains(Ultrabans.VICTIM))smvic=smvic.replaceAll(Ultrabans.VICTIM, p);
-			smvic=Formatting.formatMessage(smvic);
-			sender.sendMessage(ChatColor.GRAY + smvic);
-			return true;
-		}
-		String smvic = config.getString("Messages.Starve.MsgToVictim","You are now starving!");
-		smvic=Formatting.formatMessage(smvic);
-		victim.sendMessage(smvic);
+		victim.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Starve.MsgToVictim")));
 		victim.setFoodLevel(0);	
 		
-		String bcmsg = config.getString("Messages.Starve.MsgToSender","%victim% is now starving!");
-		if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
-		if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, idoit);
-		bcmsg=Formatting.formatMessage(bcmsg);
-		sender.sendMessage(bcmsg);
-		return true;
+		String bcmsg = lang.getString("Starve.MsgToSender");
+		if(bcmsg.contains(Ultrabans.ADMIN)) 
+			bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
+		if(bcmsg.contains(Ultrabans.VICTIM)) 
+			bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, name);
+		return bcmsg;
 	}
 }

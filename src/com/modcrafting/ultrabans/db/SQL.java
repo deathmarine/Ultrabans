@@ -1,9 +1,17 @@
-/* COPYRIGHT (c) 2012 Joshua McCurry
- * This work is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License
- * and use of this software or its code is an agreement to this license.
- * A full copy of this license can be found at
- * http://creativecommons.org/licenses/by-nc-sa/3.0/. 
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.modcrafting.ultrabans.db;
 
@@ -20,7 +28,7 @@ import java.util.logging.Level;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.EditBan;
+import com.modcrafting.ultrabans.util.BanInfo;
 
 public class SQL implements Database{
 	Ultrabans plugin;
@@ -68,13 +76,13 @@ public class SQL implements Database{
 				while (rs.next()){
 					String pName = rs.getString("name").toLowerCase();
 					long pTime = rs.getLong("temptime");
-					plugin.bannedPlayers.add(pName);
+					plugin.bannedPlayers.put(pName, Long.MIN_VALUE);
 					if(pTime != 0){
-						plugin.tempBans.put(pName,pTime);
+						plugin.bannedPlayers.put(pName,pTime);
 					}
 					if(rs.getInt("type") == 1){
 						String ip = getAddress(pName);
-						plugin.bannedIPs.add(ip);
+						plugin.bannedIPs.put(ip, Long.MIN_VALUE);
 					}
 				}
 				close(ps,rs);
@@ -330,7 +338,7 @@ public class SQL implements Database{
 		}
 	}
 	@Override
-	public List<EditBan> listRecords(String name, CommandSender sender) {
+	public List<BanInfo> listRecords(String name, CommandSender sender) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -339,9 +347,9 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ?");
 			ps.setString(1, name);
 			rs = ps.executeQuery();
-			List<EditBan> bans = new ArrayList<EditBan>();
+			List<BanInfo> bans = new ArrayList<BanInfo>();
 			while (rs.next()){
-				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
+				bans.add(new BanInfo(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
 			close(ps,rs);
 			return bans;
@@ -351,7 +359,7 @@ public class SQL implements Database{
 		return null;
 	}
 	@Override
-	public List<EditBan> listRecent(String number){
+	public List<BanInfo> listRecent(String number){
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -361,9 +369,9 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + bantable + " ORDER BY time DESC LIMIT ?");
 			ps.setInt(1, num);
 			rs = ps.executeQuery();
-			List<EditBan> bans = new ArrayList<EditBan>();
+			List<BanInfo> bans = new ArrayList<BanInfo>();
 			while (rs.next()){
-				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
+				bans.add(new BanInfo(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
 			close(ps,rs);
 			return bans;
@@ -376,7 +384,7 @@ public class SQL implements Database{
 	}
 
 	@Override
-	public List<EditBan> listRecentBans(String number){
+	public List<BanInfo> listRecentBans(String number){
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -386,9 +394,9 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE type = 0 OR type = 1 ORDER BY time DESC LIMIT ?");
 			ps.setInt(1, num);
 			rs = ps.executeQuery();
-			List<EditBan> bans = new ArrayList<EditBan>();
+			List<BanInfo> bans = new ArrayList<BanInfo>();
 			while (rs.next()){
-				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
+				bans.add(new BanInfo(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
 			close(ps,rs);
 			return bans;
@@ -400,7 +408,7 @@ public class SQL implements Database{
 		return null;
 	}
 	@Override
-	public EditBan loadFullRecord(String pName) {
+	public BanInfo loadFullRecord(String pName) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -409,9 +417,9 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ?");
 			ps.setString(1, pName);
 			rs = ps.executeQuery();
-			EditBan eb = null;
+			BanInfo eb = null;
 			while (rs.next()){
-				eb = new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
+				eb = new BanInfo(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
 			}
 			close(ps,rs);
 			return eb;
@@ -421,7 +429,7 @@ public class SQL implements Database{
 		return null;
 	}
 	@Override
-	public List<EditBan> maxWarns(String Name) {
+	public List<BanInfo> maxWarns(String Name) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -431,9 +439,9 @@ public class SQL implements Database{
 			ps.setString(1, Name);
 			ps.setInt(2, 2);
 			rs = ps.executeQuery();
-			List<EditBan> bans = new ArrayList<EditBan>();
+			List<BanInfo> bans = new ArrayList<BanInfo>();
 			while (rs.next()){
-				bans.add(new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
+				bans.add(new BanInfo(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type")));
 			}
 			close(ps,rs);
 			return bans;
@@ -443,7 +451,7 @@ public class SQL implements Database{
 		return null;
 	}
 	@Override
-	public EditBan loadFullRecordFromId(int id) {
+	public BanInfo loadFullRecordFromId(int id) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -452,9 +460,9 @@ public class SQL implements Database{
 			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE id = ?");
 			ps.setInt(1, id);
 			rs = ps.executeQuery();
-			EditBan eb = null;
+			BanInfo eb = null;
 			while (rs.next()){
-				eb = new EditBan(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
+				eb = new BanInfo(rs.getInt("id"),rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("time"),rs.getLong("temptime"),rs.getInt("type"));
 			}
 			close(ps,rs);
 			return eb;
@@ -464,7 +472,7 @@ public class SQL implements Database{
 		return null;
 	}
 	@Override
-	public void saveFullRecord(EditBan ban){
+	public void saveFullRecord(BanInfo ban){
 		Connection conn = null;
 		PreparedStatement ps = null;
 		try {
@@ -534,9 +542,10 @@ public class SQL implements Database{
 			while (rs.next()){
 			String pName = rs.getString("name").toLowerCase();
 			long pTime = rs.getLong("temptime");
-			plugin.jailed.add(pName);
 				if(pTime != 0){
-					plugin.tempJail.put(pName,pTime);
+					plugin.jailed.put(pName,pTime);
+				}else{
+					plugin.jailed.put(pName,Long.MIN_VALUE);
 				}
 			}
 			close(ps,rs);

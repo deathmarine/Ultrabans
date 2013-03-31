@@ -1,39 +1,45 @@
+/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+ * This file is part of Ultrabans.
+ * Ultrabans is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Ultrabans is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Ultrabans.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.modcrafting.ultrabans.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
 import com.modcrafting.ultrabans.Ultrabans;
 
-public class Status implements CommandExecutor {
-	Ultrabans plugin;
-	public Status(Ultrabans instance){
-		plugin = instance;
+public class Status extends CommandHandler{
+	public Status(Ultrabans instance) {
+		super(instance);
 	}
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] arg3) {
-		if(!sender.hasPermission(command.getPermission())){
-			sender.sendMessage(Ultrabans.DEFAULT_DENY_MESSAGE);
-			return true;
-		}
-		sender.sendMessage(ChatColor.BLUE+"===Status===");
-		sender.sendMessage(ChatColor.GRAY+"Currently Caching: "+ChatColor.AQUA+String.valueOf(plugin.bannedPlayers.size())+" Bans");
-		sender.sendMessage(ChatColor.GRAY+"Currently Caching: "+ChatColor.AQUA+String.valueOf(plugin.bannedIPs.size())+" IPBans");
-		sender.sendMessage(ChatColor.GRAY+"Currently Caching: "+ChatColor.AQUA+String.valueOf(plugin.jailed.size())+" Jailed");
+
+	public String command(final CommandSender sender, Command command, String[] args) {
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Status.CacheHeader")));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Status.CacheBans")
+				.replace(Ultrabans.AMOUNT,String.valueOf(plugin.bannedPlayers.size()))));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Status.CacheIPBans")
+				.replace(Ultrabans.AMOUNT,String.valueOf(plugin.bannedIPs.size()))));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Status.CacheJail")
+				.replace(Ultrabans.AMOUNT,String.valueOf(plugin.jailed.size()))));
 		int counter=0;
-		for(String a:plugin.bannedPlayers){
-			counter=counter+a.getBytes().length;
-		}
-		for(String a:plugin.bannedIPs){
-			counter=counter+a.getBytes().length;
-		}
-		for(String a:plugin.jailed){
-			counter=counter+a.getBytes().length;
-		}
-		//Close enough.
-		sender.sendMessage(ChatColor.GRAY+"Estimated Usage: "+ChatColor.AQUA+String.valueOf(counter)+" bytes.");
-		return true;
+		counter = counter+plugin.bannedPlayers.toString().getBytes().length;
+		counter = counter+plugin.bannedIPs.toString().getBytes().length;
+		counter = counter+plugin.jailed.toString().getBytes().length;
+        String msg = lang.getString("Status.Usage");
+        if(msg.contains(Ultrabans.AMOUNT))
+        	msg.replace(Ultrabans.AMOUNT, String.valueOf(counter));
+		return msg;
 	}
-	
 }
