@@ -118,9 +118,12 @@ public class Ultrabans extends JavaPlugin {
 		log = config.getBoolean("Log.Enabled",true);
 		
 		String la = config.getString("Language", "en-us");
-		File fl = new File(this.getDataFolder(),"/lang/"+la+".yml");
+		File fls = new File(this.getDataFolder(),"./lang/");
+		fls.mkdir();
+		File fl = new File(fls,"/"+la+".yml");
 		if(!fl.exists()){
 			try{
+				fl.createNewFile();
 	            BufferedInputStream in = new BufferedInputStream(this.getResource(la+".yml"));
 	            FileOutputStream fout = new FileOutputStream(fl);
 	            byte[] data = new byte[1024];
