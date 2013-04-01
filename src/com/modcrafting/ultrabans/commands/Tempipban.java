@@ -71,13 +71,13 @@ public class Tempipban  extends CommandHandler {
 					return lang.getString("Tempban.Denied");
 				String msgvic = lang.getString("TempIpBan.MsgToVictim");
 				if(msgvic.contains(Ultrabans.ADMIN)) 
-					msgvic = msgvic.replaceAll(Ultrabans.ADMIN, admin);
+					msgvic = msgvic.replace(Ultrabans.ADMIN, admin);
 				if(msgvic.contains(Ultrabans.REASON))
-					msgvic = msgvic.replaceAll(Ultrabans.REASON, reason);
+					msgvic = msgvic.replace(Ultrabans.REASON, reason);
 				if(msgvic.contains(Ultrabans.AMOUNT)) 
-					msgvic = msgvic.replaceAll(Ultrabans.AMOUNT, amt);
+					msgvic = msgvic.replace(Ultrabans.AMOUNT, amt);
 				if(msgvic.contains(Ultrabans.MODE)) 
-					msgvic = msgvic.replaceAll(Ultrabans.MODE, mode);
+					msgvic = msgvic.replace(Ultrabans.MODE, mode);
 				victim.getPlayer().kickPlayer(ChatColor.translateAlternateColorCodes('&', msgvic));
 			}
 			name = victim.getName();
@@ -96,22 +96,22 @@ public class Tempipban  extends CommandHandler {
 			plugin.getServer().dispatchCommand(sender, sb.toString());
 			String failed = lang.getString("TempIpBan.IPNotFound");
 			if(failed.contains(Ultrabans.VICTIM))
-				failed = failed.replaceAll(Ultrabans.VICTIM, name);
+				failed = failed.replace(Ultrabans.VICTIM, name);
 			return failed;
 		}
 		
 		plugin.getAPI().tempipbanPlayer(name, reason, temp, admin);
 		String bcmsg = lang.getString("TempIpBan.MsgToBroadcast");
 		if(bcmsg.contains(Ultrabans.ADMIN)) 
-			bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
+			bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);
 		if(bcmsg.contains(Ultrabans.REASON)) 
-			bcmsg = bcmsg.replaceAll(Ultrabans.REASON, reason);
+			bcmsg = bcmsg.replace(Ultrabans.REASON, reason);
 		if(bcmsg.contains(Ultrabans.VICTIM)) 
-			bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, name);
+			bcmsg = bcmsg.replace(Ultrabans.VICTIM, name);
 		if(bcmsg.contains(Ultrabans.AMOUNT)) 
-			bcmsg = bcmsg.replaceAll(Ultrabans.AMOUNT, amt);
+			bcmsg = bcmsg.replace(Ultrabans.AMOUNT, amt);
 		if(bcmsg.contains(Ultrabans.MODE)) 
-			bcmsg = bcmsg.replaceAll(Ultrabans.MODE, mode);
+			bcmsg = bcmsg.replace(Ultrabans.MODE, mode);
 		if(broadcast){
 			plugin.getServer().broadcastMessage(bcmsg);
 		}else{

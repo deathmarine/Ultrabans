@@ -40,9 +40,9 @@ public class Pardon extends CommandHandler{
 				plugin.jailed.remove(name.toLowerCase());
 			String bcmsg = lang.getString("Pardon.Msg");
 			if(bcmsg.contains(Ultrabans.ADMIN)) 
-				bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
+				bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);
 			if(bcmsg.contains(Ultrabans.VICTIM)) 
-				bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, name);
+				bcmsg = bcmsg.replace(Ultrabans.VICTIM, name);
 			plugin.getAPI().pardonPlayer(name, admin);
 			Player victim = plugin.getServer().getPlayer(name);
 			if(victim != null){

@@ -15,13 +15,9 @@
  */
 package com.modcrafting.ultrabans.listeners;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -31,11 +27,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-
 import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.Formatting;
 
@@ -55,7 +51,7 @@ public class UltraBanPlayerListener implements Listener{
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerLogin(PlayerLoginEvent event){
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		if(plugin.bannedPlayers.containsKey(player.getName().toLowerCase())){
 			String reason = plugin.getUBDatabase().getBanReason(player.getName());
 			String admin = plugin.getUBDatabase().getAdmin(player.getName());
@@ -103,21 +99,7 @@ public class UltraBanPlayerListener implements Listener{
 			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, lockMsgLogin);
 			plugin.getLogger().info(player.getName() + " attempted to join during lockdown.");
 		}
-	}
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-	public void onPlayerJoin(final PlayerJoinEvent event){
-		final Player player = event.getPlayer();
-		final String ip = player.getAddress().getAddress().getHostAddress();
-		plugin.getUBDatabase().setAddress(player.getName().toLowerCase(), ip);
-		if(plugin.bannedIPs.containsKey(ip)){
-			event.setJoinMessage(null);
-			String adminMsg = config.getString("Messages.IPBan.Login", "Your IP is banned!");
-			//adminMsg=Formatting.formatMessage(adminMsg);
-			player.kickPlayer(adminMsg);
-		}
-		if(!plugin.getUBDatabase().matchAddress(player.getName(), ip)){
-			plugin.getUBDatabase().updateAddress(player.getName(), ip);
-		}
+		
 		if(!player.hasPermission("ultraban.override.dupeip")&&config.getBoolean("Login.DupeCheck.Enable", true)){
 			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,new Runnable(){
 				@Override
@@ -136,6 +118,23 @@ public class UltraBanPlayerListener implements Listener{
 				}
 			},20L);			
 		}
+	 	if(plugin.jailed.get(player.getName().toLowerCase()) != null)
+	 		tempjailCheck(player);
+	}
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onAsyncLogin(AsyncPlayerPreLoginEvent event){
+		//final Player player = event.getPlayer();
+		final String ip = event.getAddress().getHostAddress();
+		//TODO: from above plugin.getUBDatabase().setAddress(player.getName().toLowerCase(), ip);
+		if(plugin.bannedIPs.containsKey(ip)){
+			//event.setJoinMessage(null);
+			String adminMsg = config.getString("Messages.IPBan.Login", "Your IP is banned!");
+			//adminMsg=Formatting.formatMessage(adminMsg);
+			//player.kickPlayer(adminMsg);
+			event.disallow(Result.KICK_BANNED, ChatColor.translateAlternateColorCodes('&', adminMsg));
+		}
+		String player_name = plugin.getUBDatabase().getName(ip);
+		
 		/*
 		//Shows 0 considering the first keepalive packet hasn't been sent.
 		if(config.getBoolean("Login.PingCheck.Enable",true)){
@@ -169,27 +168,6 @@ public class UltraBanPlayerListener implements Listener{
 			}
 		}
 		*/
-		if(config.getBoolean("Login.ProxyPingBack.Enable",false)){ //TODO UnderConstruction
-			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
-				@Override
-				public void run() {
-					try {
-						int to = config.getInt("Login.ProxyPingBack.Timeout",10000);
-						InetAddress tip = InetAddress.getByName(ip);
-					 	if(!tip.isReachable(to)){
-					 		plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "kick "+event.getPlayer()+" Proxy.");
-					 	}
-					} catch (UnknownHostException e) {
-				 		plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "kick "+event.getPlayer()+" Proxy.");
-					} catch (IOException e) {
-				 		plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), "kick "+event.getPlayer()+" Proxy.");
-					}
-				}
-				
-			});
-		}
-	 	if(plugin.jailed.get(player.getName().toLowerCase()) != null)tempjailCheck(player);
-		plugin.getLogger().info("Logged " + player.getName() + " connecting from ip:" + ip);
 	}
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event){

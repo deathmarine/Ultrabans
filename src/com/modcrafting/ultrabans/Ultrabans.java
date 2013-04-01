@@ -21,6 +21,8 @@ import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 import net.h31ix.updater.Updater;
 import net.h31ix.updater.Updater.UpdateResult;
 import net.h31ix.updater.Updater.UpdateType;
@@ -77,7 +79,7 @@ public class Ultrabans extends JavaPlugin {
 	public Map<String, Long> bannedIPs = new HashMap<String, Long>();
 	public Map<String, Long> jailed = new HashMap<String, Long>();
 	public Map<String, BanInfo> banEditors = new HashMap<String, BanInfo>();
-
+	public Set<String> proxy = new HashSet<String>();
 	public Jailtools jail = new Jailtools(this);
 	public UltrabansAPI api = new UltrabansAPI(this);
 	

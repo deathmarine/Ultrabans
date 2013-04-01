@@ -74,15 +74,15 @@ public class Unban extends CommandHandler {
 				plugin.getUBDatabase().removeFromBanlist(pname);			
 			}
 			String bcmsg = lang.getString("Unban.MsgToBroadcast", "%victim% was unbanned by %admin%!");
-			bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
-			bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, name);
+			bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);
+			bcmsg = bcmsg.replace(Ultrabans.VICTIM, name);
 			plugin.getServer().broadcastMessage(bcmsg);
 			return null;
 		}
 				
 		if(plugin.getUBDatabase().permaBan(name.toLowerCase())){
 			String perma = config.getString("Messages.Unban.PermaBanned");
-			perma = perma.replaceAll(Ultrabans.VICTIM, name);
+			perma = perma.replace(Ultrabans.VICTIM, name);
 			if(plugin.getLog())
 				plugin.getLogger().info(perma);
 			return perma;
@@ -120,7 +120,7 @@ public class Unban extends CommandHandler {
 			return null;
 		}
 		String failed = config.getString("Messages.Unban.Failed", "%victim% is already unbanned!");
-		failed = failed.replaceAll(Ultrabans.VICTIM, name);
+		failed = failed.replace(Ultrabans.VICTIM, name);
 		return failed;
 	}
 }

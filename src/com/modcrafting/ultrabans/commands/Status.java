@@ -37,9 +37,6 @@ public class Status extends CommandHandler{
 		counter = counter+plugin.bannedPlayers.toString().getBytes().length;
 		counter = counter+plugin.bannedIPs.toString().getBytes().length;
 		counter = counter+plugin.jailed.toString().getBytes().length;
-        String msg = lang.getString("Status.Usage");
-        if(msg.contains(Ultrabans.AMOUNT))
-        	msg.replace(Ultrabans.AMOUNT, String.valueOf(counter));
-		return msg;
+		return lang.getString("Status.Usage").replace(Ultrabans.AMOUNT, String.valueOf(counter));
 	}
 }

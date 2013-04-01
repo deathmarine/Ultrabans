@@ -19,6 +19,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.Formatting;
@@ -62,7 +63,7 @@ public class Ban extends CommandHandler {
 		if(victim != null){
 			if(victim.isOnline()){
 				if(victim.getPlayer().hasPermission("ultraban.override.ban") &&
-						!admin.equalsIgnoreCase(Ultrabans.ADMIN))
+						!(sender instanceof ConsoleCommandSender))
 					return lang.getString("Ban.Denied");
 				String vicmsg = lang.getString("Ban.MsgToVictim");
 				if(vicmsg.contains(Ultrabans.ADMIN))
@@ -85,13 +86,13 @@ public class Ban extends CommandHandler {
 			Formatting.deletePlyrdat(name);
 		if(config.getBoolean("ClearWarnOnBan",false)) 
 			plugin.getAPI().clearWarn(name);
+		if(plugin.getLog())
+			plugin.getLogger().info(ChatColor.stripColor(bcmsg));
 		if(broadcast){
 			plugin.getServer().broadcastMessage(bcmsg);
 		}else{
 			sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
 		}
-		if(plugin.getLog())
-			plugin.getLogger().info(ChatColor.stripColor(bcmsg));
 		return null;
 	}
 }

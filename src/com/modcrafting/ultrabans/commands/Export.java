@@ -60,22 +60,16 @@ public class Export extends CommandHandler{
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 		Date now = new Date();
 		now.setTime(System.currentTimeMillis());
-	    StringBuilder localStringBuilder = new StringBuilder();
-	    localStringBuilder.append(player);
-	    localStringBuilder.append("|");
-	    localStringBuilder.append(format.format(now));
-	    localStringBuilder.append("|");
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(player).append("|").append(format.format(now)).append("|");
 	    String admin = plugin.getUBDatabase().getAdmin(player);
 	    if(admin==null||admin.equalsIgnoreCase("")) 
 	    	admin = "Ultrabans";
-	    localStringBuilder.append(admin);
-	    localStringBuilder.append("|");
-	    localStringBuilder.append("Forever");
-	    localStringBuilder.append("|");
+	    sb.append(admin).append("|").append("Forever").append("|");
 	    String reason = plugin.getUBDatabase().getBanReason(player);
 	    if(reason.equalsIgnoreCase("")) 
 	    	reason = "Exported from Ultrabans";
-	    localStringBuilder.append(reason);
-	    return localStringBuilder.toString();
+	    sb.append(reason);
+	    return sb.toString();
 	}
 }

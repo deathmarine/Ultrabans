@@ -116,13 +116,13 @@ Starve:
   MsgToSender: '&6%victim%&7 is now starving!'
   Failed: '&4%victim%&c is not online.'
 Status:
-  Usage: '&6Estimated Usage: &7%amt%  bytes.'
+  Usage: '&6Estimated Usage: &7%amt% bytes.'
   CacheHeader: '&7--- [&6Currently Loaded&7] ---'
   CacheBans: '&6All Banned Players: &7%amt%'
   CacheIPBans: '&6All IPs Banned: &7%amt%'
   CacheJail: '&6Jailed Players: &7%amt%'
 Tempban:
-  Arguments: '&f/tempban {player} (-s/-a) {amt} {sec/min/hour/day} {Reason} \n&4Not Enough Arguments'
+  Arguments: '&f/tempban {player} (-s/-a) {amt} {sec/min/hour/day} {Reason} &4Not Enough Arguments'
   MsgToVictim: '&6You have been tempbanned by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'
   MsgToBroadcast: '&7%victim%&6 was tempbanned by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'
   Failed: '&4%victim%&c is already tempbanned!'
@@ -130,7 +130,7 @@ Tempban:
   Emo: '&cYou cannot tempban yourself!'
   Login: '&6You have been tempbanned by &7%admin%&6 for &7%time%&6. Reason: &7%reason%&6!'
 TempIpBan:
-  Arguments: '&f/tempipban {player} (-s/-a) {amt} {sec/min/hour/day} {Reason} \n&4Not Enough Arguments'
+  Arguments: '&f/tempipban {player} (-s/-a) {amt} {sec/min/hour/day} {Reason} &4Not Enough Arguments'
   MsgToVictim: '&6You have been tempipbanned by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'
   MsgToBroadcast: '&7%victim%&6 was tempipbanned by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'
   Failed: '&4%victim%&c is already tempipbanned!'
@@ -138,7 +138,7 @@ TempIpBan:
   Emo: '&cYou cannot tempipban yourself!'
   IPNotFound: '&cIP address not found.&6 Processed as a normal tempban for &7%victim%&6!'
 TempJail:
-  Arguments: '&f/tempjail {player} (-s/-a) {amt} {sec/min/hour/day} {Reason} \n&4Not Enough Arguments'
+  Arguments: '&f/tempjail {player} (-s/-a) {amt} {sec/min/hour/day} {Reason} &4Not Enough Arguments'
   MsgToVictim: '&6You have been tempjailed by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'
   MsgToBroadcast: '&7%victim%&6 was tempjailed by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'
   Failed: '&4%victim%&c is already jailed!'

@@ -35,7 +35,7 @@ public class History extends CommandHandler{
 		List<BanInfo> bans = plugin.getUBDatabase().listRecent(args[0]);
 		if(bans.size() < 1)
 			return lang.getString("History.Failed");
-		String msg = lang.getString("Messages.History.Header");
+		String msg = lang.getString("History.Header");
 		if(msg.contains(Ultrabans.AMOUNT)) 
 			msg = msg.replace(Ultrabans.AMOUNT, args[0]);
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));

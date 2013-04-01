@@ -43,9 +43,9 @@ public class Spawn extends CommandHandler{
 		
 		String bcmsg = lang.getString("Spawn.MsgToSender");
 		if(bcmsg.contains(Ultrabans.ADMIN)) 
-			bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, admin);
+			bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);
 		if(bcmsg.contains(Ultrabans.VICTIM)) 
-			bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, name);
+			bcmsg = bcmsg.replace(Ultrabans.VICTIM, name);
 		return bcmsg;
 	}
 }
