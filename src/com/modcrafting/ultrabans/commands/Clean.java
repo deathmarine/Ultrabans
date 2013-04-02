@@ -15,8 +15,7 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import java.util.List;
-
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
@@ -29,9 +28,10 @@ public class Clean extends CommandHandler{
 	
 	public String command(final CommandSender sender, Command command, String[] args) {
 		int count = 0;
-		List<String> list = plugin.getUBDatabase().getBans();
-		for(String name:list){
-			if(Formatting.deletePlyrdat(name)) count++;
+		for(String name:plugin.cache.keySet()){
+			OfflinePlayer of = plugin.getServer().getOfflinePlayer(name);
+			if(of!=null && Formatting.deletePlyrdat(of.getName())) 
+				count++;
 		}
 		String msg = lang.getString("Clean.Complete");
 		if(msg.contains(Ultrabans.AMOUNT)) 

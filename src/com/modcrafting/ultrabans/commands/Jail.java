@@ -21,6 +21,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
 public class Jail extends CommandHandler{
@@ -64,11 +66,15 @@ public class Jail extends CommandHandler{
 		}
 		if(name.equalsIgnoreCase(admin))
 			return lang.getString("Jail.Emo");
-		if(plugin.jailed.containsKey(name.toLowerCase())){
-			String msg = lang.getString("Jail.Failed");
-			if(msg.contains(Ultrabans.VICTIM)) 
-				msg = msg.replace(Ultrabans.VICTIM, name);
-			return msg;
+		if(plugin.cache.containsKey(name.toLowerCase())){
+			for(BanInfo info: plugin.cache.get(name.toLowerCase())){
+				if(info.getType() == BanType.JAIL.getId()){
+					String msg = lang.getString("Jail.Failed");
+					if(msg.contains(Ultrabans.VICTIM)) 
+						msg = msg.replace(Ultrabans.VICTIM, name);
+					return msg;
+				}
+			}
 		}
 		OfflinePlayer victim = plugin.getServer().getOfflinePlayer(name);
 		if(victim !=null){

@@ -21,6 +21,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
 public class Perma extends CommandHandler {
@@ -53,11 +55,15 @@ public class Perma extends CommandHandler {
 				reason = Formatting.combineSplit(1, args);
 			}
 		}
-		if(plugin.bannedPlayers.containsKey(name.toLowerCase())){
-			String failed = lang.getString("PermaBan.Failed");
-			if(failed.contains(Ultrabans.VICTIM))
-				failed = failed.replace(Ultrabans.VICTIM, name);
-			return failed;
+		if(plugin.cache.containsKey(name.toLowerCase())){
+			for(BanInfo info: plugin.cache.get(name.toLowerCase())){
+				if(info.getType() == BanType.BAN.getId()){
+					String failed = lang.getString("PermaBan.Failed");
+					if(failed.contains(Ultrabans.VICTIM))
+						failed = failed.replace(Ultrabans.VICTIM, name);
+					return failed; 					
+				}
+			}
 		}
 		OfflinePlayer victim = plugin.getServer().getOfflinePlayer(name);
 		if(victim != null){

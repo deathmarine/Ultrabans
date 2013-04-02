@@ -22,6 +22,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 public class Tempipban  extends CommandHandler {
 	public Tempipban(Ultrabans instance) {
@@ -84,9 +86,17 @@ public class Tempipban  extends CommandHandler {
 		}
 		String offlineip = plugin.getUBDatabase().getAddress(name);
 		if(offlineip != null){
-			
-			//TODO check first and catch already ip banned
-			plugin.bannedIPs.put(offlineip, tempTime);
+			if(plugin.cacheIP.containsKey(offlineip)){
+				for(BanInfo info: plugin.cache.get(offlineip)){
+					if(info.getType() == BanType.TEMPBAN.getId() 
+					|| info.getType() == BanType.BAN.getId()){
+						String failed = lang.getString("TempIpBan.Failed");
+						if(failed.contains(Ultrabans.VICTIM))
+							failed = failed.replace(Ultrabans.VICTIM, name);
+						return failed;
+					}
+				}
+			}
 		}else{
 			StringBuilder sb = new StringBuilder();
 			sb.append("tempban ").append(name+" ");
@@ -100,7 +110,7 @@ public class Tempipban  extends CommandHandler {
 			return failed;
 		}
 		
-		plugin.getAPI().tempipbanPlayer(name, reason, temp, admin);
+		plugin.getAPI().tempipbanPlayer(name, offlineip, reason, temp, admin);
 		String bcmsg = lang.getString("TempIpBan.MsgToBroadcast");
 		if(bcmsg.contains(Ultrabans.ADMIN)) 
 			bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);

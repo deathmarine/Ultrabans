@@ -24,12 +24,21 @@ public enum BanType {
 	JAIL(6),
 	MUTE(7),
 	INFO(8),
-	PERMA(9);
+	PERMA(9),
+	TEMPBAN(10),
+	TEMPIPBAN(11),
+	TEMPJAIL(12);
 	int id;
 	private BanType(int i){
 		id=i;
 	}
 	public int getId(){
 		return id;
+	}
+	public static BanType fromID(int type){
+		for(BanType tp:BanType.values())
+			if(tp.getId()==type)
+				return tp;
+		return BAN;
 	}
 }

@@ -16,6 +16,8 @@
 package com.modcrafting.ultrabans.listeners;
 
 import java.util.Date;
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -25,6 +27,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.BanType;
 
 public class UltraBanBlockListener implements Listener {
 	Ultrabans plugin;
@@ -34,39 +38,44 @@ public class UltraBanBlockListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBlockPlace(BlockPlaceEvent event){
 		 Player player = event.getPlayer();
-		 if(plugin.jailed.containsKey(player.getName().toLowerCase())){
-			 if(plugin.jailed.get(player.getName().toLowerCase())>Long.MIN_VALUE){
-				 if(tempjailCheck(player)) return;
+		 if(plugin.cache.containsKey(player.getName().toLowerCase())){
+			 for(BanInfo info : plugin.cache.get(player.getName().toLowerCase())){
+				 if(info.getType() == BanType.TEMPJAIL.getId() || info.getType() == BanType.JAIL.getId()){
+					 if(info.getType() == BanType.TEMPJAIL.getId() && tempjailCheck(player, info))
+						 return;
+					 String adminMsg = plugin.getConfig().getString("Messages.Jail.PlaceMsg", "You cannot place blocks while you are jailed!");
+					 player.sendMessage(ChatColor.GRAY + adminMsg);
+					 event.setCancelled(true);					 
+				 }
 			 }
-			 String adminMsg = plugin.getConfig().getString("Messages.Jail.PlaceMsg", "You cannot place blocks while you are jailed!");
-			 player.sendMessage(ChatColor.GRAY + adminMsg);
-			 event.setCancelled(true);
 		 }
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onBlockBreak(BlockBreakEvent event){
 		 Player player = event.getPlayer();
-		 if(plugin.jailed.containsKey(player.getName().toLowerCase())){
-			 if(plugin.jailed.get(player.getName().toLowerCase())>Long.MIN_VALUE){
-				 if(tempjailCheck(player)) return;
+		 if(plugin.cache.containsKey(player.getName().toLowerCase())){
+			 List<BanInfo> list = plugin.cache.get(player.getName().toLowerCase());
+			 for(BanInfo info : list){
+				 if(info.getType() == BanType.TEMPJAIL.getId() || info.getType() == BanType.JAIL.getId()){
+					 if(info.getType() == BanType.TEMPJAIL.getId() && tempjailCheck(player, info))
+						 return;
+					 String adminMsg = plugin.getConfig().getString("Messages.Jail.BreakMsg", "You cannot break blocks while you are jailed!");
+					 player.sendMessage(ChatColor.GRAY + adminMsg);
+					 event.setCancelled(true); 
+				 }
 			 }
-			 String adminMsg = plugin.getConfig().getString("Messages.Jail.BreakMsg", "You cannot break blocks while you are jailed!");
-			 player.sendMessage(ChatColor.GRAY + adminMsg);
-			 event.setCancelled(true);
 		}
 	}
-	private boolean tempjailCheck(Player player){
-		long tempTime = plugin.jailed.get(player.getName().toLowerCase());
-		if(tempTime == Long.MIN_VALUE)
-			return false;
+	private boolean tempjailCheck(Player player, BanInfo info){
+		long tempTime = info.getEndTime();
 		long now = System.currentTimeMillis()/1000;
 		long diff = tempTime - now;
 		if(diff <= 0){
-			//TODO: ADD API
-			plugin.jailed.remove(player.getName().toLowerCase());
-			plugin.getUBDatabase().removeFromJaillist(player.getName().toLowerCase());
-			plugin.getUBDatabase().addPlayer(player.getName(), "Released From Jail", "Served Time", 0, 8);
+			List<BanInfo> list = plugin.cache.get(player.getName().toLowerCase());
+			list.remove(info);
+			plugin.cache.put(player.getName().toLowerCase(), list);
+			plugin.getAPI().pardonPlayer(player.getName(), info.getAdmin());
 			Location stlp = plugin.jail.getJail("release");
 			player.teleport(stlp);
 			String bcmsg = plugin.getConfig().getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
@@ -78,8 +87,7 @@ public class UltraBanBlockListener implements Listener {
 		Date date = new Date();
 		date.setTime(tempTime*1000);
 		String dateStr = date.toString();
-		String reason = plugin.getUBDatabase().getjailReason(player.getName());
-		player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + reason);
+		player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + info.getReason());
 		player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
 		return false;
 	}	 

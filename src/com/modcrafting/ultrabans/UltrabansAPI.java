@@ -15,6 +15,10 @@
  */
 package com.modcrafting.ultrabans;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.modcrafting.ultrabans.util.BanInfo;
 import com.modcrafting.ultrabans.util.BanType;
 
 public class UltrabansAPI {
@@ -32,17 +36,33 @@ public class UltrabansAPI {
 	}
 	
 	public void banPlayer(final String player_name, final String reason, final String admin){
-		plugin.bannedPlayers.put(player_name.toLowerCase(), Long.MIN_VALUE);
+		List<BanInfo> list = new ArrayList<BanInfo>();
+		if(plugin.cache.containsKey(player_name))
+			list = plugin.cache.get(player_name);
+				list.add(new BanInfo(player_name, reason, admin, 0, BanType.BAN.getId()));
+		plugin.cache.put(player_name.toLowerCase(), list);
 		addPlayer(player_name, reason, admin, 0, BanType.BAN);
 	}
 	
 	public void ipbanPlayer(final String player_name, final String ip, final String reason, final String admin){
-		plugin.bannedIPs.put(ip, Long.MIN_VALUE);
+		BanInfo info = new BanInfo(player_name, reason, admin, 0, BanType.IPBAN.getId());
+		List<BanInfo> list = new ArrayList<BanInfo>();
+		if(plugin.cacheIP.containsKey(player_name))
+			list = plugin.cache.get(player_name);
+		if(plugin.cacheIP.containsKey(player_name))
+			list = plugin.cache.get(player_name);
+		list.add(info);
+		plugin.cache.put(player_name.toLowerCase(), list);
+		plugin.cacheIP.put(ip, list);
 		addPlayer(player_name, reason, admin, 0, BanType.IPBAN);
 	}
 	
 	public void jailPlayer(final String player_name, final String reason, final String admin){
-		plugin.jailed.put(player_name.toLowerCase(), Long.MIN_VALUE);
+		List<BanInfo> list = new ArrayList<BanInfo>();
+		if(plugin.cache.containsKey(player_name))
+			list = plugin.cache.get(player_name);
+		list.add(new BanInfo(player_name, reason, admin, 0, BanType.JAIL.getId()));
+		plugin.cache.put(player_name.toLowerCase(), list);
 		addPlayer(player_name, reason, admin, 0, BanType.JAIL);
 	}
 	
@@ -68,25 +88,43 @@ public class UltrabansAPI {
 	public void kickPlayer(final String player_name, final String reason, final String admin){
 		addPlayer(player_name, reason, admin, 0, BanType.KICK);
 	}
-
 	public void permabanPlayer(final String player_name, final String reason, final String admin){
-		plugin.bannedPlayers.put(player_name.toLowerCase(), Long.MIN_VALUE);
+		List<BanInfo> list = new ArrayList<BanInfo>();
+		if(plugin.cache.containsKey(player_name))
+			list = plugin.cache.get(player_name);
+		list.add(new BanInfo(player_name, reason, admin, 0, BanType.PERMA.getId()));
+		plugin.cache.put(player_name.toLowerCase(), list);
 		addPlayer(player_name, reason, admin, 0, BanType.PERMA);
 	}
 
 	public void tempbanPlayer(String player_name, String reason, long temp, String admin) {
-		plugin.bannedPlayers.put(player_name.toLowerCase(), temp);
-		addPlayer(player_name, reason, admin, temp, BanType.BAN);
+		List<BanInfo> list = new ArrayList<BanInfo>();
+		if(plugin.cache.containsKey(player_name))
+			list = plugin.cache.get(player_name);
+		list.add(new BanInfo(player_name, reason, admin, 0, BanType.TEMPBAN.getId()));
+		plugin.cache.put(player_name.toLowerCase(), list);
+		addPlayer(player_name, reason, admin, temp, BanType.TEMPBAN);
 	}
 
-	public void tempipbanPlayer(String player_name, String reason, long temp, String admin) {
-		plugin.bannedPlayers.put(player_name.toLowerCase(), temp);
-		addPlayer(player_name, reason, admin, temp, BanType.IPBAN);
+	public void tempipbanPlayer(String player_name, String ip, String reason, long temp, String admin) {
+		BanInfo info = new BanInfo(player_name, reason, admin, 0, BanType.TEMPIPBAN.getId());
+		List<BanInfo> list = new ArrayList<BanInfo>();
+		if(plugin.cacheIP.containsKey(player_name))
+			list = plugin.cache.get(player_name);
+		if(plugin.cacheIP.containsKey(player_name))
+			list = plugin.cache.get(player_name);
+		list.add(info);
+		plugin.cache.put(player_name.toLowerCase(), list);
+		plugin.cacheIP.put(ip, list);
+		addPlayer(player_name, reason, admin, temp, BanType.TEMPIPBAN);
 	}
 
 	public void tempjailPlayer(String player_name, String reason, long temp, String admin) {
-		plugin.jailed.put(player_name.toLowerCase(), temp);
-		addPlayer(player_name, reason, admin, temp, BanType.JAIL);
+		List<BanInfo> list = new ArrayList<BanInfo>();
+		if(plugin.cache.containsKey(player_name))
+			list = plugin.cache.get(player_name);
+		list.add(new BanInfo(player_name, reason, admin, 0, BanType.TEMPJAIL.getId()));
+		addPlayer(player_name, reason, admin, temp, BanType.TEMPJAIL);
 	}
 	
 	public void clearWarn(final String player_name){

@@ -28,15 +28,12 @@ public class Status extends CommandHandler{
 	public String command(final CommandSender sender, Command command, String[] args) {
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Status.CacheHeader")));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Status.CacheBans")
-				.replace(Ultrabans.AMOUNT,String.valueOf(plugin.bannedPlayers.size()))));
+				.replace(Ultrabans.AMOUNT,String.valueOf(plugin.cache.size()))));
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Status.CacheIPBans")
-				.replace(Ultrabans.AMOUNT,String.valueOf(plugin.bannedIPs.size()))));
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("Status.CacheJail")
-				.replace(Ultrabans.AMOUNT,String.valueOf(plugin.jailed.size()))));
+				.replace(Ultrabans.AMOUNT,String.valueOf(plugin.cacheIP.size()))));
 		int counter=0;
-		counter = counter+plugin.bannedPlayers.toString().getBytes().length;
-		counter = counter+plugin.bannedIPs.toString().getBytes().length;
-		counter = counter+plugin.jailed.toString().getBytes().length;
+		counter = counter+plugin.cache.toString().getBytes().length;
+		counter = counter+plugin.cacheIP.toString().getBytes().length;
 		return lang.getString("Status.Usage").replace(Ultrabans.AMOUNT, String.valueOf(counter));
 	}
 }

@@ -20,9 +20,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import net.h31ix.updater.Updater;
 import net.h31ix.updater.Updater.UpdateResult;
 import net.h31ix.updater.Updater.UpdateType;
@@ -70,16 +69,9 @@ import com.modcrafting.ultrabans.util.BanInfo;
 import com.modcrafting.ultrabans.util.Jailtools;
 
 public class Ultrabans extends JavaPlugin {
-	
-	//public HashSet<String> bannedPlayers = new HashSet<String>();
-	//public HashSet<String> bannedIPs = new HashSet<String>();
-	//public HashSet<String> jailed = new HashSet<String>();
 	public HashSet<String> muted = new HashSet<String>();
-	public Map<String, Long> bannedPlayers = new HashMap<String, Long>();
-	public Map<String, Long> bannedIPs = new HashMap<String, Long>();
-	public Map<String, Long> jailed = new HashMap<String, Long>();
-	public Map<String, BanInfo> banEditors = new HashMap<String, BanInfo>();
-	public Set<String> proxy = new HashSet<String>();
+	public Map<String, List<BanInfo>> cache = new HashMap<String, List<BanInfo>>();
+	public Map<String, List<BanInfo>> cacheIP = new HashMap<String, List<BanInfo>>();
 	public Jailtools jail = new Jailtools(this);
 	public UltrabansAPI api = new UltrabansAPI(this);
 	
@@ -102,13 +94,9 @@ public class Ultrabans extends JavaPlugin {
 	
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
-		//tempBans.clear();
-		//tempJail.clear();
-		bannedPlayers.clear();
-		bannedIPs.clear();
-		jailed.clear();
+		cache.clear();
+		cacheIP.clear();
 		muted.clear();
-		banEditors.clear();
 	}
 	
 	public void onEnable() {
@@ -157,7 +145,6 @@ public class Ultrabans extends JavaPlugin {
 			db = new SQLite(this);
 		}
 		db.load();
-		db.loadJailed();
 		//Updater
 		if(config.getBoolean("AutoUpdater.Enabled",true)){
 			Updater up = new Updater(this,this.getDescription().getName().toLowerCase(),this.getFile(),UpdateType.DEFAULT,true);

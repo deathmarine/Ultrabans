@@ -53,15 +53,10 @@ public class Ipban extends CommandHandler{
 			}
 		}
 		if(Formatting.validIP(name)){
-			plugin.bannedIPs.put(name, Long.MIN_VALUE);
 			String pname = plugin.getUBDatabase().getName(name);
-			if (pname != null){
-				plugin.getUBDatabase().addPlayer(pname, reason, admin, 0, 1);
-				plugin.bannedPlayers.put(pname, Long.MIN_VALUE);
-			}else{
-				plugin.getUBDatabase().setAddress(name, name);
-				plugin.getUBDatabase().addPlayer(name, reason, admin, 0, 1);
-			}
+			if (pname != null)
+				pname = name;
+			plugin.getAPI().ipbanPlayer(pname, name, reason, admin);
 			String bcmsg = lang.getString("IPBan.MsgToBroadcast");
 			if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);
 			if(bcmsg.contains(Ultrabans.REASON)) bcmsg = bcmsg.replace(Ultrabans.REASON, reason);
@@ -97,7 +92,7 @@ public class Ipban extends CommandHandler{
 			plugin.getServer().dispatchCommand(sender, sb.toString());
 			return null;
 		}
-		if(plugin.bannedIPs.containsKey(victimip)){
+		if(plugin.cacheIP.containsKey(victimip)){
 			String failed = lang.getString("IPBan.Failed");
 			if(failed.contains(Ultrabans.VICTIM)) 
 				failed = failed.replace(Ultrabans.VICTIM, name);

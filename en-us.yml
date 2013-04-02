@@ -118,9 +118,8 @@ Starve:
 Status:
   Usage: '&6Estimated Usage: &7%amt% bytes.'
   CacheHeader: '&7--- [&6Currently Loaded&7] ---'
-  CacheBans: '&6All Banned Players: &7%amt%'
+  CacheBans: '&6All Cached Players: &7%amt%'
   CacheIPBans: '&6All IPs Banned: &7%amt%'
-  CacheJail: '&6Jailed Players: &7%amt%'
 Tempban:
   Arguments: '&f/tempban {player} (-s/-a) {amt} {sec/min/hour/day} {Reason} &4Not Enough Arguments'
   MsgToVictim: '&6You have been tempbanned by &7%admin%&6 for &7%amt% %mode%s.&6 Reason: &7%reason%&6!'

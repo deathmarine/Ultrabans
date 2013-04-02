@@ -41,9 +41,9 @@ public class History extends CommandHandler{
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
 		for(BanInfo ban : bans){
 			Date date = new Date();
-			date.setTime(ban.time*1000);
+			date.setTime(ban.getEndTime()*1000);
 			String dateStr = date.toString();
-			sender.sendMessage(ChatColor.RED + Formatting.banType(ban.type) + ": " + ban.name + ChatColor.GRAY + " by " + ban.admin + " on " + dateStr.substring(4, 19) + " for " + ban.reason);
+			sender.sendMessage(ChatColor.RED + Formatting.banType(ban.getType()) + ": " + ban.getName() + ChatColor.GRAY + " by " + ban.getAdmin() + " till " + dateStr.substring(4, 19) + " for " + ban.getReason());
 		}
 		return null;
 	}

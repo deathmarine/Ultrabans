@@ -24,6 +24,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.BanType;
 
 public class Import extends CommandHandler{
 	public Import(Ultrabans instance) {
@@ -47,15 +48,10 @@ public class Import extends CommandHandler{
 				if(ip!=null&&!ip.contains("#")&&ip.length()>0){
 				    String[] args1 = ip.split("\\|");
 				    String name = args1[0].trim();
-					if(!plugin.bannedIPs.containsKey(name)) 
-						plugin.bannedIPs.put(name, Long.MIN_VALUE);
 					String cknullIP = plugin.getUBDatabase().getName(name);
-					if (cknullIP != null){
-						plugin.getUBDatabase().addPlayer(plugin.getUBDatabase().getName(name), "imported", args1[2].trim(), 0, 1);
-					}else{
-						plugin.getUBDatabase().setAddress("import", name);
-						plugin.getUBDatabase().addPlayer("import", "imported", args1[2].trim(), 0, 1);
-					}
+					if (cknullIP == null)
+						name = "imported";
+					plugin.getAPI().ipbanPlayer(name, ip, "imported", sender.getName());
 				}
 			}
 			bannedIP.close();
@@ -87,7 +83,7 @@ public class Import extends CommandHandler{
 		}
 	    String admin = args[2].trim();
 	    String reason = args[4];
-	    plugin.bannedPlayers.put(name, Long.MIN_VALUE);
+	    plugin.getAPI().addPlayer(name, reason, admin, temp, BanType.fromID(type));
 		plugin.getUBDatabase().addPlayer(name, reason, admin, temp, type);
 	}
 }

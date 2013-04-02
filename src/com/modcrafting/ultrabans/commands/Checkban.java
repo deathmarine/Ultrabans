@@ -38,7 +38,7 @@ public class Checkban extends CommandHandler{
 		OfflinePlayer check = plugin.getServer().getOfflinePlayer(name);
 		if(check != null)
 			name = check.getName();
-		List<BanInfo> bans = plugin.getUBDatabase().listRecords(name, sender);
+		List<BanInfo> bans = plugin.getUBDatabase().listRecords(name);
 		if (bans.isEmpty()) {
 			String msg = lang.getString("CheckBan.None");
 			if (msg.contains(Ultrabans.AMOUNT))
@@ -49,10 +49,10 @@ public class Checkban extends CommandHandler{
 		}
 		String msg = lang.getString("CheckBan.Header");
 		if(msg.contains(Ultrabans.AMOUNT)) msg=msg.replace(Ultrabans.AMOUNT, String.valueOf(bans.size()));
-		if(msg.contains(Ultrabans.VICTIM)) msg=msg.replace(Ultrabans.VICTIM, bans.get(0).name);
+		if(msg.contains(Ultrabans.VICTIM)) msg=msg.replace(Ultrabans.VICTIM, bans.get(0).getName());
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
 		for(BanInfo ban : bans){
-			sender.sendMessage(ChatColor.RED + Formatting.banType(ban.type) + ChatColor.GRAY + ban.id + ": " + ChatColor.GREEN + ban.reason + ChatColor.AQUA +" by " + ban.admin);
+			sender.sendMessage(ChatColor.RED + Formatting.banType(ban.getType()) + ": " + ChatColor.GREEN + ban.getReason() + ChatColor.AQUA +" by " + ban.getAdmin());
 		}
 		return null;
 	}
