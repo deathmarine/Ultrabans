@@ -70,15 +70,20 @@ public class Ipban extends CommandHandler{
 				plugin.getLogger().info(admin + " banned player " + name + ".");
 			return null;
 		}
+		String victimip = plugin.getUBDatabase().getAddress(name);
 		OfflinePlayer victim = plugin.getServer().getOfflinePlayer(name);
 		if(victim != null){
-			if(victim.isOnline() 
-					&& victim.getPlayer().hasPermission("ultraban.override.ipban")
-					&& !admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN))
-				return lang.getString("IPBan.Denied");
+			if(victim.isOnline()){
+				if(victim.getPlayer().hasPermission("ultraban.override.ipban")
+						&& !admin.equalsIgnoreCase(Ultrabans.DEFAULT_ADMIN))
+					return lang.getString("IPBan.Denied");
+				victimip = victim.getPlayer().getAddress().getAddress().getHostAddress();
+				plugin.getUBDatabase().setAddress(victim.getName(), victimip);
+			}		
 			name = victim.getName();
+			if(victimip == null)
+				victimip = plugin.getUBDatabase().getAddress(victim.getName());
 		}
-		String victimip = plugin.getUBDatabase().getAddress(name);
 		if(victimip == null){
 			String failed = lang.getString("IPBan.IPNotFound");
 			if(failed.contains(Ultrabans.VICTIM)) 

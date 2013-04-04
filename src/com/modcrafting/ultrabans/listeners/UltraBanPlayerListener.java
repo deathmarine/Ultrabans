@@ -51,10 +51,10 @@ public class UltraBanPlayerListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerLogin(PlayerLoginEvent event){
 		//TODO Set IP...
-		String reason = Ultrabans.DEFAULT_ADMIN;
-		String admin = Ultrabans.DEFAULT_REASON;
+		String reason = Ultrabans.DEFAULT_REASON;
+		String admin = Ultrabans.DEFAULT_ADMIN;
 		final Player player = event.getPlayer();
-		String ip = player.getAddress().getAddress().getHostAddress();
+		String ip = event.getAddress().getHostAddress();
 		plugin.getUBDatabase().setAddress(player.getName().toLowerCase(), ip);
 		if(plugin.cacheIP.containsKey(ip)){
 			for(BanInfo info : plugin.cacheIP.get(player.getName().toLowerCase())){

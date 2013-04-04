@@ -66,7 +66,7 @@ public class SQL extends Database{
 			"`id` int(11) NOT NULL AUTO_INCREMENT," + 
 			"`type` int(1) NOT NULL DEFAULT '0'," + 
 			"PRIMARY KEY (`id`) USING BTREE" + 
-			") ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;";
+			") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;";
 	public String SQLCreateBanipTable = "CREATE TABLE IF NOT EXISTS %table% (" +
 			"`name` varchar(32) NOT NULL," + 
 			"`lastip` tinytext NOT NULL," + 

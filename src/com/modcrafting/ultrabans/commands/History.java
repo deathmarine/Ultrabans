@@ -22,7 +22,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.BanInfo;
-import com.modcrafting.ultrabans.util.Formatting;
+import com.modcrafting.ultrabans.util.BanType;
 
 public class History extends CommandHandler{
 	public History(Ultrabans instance) {
@@ -43,7 +43,9 @@ public class History extends CommandHandler{
 			Date date = new Date();
 			date.setTime(ban.getEndTime()*1000);
 			String dateStr = date.toString();
-			sender.sendMessage(ChatColor.RED + Formatting.banType(ban.getType()) + ": " + ban.getName() + ChatColor.GRAY + " by " + ban.getAdmin() + " till " + dateStr.substring(4, 19) + " for " + ban.getReason());
+			StringBuilder sb = new StringBuilder();
+			//TODO: build type specific messages.
+			sender.sendMessage(ChatColor.RED + BanType.toCode(ban.getType()) + ": " + ban.getName() + ChatColor.GRAY + " by " + ban.getAdmin() + " till " + dateStr.substring(4, 19) + " for " + ban.getReason());
 		}
 		return null;
 	}

@@ -40,12 +40,18 @@ public abstract class CommandHandler implements CommandExecutor{
 			return true;
 		}
 
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
 			@Override
 			public void run() {
 				String message = command(sender, command, args);
 				if(message!=null)
-					sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+					message = ChatColor.translateAlternateColorCodes('&', message);
+					if(message.contains("%n%")){
+						for(String m : message.split("%n%"))
+							sender.sendMessage(m);
+					}else{
+						sender.sendMessage(message);
+					}
 			}
 		});
 		return true;

@@ -23,6 +23,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
 public class Checkban extends CommandHandler{
@@ -52,7 +53,7 @@ public class Checkban extends CommandHandler{
 		if(msg.contains(Ultrabans.VICTIM)) msg=msg.replace(Ultrabans.VICTIM, bans.get(0).getName());
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
 		for(BanInfo ban : bans){
-			sender.sendMessage(ChatColor.RED + Formatting.banType(ban.getType()) + ": " + ChatColor.GREEN + ban.getReason() + ChatColor.AQUA +" by " + ban.getAdmin());
+			sender.sendMessage(ChatColor.RED + BanType.toCode(ban.getType()) + ": " + ChatColor.GREEN + ban.getReason() + ChatColor.AQUA +" by " + ban.getAdmin());
 		}
 		return null;
 	}

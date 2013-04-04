@@ -45,7 +45,6 @@ public abstract class Database {
 			PreparedStatement ps = null;
 			try{
 				ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE type != 8 AND type != 5");
-				ps.setLong(1, System.currentTimeMillis()/1000);
 				ResultSet rs = ps.executeQuery();
 				while (rs.next()){
 					String pName = rs.getString("name");

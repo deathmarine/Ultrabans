@@ -14,10 +14,8 @@ CheckBan:
 CheckIP:
   Arguments: '&f/checkip {player} &4Not Enough Arguments'
   NoPlayer: '&7Player not found!'
-  MSG1: '&eIP Address: '
-  MSG2: '&eHost Address: '
-  MSG3: '&eHost Name: '
-  MSG4: '&eConnection: '
+  MSG1: '&eHost Address: '
+  MSG2: '&eHost Name: '
   Exception: '&4Gathering Information Failed!'
 Clean:
   Complete: '&6Deleted &7%amt%&6 player.dat files.'
@@ -43,7 +41,7 @@ InvOf:
   Failed: '&4Unable to find player.'
 IPBan:
   Arguments: '&f/ipban {player} (-s/-a) (reason) &4Not Enough Arguments'
-  Failed: '&4%victim%&c is already in ipbanned.'
+  Failed: '&4%victim%&c is already ipbanned.'
   Denied: '&4Your ipban attempt has been denied!'
   Emo: '&4You cannot ipban yourself!'
   IPNotFound: '&4IP address not found. &6Processed as a normal ban for &7%victim%&6!'

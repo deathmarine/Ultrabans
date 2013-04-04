@@ -58,10 +58,19 @@ public class Unban extends CommandHandler {
 		}
 		OfflinePlayer of = plugin.getServer().getOfflinePlayer(name);
 		if(of!=null){
-			if(of.isBanned()) of.setBanned(false);
+			if(of.isBanned()) 
+				of.setBanned(false);
 			name = of.getName();
 		}
-		//unban IPv4
+		int count = 0;
+		String ip = plugin.getUBDatabase().getAddress(name);
+		if(ip != null && plugin.cacheIP.containsKey(ip)){
+			count++;
+			plugin.cacheIP.remove(ip);
+			if(plugin.getLog())
+				plugin.getLogger().info("Removed IP ban!");
+		}
+		
 		if(Formatting.validIP(name)){
 			if(plugin.cacheIP.containsKey(name)){
 				for(BanInfo info : plugin.cacheIP.get(name)){
@@ -80,11 +89,12 @@ public class Unban extends CommandHandler {
 				return null;
 			}else{
 				//TODO: Unban failed for that IP
+				return "Failed IP";
 			}
 		}
+
+		List<BanInfo> list = new ArrayList<BanInfo>();
 		if(plugin.cache.containsKey(name.toLowerCase())){
-			int count = 0;
-			List<BanInfo> list = new ArrayList<BanInfo>();
 			for(BanInfo info : plugin.cache.get(name.toLowerCase())){
 				switch(BanType.fromID(info.getType())){
 					case BAN:
@@ -113,43 +123,35 @@ public class Unban extends CommandHandler {
 						break;
 				}
 			}
-			if(count!=0){
-				List<BanInfo> lt = plugin.cache.get(name.toLowerCase());
-				for(BanInfo info: list){
-					if(config.getBoolean("UnbansLog.Enable", true)){
-						reason = info.getReason();
-						if(config.getBoolean("UnbansLog.LogReason",true) && reason != null){
-							plugin.getUBDatabase().addPlayer(name, "Unbanned: "+reason, admin, 0, 5);
-						}else{
-							plugin.getUBDatabase().addPlayer(name, "Unbanned", admin, 0, 5);
-						}
+		}
+		if(count!=0){
+			List<BanInfo> lt = plugin.cache.get(name.toLowerCase());
+			for(BanInfo info: list){
+				if(config.getBoolean("UnbansLog.Enable", true)){
+					reason = info.getReason();
+					if(config.getBoolean("UnbansLog.LogReason",true) && reason != null){
+						plugin.getUBDatabase().addPlayer(name, "Unbanned: "+reason, admin, 0, 5);
+					}else{
+						plugin.getUBDatabase().addPlayer(name, "Unbanned", admin, 0, 5);
 					}
-					lt.remove(info);
 				}
-				plugin.getUBDatabase().removeFromBanlist(name);
-				plugin.cache.put(name.toLowerCase(), lt);
-				
-				String ip = plugin.getUBDatabase().getAddress(name);
-				if(ip != null && plugin.cacheIP.containsKey(ip)){
-					plugin.cacheIP.remove(ip);
-					if(plugin.getLog())
-						plugin.getLogger().info("Also removed the IP ban!");
-				}
-				
-				String bcmsg = ChatColor.translateAlternateColorCodes('&', lang.getString("Unban.MsgToBroadcast"));
-				if(bcmsg.contains(Ultrabans.ADMIN)) 
-					bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);
-				if(bcmsg.contains(Ultrabans.VICTIM)) 
-					bcmsg = bcmsg.replace(Ultrabans.VICTIM, name);
-				if(broadcast){
-					plugin.getServer().broadcastMessage(bcmsg);
-				}else{
-					sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
-				}
-				if(plugin.getLog())
-					plugin.getLogger().info(ChatColor.stripColor(bcmsg));
-				return null;
+				lt.remove(info);
 			}
+			plugin.getUBDatabase().removeFromBanlist(name);
+			plugin.cache.put(name.toLowerCase(), lt);
+			String bcmsg = ChatColor.translateAlternateColorCodes('&', lang.getString("Unban.MsgToBroadcast"));
+			if(bcmsg.contains(Ultrabans.ADMIN)) 
+				bcmsg = bcmsg.replace(Ultrabans.ADMIN, admin);
+			if(bcmsg.contains(Ultrabans.VICTIM)) 
+				bcmsg = bcmsg.replace(Ultrabans.VICTIM, name);
+			if(broadcast){
+				plugin.getServer().broadcastMessage(bcmsg);
+			}else{
+				sender.sendMessage(ChatColor.ITALIC + "Silent: " + bcmsg);
+			}
+			if(plugin.getLog())
+				plugin.getLogger().info(ChatColor.stripColor(bcmsg));
+			return null;
 		}
 		String failed = config.getString("Messages.Unban.Failed", "%victim% is already unbanned!");
 		failed = failed.replace(Ultrabans.VICTIM, name);

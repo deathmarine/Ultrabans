@@ -59,20 +59,6 @@ public class Formatting {
 		}
 		return Ultrabans.DEFAULT_REASON;
 	}
-	public static String banType(int num){
-		switch(num){
-		case 0: return "B";
-		case 1: return "IP";
-		case 2: return "W";
-		case 3: return "K";
-		case 4: return "F";
-		case 5: return "UN";
-		case 6: return "J";
-		case 7: return "M";
-		case 9: return "PB";
-		default: return "?";
-		}
-	}
 	public static boolean validIP(String ip) {
 	    if (ip == null || ip.isEmpty()) return false;
 	    ip = ip.trim();

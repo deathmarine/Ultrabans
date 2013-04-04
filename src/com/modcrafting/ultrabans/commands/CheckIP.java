@@ -50,11 +50,7 @@ public class CheckIP extends CommandHandler{
 			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("CheckIP.MSG1")) 
 					+ ChatColor.GRAY + ip);
 			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("CheckIP.MSG2")) 
-					+ ChatColor.GRAY + inet.getHostAddress());
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("CheckIP.MSG3")) 
 					+ ChatColor.GRAY + inet.getHostName());
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("CheckIP.MSG4")) 
-					+ ChatColor.GRAY + inet.getCanonicalHostName());
 		} catch (UnknownHostException e) {
 			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("CheckIP.Exception")));
 		}

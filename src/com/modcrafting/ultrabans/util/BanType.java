@@ -35,10 +35,30 @@ public enum BanType {
 	public int getId(){
 		return id;
 	}
+	
+	public String toCode(){
+		return toCode(id);
+	}
+	
 	public static BanType fromID(int type){
 		for(BanType tp:BanType.values())
 			if(tp.getId()==type)
 				return tp;
 		return BAN;
+	}
+
+	public static String toCode(int num){
+		switch(num){
+			case 0: return "B";
+			case 1: return "IP";
+			case 2: return "W";
+			case 3: return "K";
+			case 4: return "F";
+			case 5: return "UN";
+			case 6: return "J";
+			case 7: return "M";
+			case 9: return "PB";
+			default: return "?";
+		}
 	}
 }
