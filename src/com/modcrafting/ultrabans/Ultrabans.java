@@ -100,7 +100,7 @@ public class Ultrabans extends JavaPlugin {
 	}
 	
 	public void onEnable() {
-		long time = System.currentTimeMillis();
+		long time = System.currentTimeMillis() / 1000L; // Time without millseconds, without 'L' that works wrong.
 		setConstant(this);
 		this.getDataFolder().mkdir();
 		this.saveDefaultConfig();
@@ -159,7 +159,7 @@ public class Ultrabans extends JavaPlugin {
 			}
 		}
 		
-		this.getLogger().info("Loaded. "+((long) (System.currentTimeMillis()-time)/1000)+" secs.");
+		this.getLogger().info("Loaded. "+((long) (System.currentTimeMillis()-time)/1000L)+" secs."); // also here, without mills.
 	}
 	
 	public void loadCommands(){
