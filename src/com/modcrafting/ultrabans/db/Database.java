@@ -40,43 +40,36 @@ public abstract class Database {
 	public abstract void load();
 	
 	public void initialize(){
-		Connection conn = getSQLConnection();
-		if(conn != null){
-			PreparedStatement ps = null;
-			try{
-				ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE type != 8 AND type != 5");
-				ResultSet rs = ps.executeQuery();
-				while (rs.next()){
-					String pName = rs.getString("name");
-					List<BanInfo> list = new ArrayList<BanInfo>();
-					if(plugin.cache.containsKey(pName.toLowerCase()))
-						list = plugin.cache.get(pName.toLowerCase());
+		connection = getSQLConnection();
+		try{
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + bantable + " WHERE type != 8 AND type != 5");
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()){
+				String pName = rs.getString("name");
+				List<BanInfo> list = new ArrayList<BanInfo>();
+				if(plugin.cache.containsKey(pName.toLowerCase()))
+					list = plugin.cache.get(pName.toLowerCase());
+				list.add(new BanInfo(rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("temptime"),rs.getInt("type")));
+				plugin.cache.put(pName.toLowerCase(), list);
+				if(rs.getInt("type") == 1 || rs.getInt("type") == 11){
+					list = new ArrayList<BanInfo>();
+					String ip = getAddress(pName);
+					if(ip!=null && plugin.cacheIP.containsKey(ip))
+						list = plugin.cacheIP.get(ip);
 					list.add(new BanInfo(rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("temptime"),rs.getInt("type")));
-					plugin.cache.put(pName.toLowerCase(), list);
-					if(rs.getInt("type") == 1 || rs.getInt("type") == 11){
-						list = new ArrayList<BanInfo>();
-						String ip = getAddress(pName);
-						if(ip!=null && plugin.cacheIP.containsKey(ip))
-							list = plugin.cacheIP.get(ip);
-						list.add(new BanInfo(rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("temptime"),rs.getInt("type")));
-						plugin.cacheIP.put(ip, list);
-					}
+					plugin.cacheIP.put(ip, list);
 				}
-				close(ps,rs);
-			} catch (SQLException ex) {
-				plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
 			}
-		}else{
-			plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection");
+			close(ps,rs);
+		} catch (SQLException ex) {
+			plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
 		}
 	}
 	
 	public void setAddress(String pName, String logIp){
-		Connection conn = null;
-		PreparedStatement ps = null;
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("REPLACE INTO " + iptable+ " (name,lastip) VALUES(?,?)");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("REPLACE INTO " + iptable+ " (name,lastip) VALUES(?,?)");
 			ps.setString(1, pName);
 			ps.setString(2, logIp);
 			ps.executeUpdate();
@@ -88,14 +81,11 @@ public abstract class Database {
 	}
 	
 	public String getAddress(String pName) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + iptable+ " WHERE name = ?");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + iptable+ " WHERE name = ?");
 			ps.setString(1, pName);
-			rs = ps.executeQuery();
+			ResultSet rs = ps.executeQuery();
 			String ip = null;
 			while (rs.next()){
 				ip = rs.getString("lastip");
@@ -109,14 +99,11 @@ public abstract class Database {
 	}
 	
 	public String getName(String ip) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + iptable+ " WHERE lastip = ?");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + iptable+ " WHERE lastip = ?");
 			ps.setString(1, ip);
-			rs = ps.executeQuery();
+			ResultSet rs = ps.executeQuery();
 			String name = null;
 			while (rs.next()){
 				name = rs.getString("name");
@@ -130,15 +117,12 @@ public abstract class Database {
 	}
 	
 	public boolean matchAddress(String player, String ip) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT lastip FROM " + iptable+ " WHERE name = ? AND lastip = ?");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("SELECT lastip FROM " + iptable+ " WHERE name = ? AND lastip = ?");
 			ps.setString(1, player);
 			ps.setString(2, ip);
-			rs = ps.executeQuery();
+			ResultSet rs = ps.executeQuery();
 			boolean set = false;
 			while(rs.next()){
 				set = true;
@@ -152,11 +136,9 @@ public abstract class Database {
 	}
 	
 	public void updateAddress(String p, String ip) {
-		Connection conn = null;
-		PreparedStatement ps = null;
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("UPDATE " + iptable+ " SET lastip = ? WHERE name = ?");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("UPDATE " + iptable+ " SET lastip = ? WHERE name = ?");
 			ps.setString(1, ip);
 			ps.setString(2, p);
 			ps.executeUpdate();
@@ -167,11 +149,9 @@ public abstract class Database {
 	}
 	
 	public void addPlayer(String player, String reason, String admin, long tempTime , int type){
-		Connection conn = null;
-		PreparedStatement ps = null;
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("INSERT INTO " + bantable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO " + bantable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
 			ps.setLong(5, tempTime);
 			ps.setString(1, player);
 			ps.setString(2, reason);
@@ -186,11 +166,9 @@ public abstract class Database {
 	}
 	
 	public void importPlayer(String player, String reason, String admin, long tempTime , long time, int type){
-		Connection conn = null;
-		PreparedStatement ps = null;
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("INSERT INTO " + bantable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO " + bantable + " (name,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
 			ps.setLong(5, tempTime);
 			ps.setString(1, player);
 			ps.setString(2, reason);
@@ -205,11 +183,9 @@ public abstract class Database {
 	}
 	
 	public boolean removeFromBanlist(String player) {
-		Connection conn = null;
-		PreparedStatement ps = null;
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND (type = 0 OR type = 1)");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND (type = 0 OR type = 1)");
 			ps.setString(1, player);
 			ps.executeUpdate();
 			close(ps,null);
@@ -221,14 +197,11 @@ public abstract class Database {
 	}
 	
 	public List<BanInfo> listRecords(String name) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ?");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ?");
 			ps.setString(1, name);
-			rs = ps.executeQuery();
+			ResultSet rs = ps.executeQuery();
 			List<BanInfo> bans = new ArrayList<BanInfo>();
 			while (rs.next()){
 				bans.add(new BanInfo(rs.getString("name"), rs.getString("reason"),rs.getString("admin"),rs.getLong("temptime"),rs.getInt("type")));
@@ -242,15 +215,12 @@ public abstract class Database {
 	}
 
 	public List<BanInfo> listRecent(String number){
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
 		Integer num = Integer.parseInt(number.trim());
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + bantable + " ORDER BY time DESC LIMIT ?");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + bantable + " ORDER BY time DESC LIMIT ?");
 			ps.setInt(1, num);
-			rs = ps.executeQuery();
+			ResultSet rs = ps.executeQuery();
 			List<BanInfo> bans = new ArrayList<BanInfo>();
 			while (rs.next()){
 				bans.add(new BanInfo(rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("temptime"),rs.getInt("type")));
@@ -266,15 +236,12 @@ public abstract class Database {
 	}
 	
 	public List<BanInfo> maxWarns(String Name) {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
 		try {
-			conn = getSQLConnection();
-			ps = conn.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ? AND type = ?");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + bantable + " WHERE name = ? AND type = ?");
 			ps.setString(1, Name);
 			ps.setInt(2, 2);
-			rs = ps.executeQuery();
+			ResultSet rs = ps.executeQuery();
 			List<BanInfo> bans = new ArrayList<BanInfo>();
 			while (rs.next()){
 				bans.add(new BanInfo(rs.getString("name"),rs.getString("reason"),rs.getString("admin"),rs.getLong("temptime"),rs.getInt("type")));
@@ -289,8 +256,8 @@ public abstract class Database {
 	
 	public boolean removeFromJaillist(String player) {
 		try {
-			Connection conn = getSQLConnection();
-			PreparedStatement ps = conn.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND type = 6");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND type = 6");
 			ps.setString(1, player);
 			ps.executeUpdate();
 			close(ps,null);
@@ -304,8 +271,8 @@ public abstract class Database {
 
 	public List<String> listPlayers(String ip){
 		try {
-			Connection conn = getSQLConnection();
-			PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + iptable + " WHERE lastip = ?");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("SELECT * FROM " + iptable + " WHERE lastip = ?");
 			ps.setString(1, ip);
 			ResultSet rs = ps.executeQuery();
 			List<String> bans = new ArrayList<String>();
@@ -321,9 +288,9 @@ public abstract class Database {
 	}
 	
 	public void clearWarns(String player) {
-		Connection conn = getSQLConnection();
 		try {
-			PreparedStatement ps = conn.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND type = 2");
+			connection = getSQLConnection();
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND type = 2");
 			ps.setString(1, player);
 			close(ps, null);
 		} catch (SQLException ex) {

@@ -54,7 +54,7 @@ public class Ipban extends CommandHandler{
 		}
 		if(Formatting.validIP(name)){
 			String pname = plugin.getUBDatabase().getName(name);
-			if (pname != null)
+			if (pname == null)
 				pname = name;
 			plugin.getAPI().ipbanPlayer(pname, name, reason, admin);
 			String bcmsg = lang.getString("IPBan.MsgToBroadcast");

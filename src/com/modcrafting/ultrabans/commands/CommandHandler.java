@@ -44,7 +44,7 @@ public abstract class CommandHandler implements CommandExecutor{
 			@Override
 			public void run() {
 				String message = command(sender, command, args);
-				if(message!=null)
+				if(message != null){
 					message = ChatColor.translateAlternateColorCodes('&', message);
 					if(message.contains("%n%")){
 						for(String m : message.split("%n%"))
@@ -52,6 +52,7 @@ public abstract class CommandHandler implements CommandExecutor{
 					}else{
 						sender.sendMessage(message);
 					}
+				}
 			}
 		});
 		return true;

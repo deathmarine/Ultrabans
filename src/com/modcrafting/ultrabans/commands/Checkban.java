@@ -30,7 +30,7 @@ public class Checkban extends CommandHandler{
 	public Checkban(Ultrabans ultraBan) {
 		super(ultraBan);
 	}
-	
+
 	public String command(final CommandSender sender, Command command, String[] args) {
 		if (args.length < 1)
 			return lang.getString("CheckBan.Arguments");

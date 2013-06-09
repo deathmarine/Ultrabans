@@ -56,7 +56,8 @@ public class DupeIP extends CommandHandler{
 				sb.append(list.get(i)).append(" ");
 			}
 		}
-		sender.sendMessage(ChatColor.GRAY+sb.toString());
+		if(sb.toString().length()>0)
+			sender.sendMessage(ChatColor.GRAY+sb.toString());
 		return lang.getString("DupeIP.Completed");
 	}
 }

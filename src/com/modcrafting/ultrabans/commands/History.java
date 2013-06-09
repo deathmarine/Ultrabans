@@ -30,9 +30,10 @@ public class History extends CommandHandler{
 	}
 
 	public String command(CommandSender sender, Command command, String[] args) {
-		if (args.length < 1) 
-			return lang.getString("History.Argument");
-		List<BanInfo> bans = plugin.getUBDatabase().listRecent(args[0]);
+		String size = "5";
+		if (args.length > 0) 
+			size = args[0];
+		List<BanInfo> bans = plugin.getUBDatabase().listRecent(size);
 		if(bans.size() < 1)
 			return lang.getString("History.Failed");
 		String msg = lang.getString("History.Header");
@@ -43,9 +44,18 @@ public class History extends CommandHandler{
 			Date date = new Date();
 			date.setTime(ban.getEndTime()*1000);
 			String dateStr = date.toString();
-			StringBuilder sb = new StringBuilder();
-			//TODO: build type specific messages.
-			sender.sendMessage(ChatColor.RED + BanType.toCode(ban.getType()) + ": " + ban.getName() + ChatColor.GRAY + " by " + ban.getAdmin() + " till " + dateStr.substring(4, 19) + " for " + ban.getReason());
+			switch(BanType.fromID(ban.getType())){
+				case TEMPBAN:
+				case TEMPIPBAN:
+				case TEMPJAIL:{
+					sender.sendMessage(ChatColor.RED + BanType.toCode(ban.getType()) + ": " + ban.getName() + ChatColor.GRAY + " by " + ban.getAdmin() + " till " + dateStr.substring(4, 19) + " for " + ban.getReason());
+					break;
+				}
+				default:{
+					sender.sendMessage(ChatColor.RED + BanType.toCode(ban.getType()) + ": " + ban.getName() + ChatColor.GRAY + " by " + ban.getAdmin() + " for " + ban.getReason());
+					break;	
+				}
+			}
 		}
 		return null;
 	}

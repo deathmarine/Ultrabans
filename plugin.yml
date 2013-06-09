@@ -19,6 +19,7 @@ commands:
     description: IPban a player
     usage: /<command> {player} (-s/-a) {reason}
     permission: ultraban.ipban
+    aliases: [banip]
   tempipban:
     description: Temporarily ipban a player
     usage: /<command> {player} (-s/-a) {amt} {sec/min/hour/day} {Reason}

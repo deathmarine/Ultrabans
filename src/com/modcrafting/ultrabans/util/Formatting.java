@@ -17,13 +17,13 @@ package com.modcrafting.ultrabans.util;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.bukkit.Bukkit;
 import com.modcrafting.ultrabans.Ultrabans;
 
 public class Formatting {
+	public static Pattern ipv4 = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
 	public static String expandName(String p) {
 		HashSet<String> set = new HashSet<String>();
 		for (int n = 0; n < Bukkit.getOnlinePlayers().length; n++) {
@@ -59,15 +59,13 @@ public class Formatting {
 		}
 		return Ultrabans.DEFAULT_REASON;
 	}
+	
 	public static boolean validIP(String ip) {
-	    if (ip == null || ip.isEmpty()) return false;
+	    if (ip == null || ip.isEmpty()) 
+	    	return false;
 	    ip = ip.trim();
-	    if ((ip.length() < 6) & (ip.length() > 15)) return false;
-
 	    try {
-	        Pattern pattern = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
-	        Matcher matcher = pattern.matcher(ip);
-	        return matcher.matches();
+	        return ipv4.matcher(ip).matches();// || ipv6.matcher(ip).matches();
 	    } catch (PatternSyntaxException ex) {
 	        return false;
 	    }

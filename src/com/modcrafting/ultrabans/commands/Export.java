@@ -48,21 +48,22 @@ public class Export extends CommandHandler{
 			for(String p : plugin.cacheIP.keySet()){
 				for(BanInfo info : plugin.cacheIP.get(p)){
 					if(info.getType() == BanType.IPBAN.getId()){
-						banlist.newLine();
-						banlist.write(g(p, info.getAdmin(), info.getReason()));
+						iplist.newLine();
+						iplist.write(g(p, info.getAdmin(), info.getReason()));
 					}
 				}
 			}
 			iplist.close();
 		}catch(IOException e){
 			String msg = ChatColor.translateAlternateColorCodes('&', lang.getString("Export.Failed"));
-			sender.sendMessage(msg);
 			if(plugin.getLog())
 				plugin.getLogger().severe(ChatColor.stripColor(msg));
+			e.printStackTrace();
+			return msg;
 		}
 		String msg = ChatColor.translateAlternateColorCodes('&', lang.getString("Export.Completed"));
 		if(plugin.getLog())
-			plugin.getLogger().severe(ChatColor.stripColor(msg));
+			plugin.getLogger().info(ChatColor.stripColor(msg));
 		return msg;
 	}
 	

@@ -74,11 +74,11 @@ public class SQL extends Database{
 			") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;";
 	
 	public void load() {
-		Connection conn = getSQLConnection();
+		connection = getSQLConnection();
 		try {
-			PreparedStatement s = conn.prepareStatement(SQLCreateBansTable.replaceAll("%table%",bantable));
+			PreparedStatement s = connection.prepareStatement(SQLCreateBansTable.replaceAll("%table%",bantable));
 			s.execute();
-			s = conn.prepareStatement(SQLCreateBansTable.replaceAll("%table%",iptable));
+			s = connection.prepareStatement(SQLCreateBansTable.replaceAll("%table%",iptable));
 			s.execute();
 			s.close();
 		} catch (SQLException e) {

@@ -28,7 +28,6 @@ Export:
   Failed: '&4Could not export ban lists.'
   Completed: '&aExported banlists.'
 History:
-  Arguments: '&f/history {amt} &4Not Enough Arguments'
   Failed: '&4Unable to find any information'
   Header: '&6Ultrabans Listing &7%amt% &6Records.'
 Import:

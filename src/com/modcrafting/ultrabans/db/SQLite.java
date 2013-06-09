@@ -26,7 +26,6 @@ import com.modcrafting.ultrabans.Ultrabans;
 
 public class SQLite extends Database{
 	String dbname;
-	Connection connection;
 	public SQLite(Ultrabans instance){
 		super(instance);
 		dbname = plugin.getConfig().getString("SQLite.Filename", "banlist");
@@ -72,10 +71,9 @@ public class SQLite extends Database{
     }
 	
 	public void load() {
-		Connection conn = getSQLConnection();
-		Statement s;
+		connection = getSQLConnection();
 		try {
-			s = conn.createStatement();
+			Statement s = connection.createStatement();
 			s.executeUpdate(SQLiteCreateBansTable);
 			s.executeUpdate(SQLiteCreateBanipTable);
 			s.close();

@@ -1,9 +1,4 @@
-.classpath
-.project
-/.settings
-/.git
-/lib
 /bin
 /dist
 /target
-/site
+/dist
