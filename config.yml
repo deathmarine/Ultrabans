@@ -11,7 +11,8 @@ MySQL:
 #SQLite Information#
 SQLite:
   Filename: 'banlist'
-#delete dat on ban#
+#delete data on ban#
+#Player file will be deleted from world folder
 CleanOnBan: true
 #clear warnings on ban#
 ClearWarnOnBan: false
@@ -21,21 +22,24 @@ Log:
 MaxWarning:
   Enable: false
   Amt: 5
-  #ban,kick,ipban,perma,tempban,tempipban#
+  #possible actions: ban,kick,ipban,perma,tempban,tempipban#
   Result: ban
   Silent: true
   Reason: 'Max Warnings'
   #Used with Temporary actions#
   Temp:
     Amt: 5
-  #sec,min,hour,day,week,month#
+  #Types: sec,min,hour,day,week,month#
     Mode: day
 #Default labels#
 Label:
   Console: 'Server'
+  #if reason not defined
   Reason: 'Unsure'
 #change to true or false to enable lockdown#
 #also can be done ingame /lockdown#
+#Players without required permissions can't
+#Join server during lockdown.
 Lockdown: false
 Login:
 #Check for duplicates on Login#
@@ -102,4 +106,5 @@ Mode:
   Week: Week
   Month: Month
   Year: Year
+  #Your language file name
 Language: 'en-us'
