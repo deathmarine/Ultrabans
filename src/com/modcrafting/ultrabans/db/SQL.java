@@ -78,7 +78,7 @@ public class SQL extends Database{
 		try {
 			PreparedStatement s = connection.prepareStatement(SQLCreateBansTable.replaceAll("%table%",bantable));
 			s.execute();
-			s = connection.prepareStatement(SQLCreateBansTable.replaceAll("%table%",iptable));
+			s = connection.prepareStatement(SQLCreateBanipTable.replaceAll("%table%",iptable));
 			s.execute();
 			s.close();
 		} catch (SQLException e) {
