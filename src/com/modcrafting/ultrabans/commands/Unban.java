@@ -36,7 +36,7 @@ public class Unban extends CommandHandler {
 
 	public String command(CommandSender sender, Command command, String[] args) {
 		if (args.length < 1)
-			return lang.getString("Ban.Arguments");
+			return lang.getString("Unban.Arguments");
 		boolean broadcast = true;
 		String admin = Ultrabans.DEFAULT_ADMIN;
 		String reason;
