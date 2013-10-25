@@ -25,6 +25,7 @@ import com.modcrafting.ultrabans.Ultrabans;
 import com.modcrafting.ultrabans.util.BanInfo;
 import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
+
 public class Tempipban  extends CommandHandler {
 	public Tempipban(Ultrabans instance) {
 		super(instance);
