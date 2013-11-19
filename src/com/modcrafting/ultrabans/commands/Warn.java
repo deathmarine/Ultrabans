@@ -101,6 +101,10 @@ public class Warn extends CommandHandler {
 					String fakecmd = "ban" + " " + idoit + " " + "-s" + " " + r;
 					plugin.getServer().dispatchCommand(sender, fakecmd);
 				}
+				
+				if(config.getBoolean("MaxWarning.ClearWarns"))
+					plugin.getUBDatabase().clearWarns(idoit);
+				
 				return null;
 			}	
 		}
