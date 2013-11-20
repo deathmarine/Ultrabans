@@ -15,12 +15,17 @@
  */
 package com.modcrafting.ultrabans.commands;
 
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
 public class Warn extends CommandHandler {
@@ -101,6 +106,10 @@ public class Warn extends CommandHandler {
 					String fakecmd = "ban" + " " + idoit + " " + "-s" + " " + r;
 					plugin.getServer().dispatchCommand(sender, fakecmd);
 				}
+				
+				if(config.getBoolean("MaxWarning.ClearWarns"))
+					plugin.getAPI().clearWarn(idoit);
+				
 				return null;
 			}	
 		}
