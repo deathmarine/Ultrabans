@@ -26,6 +26,8 @@ MaxWarning:
   Result: ban
   Silent: true
   Reason: 'Max Warnings'
+  #Clear warnings of player when player reach max warnings?#
+  ClearWarns: true
   #Used with Temporary actions#
   Temp:
     Amt: 5

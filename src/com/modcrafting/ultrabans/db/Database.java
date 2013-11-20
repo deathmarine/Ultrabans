@@ -292,6 +292,7 @@ public abstract class Database {
 			connection = getSQLConnection();
 			PreparedStatement ps = connection.prepareStatement("DELETE FROM " + bantable + " WHERE name = ? AND type = 2");
 			ps.setString(1, player);
+			ps.executeUpdate();
 			close(ps, null);
 		} catch (SQLException ex) {
 			Error.execute(plugin, ex);
