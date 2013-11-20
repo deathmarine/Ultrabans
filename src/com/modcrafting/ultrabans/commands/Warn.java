@@ -15,8 +15,6 @@
  */
 package com.modcrafting.ultrabans.commands;
 
-import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
