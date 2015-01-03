@@ -27,6 +27,8 @@ public class Ubinfo implements CommandExecutor {
                 player.sendMessage(ChatColor.AQUA + "Website: http://www.sourceforums.org");
                 player.sendMessage(ChatColor.WHITE + "");
                 player.sendMessage(ChatColor.AQUA + "Email: admin@sourceforums.org");
+                player.sendMessage(ChatColor.WHITE + "");
+                player.sendMessage(ChatColor.AQUA + "Expected Feautures for Next Update: UUID support and a new Auto Updater!");
             }
         }
         return true;
