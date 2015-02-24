@@ -58,6 +58,7 @@ import com.modcrafting.ultrabans.commands.Tempban;
 import com.modcrafting.ultrabans.commands.Tempipban;
 import com.modcrafting.ultrabans.commands.Tempjail;
 import com.modcrafting.ultrabans.commands.Unban;
+import com.modcrafting.ultrabans.commands.Ubinfo;
 import com.modcrafting.ultrabans.commands.Version;
 import com.modcrafting.ultrabans.commands.Warn;
 import com.modcrafting.ultrabans.db.Database;
@@ -190,6 +191,7 @@ public class Ultrabans extends JavaPlugin {
 		getCommand("invof").setExecutor(new Inventory(this));
 		getCommand("ustatus").setExecutor(new Status(this));
 		getCommand("uclean").setExecutor(new Clean(this));
+		getCommand("ubinfo").setExecutor(new Ubinfo(this));
 		getCommand("uping").setExecutor(new Ping(this));
 	}
 	
