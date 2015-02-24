@@ -9,6 +9,8 @@ import com.modcrafting.ultrabans.Ultrabans;
 public class Ubinfo implements CommandExecutor {
     public Ubinfo(Ultrabans ultrabans) {
 	}
+	
+	public final String 
 
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
         if (sender instanceof Player) {
