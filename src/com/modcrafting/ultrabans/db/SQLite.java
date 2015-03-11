@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+/* COPYRIGHT (c) 2015 Deathmarine
  * This file is part of Ultrabans.
  * Ultrabans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,52 +24,55 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import com.modcrafting.ultrabans.Ultrabans;
 
-public class SQLite extends Database{
+public class SQLite extends Database {
 	String dbname;
-	public SQLite(Ultrabans instance){
+
+	public SQLite(Ultrabans instance) {
 		super(instance);
 		dbname = plugin.getConfig().getString("SQLite.Filename", "banlist");
 		bantable = "banlist";
 		iptable = "banlistip";
 	}
-	public String SQLiteCreateBansTable = "CREATE TABLE IF NOT EXISTS banlist (" +
-			"`name` TEXT," +
-			"`reason` TEXT," + 
-			"`admin` TEXT," + 
-			"`time` INTEGER," + 
-			"`temptime` INTEGER ," + 
-			"`id` INTEGER PRIMARY KEY," + 
-			"`type` INTEGER DEFAULT '0'" + 
-			");";
-	public String SQLiteCreateBanipTable = "CREATE TABLE IF NOT EXISTS banlistip (" +
-			"`name` TEXT," + 
-			"`lastip` TEXT," + 
-			"PRIMARY KEY (`name`)" + 
-			");";
+
+	public String SQLiteCreateBansTable = "CREATE TABLE IF NOT EXISTS banlist ("
+			+ "`uuid` TEXT,"
+			+ "`reason` TEXT,"
+			+ "`admin` TEXT,"
+			+ "`time` INTEGER,"
+			+ "`temptime` INTEGER ,"
+			+ "`id` INTEGER PRIMARY KEY," + "`type` INTEGER DEFAULT '0'" + ");";
+	public String SQLiteCreateBanipTable = "CREATE TABLE IF NOT EXISTS banlistip ("
+			+ "`uuid` TEXT," + "`lastip` TEXT," + "PRIMARY KEY (`name`)" + ");";
+
 	public Connection getSQLConnection() {
-		File dataFolder = new File(plugin.getDataFolder(), dbname+".db");
-		if (!dataFolder.exists()){
+		File dataFolder = new File(plugin.getDataFolder(), dbname + ".db");
+		if (!dataFolder.exists()) {
 			try {
 				dataFolder.createNewFile();
 			} catch (IOException e) {
-				plugin.getLogger().log(Level.SEVERE, "File write error: "+dbname+".db");
+				plugin.getLogger().log(Level.SEVERE,
+						"File write error: " + dbname + ".db");
 			}
 		}
 		try {
-			if(connection!=null&&!connection.isClosed()){
+			if (connection != null && !connection.isClosed()) {
 				return connection;
 			}
 			Class.forName("org.sqlite.JDBC");
-			connection = DriverManager.getConnection("jdbc:sqlite:" + dataFolder);
-    		return connection;
+			connection = DriverManager.getConnection("jdbc:sqlite:"
+					+ dataFolder);
+			return connection;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE,"SQLite exception on initialize", ex);
-	    } catch (ClassNotFoundException ex) {
-	    	plugin.getLogger().log(Level.SEVERE, "You need the SQLite JBDC library. Google it. Put it in /lib folder.");
-	    }
+			plugin.getLogger().log(Level.SEVERE,
+					"SQLite exception on initialize", ex);
+		} catch (ClassNotFoundException ex) {
+			plugin.getLogger()
+					.log(Level.SEVERE,
+							"You need the SQLite JBDC library. Google it. Put it in /lib folder.");
+		}
 		return null;
-    }
-	
+	}
+
 	public void load() {
 		connection = getSQLConnection();
 		try {

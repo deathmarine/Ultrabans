@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+/* COPYRIGHT (c) 2015 Deathmarine
  * This file is part of Ultrabans.
  * Ultrabans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,23 +24,25 @@ import java.util.logging.Level;
 import org.bukkit.configuration.file.YamlConfiguration;
 import com.modcrafting.ultrabans.Ultrabans;
 
-public class SQL extends Database{
+public class SQL extends Database {
 	private String database;
 	private String username;
 	private String password;
-	public SQL(Ultrabans instance){
+
+	public SQL(Ultrabans instance) {
 		super(instance);
 		YamlConfiguration config = (YamlConfiguration) plugin.getConfig();
-		database = config.getString("MySQL.Database","jdbc:mysql://localhost:3306/minecraft");
-		username = config.getString("MySQL.User","root");
-		password = config.getString("MySQL.Password","root");
-		bantable = config.getString("MySQL.Table","banlist");
-		iptable = config.getString("MySQL.IPTable","banlistip");
+		database = config.getString("MySQL.Database",
+				"jdbc:mysql://localhost:3306/minecraft");
+		username = config.getString("MySQL.User", "root");
+		password = config.getString("MySQL.Password", "root");
+		bantable = config.getString("MySQL.Table", "banlist");
+		iptable = config.getString("MySQL.IPTable", "banlistip");
 	}
-	
+
 	public Connection getSQLConnection() {
 		try {
-			if(connection!=null&&!connection.isClosed()){
+			if (connection != null && !connection.isClosed()) {
 				return connection;
 			}
 			Properties info = new Properties();
@@ -49,36 +51,39 @@ public class SQL extends Database{
 			info.put("password", password);
 			info.put("useUnicode", "true");
 			info.put("characterEncoding", "utf8");
-			connection = DriverManager.getConnection(database,info);
+			connection = DriverManager.getConnection(database, info);
 			return connection;
 		} catch (SQLException ex) {
-			plugin.getLogger().log(Level.SEVERE, "Unable to retreive connection", ex);
+			plugin.getLogger().log(Level.SEVERE,
+					"Unable to retreive connection", ex);
 		}
-		return null;	
+		return null;
 	}
 
-	public String SQLCreateBansTable = "CREATE TABLE IF NOT EXISTS %table% (" +
-			"`name` varchar(32) NOT NULL," +
-			"`reason` text NOT NULL," + 
-			"`admin` varchar(32) NOT NULL," + 
-			"`time` bigint(20) NOT NULL," + 
-			"`temptime` bigint(20) NOT NULL," + 
-			"`id` int(11) NOT NULL AUTO_INCREMENT," + 
-			"`type` int(1) NOT NULL DEFAULT '0'," + 
-			"PRIMARY KEY (`id`) USING BTREE" + 
-			") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;";
-	public String SQLCreateBanipTable = "CREATE TABLE IF NOT EXISTS %table% (" +
-			"`name` varchar(32) NOT NULL," + 
-			"`lastip` tinytext NOT NULL," + 
-			"PRIMARY KEY (`name`)" + 
-			") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;";
-	
+	public String SQLCreateBansTable = "CREATE TABLE IF NOT EXISTS %table% ("
+			+ "`uuid` varchar(32) NOT NULL,"
+			+ "`reason` text NOT NULL,"
+			+ "`admin` varchar(32) NOT NULL,"
+			+ "`time` bigint(20) NOT NULL,"
+			+ "`temptime` bigint(20) NOT NULL,"
+			+ "`id` int(11) NOT NULL AUTO_INCREMENT,"
+			+ "`type` int(1) NOT NULL DEFAULT '0',"
+			+ "PRIMARY KEY (`id`) USING BTREE"
+			+ ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;";
+	public String SQLCreateBanipTable = "CREATE TABLE IF NOT EXISTS %table% ("
+			+ "`uuid` varchar(32) NOT NULL," + "`lastip` tinytext NOT NULL,"
+			+ "PRIMARY KEY (`name`)"
+			+ ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;";
+
 	public void load() {
 		connection = getSQLConnection();
 		try {
-			PreparedStatement s = connection.prepareStatement(SQLCreateBansTable.replaceAll("%table%",bantable));
+			PreparedStatement s = connection
+					.prepareStatement(SQLCreateBansTable.replaceAll("%table%",
+							bantable));
 			s.execute();
-			s = connection.prepareStatement(SQLCreateBansTable.replaceAll("%table%",iptable));
+			s = connection.prepareStatement(SQLCreateBansTable.replaceAll(
+					"%table%", iptable));
 			s.execute();
 			s.close();
 		} catch (SQLException e) {

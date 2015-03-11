@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+/* COPYRIGHT (c) 2015 Deathmarine
  * This file is part of Ultrabans.
  * Ultrabans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,63 +32,84 @@ import com.modcrafting.ultrabans.util.BanType;
 
 public class UltraBanBlockListener implements Listener {
 	Ultrabans plugin;
+
 	public UltraBanBlockListener(Ultrabans instance) {
 		plugin = instance;
 	}
+
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onBlockPlace(BlockPlaceEvent event){
-		 Player player = event.getPlayer();
-		 if(plugin.cache.containsKey(player.getName().toLowerCase())){
-			 for(BanInfo info : plugin.cache.get(player.getName().toLowerCase())){
-				 if(info.getType() == BanType.TEMPJAIL.getId() || info.getType() == BanType.JAIL.getId()){
-					 if(info.getType() == BanType.TEMPJAIL.getId() && tempjailCheck(player, info))
-						 return;
-					 String adminMsg = plugin.getConfig().getString("Messages.Jail.PlaceMsg", "You cannot place blocks while you are jailed!");
-					 player.sendMessage(ChatColor.GRAY + adminMsg);
-					 event.setCancelled(true);					 
-				 }
-			 }
-		 }
+	public void onBlockPlace(BlockPlaceEvent event) {
+		Player player = event.getPlayer();
+		if (plugin.cache.containsKey(player.getUniqueId().toString())) {
+			for (BanInfo info : plugin.cache.get(player.getUniqueId()
+					.toString())) {
+				if (info.getType() == BanType.TEMPJAIL.getId()
+						|| info.getType() == BanType.JAIL.getId()) {
+					if (info.getType() == BanType.TEMPJAIL.getId()
+							&& tempjailCheck(player, info))
+						return;
+					String adminMsg = plugin.getConfig().getString(
+							"Messages.Jail.PlaceMsg",
+							"You cannot place blocks while you are jailed!");
+					player.sendMessage(ChatColor.GRAY + adminMsg);
+					event.setCancelled(true);
+				}
+			}
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onBlockBreak(BlockBreakEvent event){
-		 Player player = event.getPlayer();
-		 if(plugin.cache.containsKey(player.getName().toLowerCase())){
-			 List<BanInfo> list = plugin.cache.get(player.getName().toLowerCase());
-			 for(BanInfo info : list){
-				 if(info.getType() == BanType.TEMPJAIL.getId() || info.getType() == BanType.JAIL.getId()){
-					 if(info.getType() == BanType.TEMPJAIL.getId() && tempjailCheck(player, info))
-						 return;
-					 String adminMsg = plugin.getConfig().getString("Messages.Jail.BreakMsg", "You cannot break blocks while you are jailed!");
-					 player.sendMessage(ChatColor.GRAY + adminMsg);
-					 event.setCancelled(true); 
-				 }
-			 }
+	public void onBlockBreak(BlockBreakEvent event) {
+		Player player = event.getPlayer();
+		if (plugin.cache.containsKey(player.getUniqueId().toString())) {
+			List<BanInfo> list = plugin.cache.get(player.getUniqueId()
+					.toString());
+			for (BanInfo info : list) {
+				if (info.getType() == BanType.TEMPJAIL.getId()
+						|| info.getType() == BanType.JAIL.getId()) {
+					if (info.getType() == BanType.TEMPJAIL.getId()
+							&& tempjailCheck(player, info))
+						return;
+					String adminMsg = plugin.getConfig().getString(
+							"Messages.Jail.BreakMsg",
+							"You cannot break blocks while you are jailed!");
+					player.sendMessage(ChatColor.GRAY + adminMsg);
+					event.setCancelled(true);
+				}
+			}
 		}
 	}
-	private boolean tempjailCheck(Player player, BanInfo info){
+
+	private boolean tempjailCheck(Player player, BanInfo info) {
 		long tempTime = info.getEndTime();
-		long now = System.currentTimeMillis()/1000;
+		long now = System.currentTimeMillis() / 1000;
 		long diff = tempTime - now;
-		if(diff <= 0){
-			List<BanInfo> list = plugin.cache.get(player.getName().toLowerCase());
+		if (diff <= 0) {
+			List<BanInfo> list = plugin.cache.get(player.getUniqueId()
+					.toString());
 			list.remove(info);
-			plugin.cache.put(player.getName().toLowerCase(), list);
+			plugin.cache.put(player.getUniqueId().toString(), list);
 			plugin.getAPI().pardonPlayer(player.getName(), info.getAdmin());
 			Location stlp = plugin.jail.getJail("release");
 			player.teleport(stlp);
-			String bcmsg = plugin.getConfig().getString("Messages.Pardon.Msg","%victim% was released from jail by %admin%!");
-			if(bcmsg.contains(Ultrabans.ADMIN)) bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN, Ultrabans.DEFAULT_ADMIN);
-			if(bcmsg.contains(Ultrabans.VICTIM)) bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, player.getName());
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&', bcmsg));
+			String bcmsg = plugin.getConfig().getString("Messages.Pardon.Msg",
+					"%victim% was released from jail by %admin%!");
+			if (bcmsg.contains(Ultrabans.ADMIN))
+				bcmsg = bcmsg.replaceAll(Ultrabans.ADMIN,
+						Ultrabans.DEFAULT_ADMIN);
+			if (bcmsg.contains(Ultrabans.VICTIM))
+				bcmsg = bcmsg.replaceAll(Ultrabans.VICTIM, player.getName());
+			player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+					bcmsg));
 			return true;
 		}
 		Date date = new Date();
-		date.setTime(tempTime*1000);
+		date.setTime(tempTime * 1000);
 		String dateStr = date.toString();
-		player.sendMessage(ChatColor.GRAY + "You've been tempjailed for " + info.getReason());
-		player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED + dateStr);
+		player.sendMessage(ChatColor.GRAY + "You've been tempjailed for "
+				+ info.getReason());
+		player.sendMessage(ChatColor.GRAY + "Remaining: " + ChatColor.RED
+				+ dateStr);
 		return false;
-	}	 
+	}
 }

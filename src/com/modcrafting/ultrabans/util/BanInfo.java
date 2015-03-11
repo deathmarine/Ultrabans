@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+/* COPYRIGHT (c) 2015 Deathmarine
  * This file is part of Ultrabans.
  * Ultrabans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,9 @@ public class BanInfo {
 	private String admin;
 	private long endTime;
 	private int type;
-	
-	public BanInfo(String name, String reason, String admin, long endTime, int type){
+
+	public BanInfo(String name, String reason, String admin, long endTime,
+			int type) {
 		this.setName(name);
 		this.setReason(reason);
 		this.setAdmin(admin);
@@ -69,5 +70,5 @@ public class BanInfo {
 	public void setType(int type) {
 		this.type = type;
 	}
-		
+
 }

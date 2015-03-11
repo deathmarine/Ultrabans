@@ -1,6 +1,7 @@
 #Change to MySQL for mysql support#
 #Change to SQLite for sqlite support#
 Database: SQLite
+
 #MySQL Information#
 MySQL:
   Database: 'jdbc:mysql://localhost:3306/minecraft'
@@ -8,15 +9,20 @@ MySQL:
   Password: 'root'
   Table: 'banlist'
   IPTable: 'banlistip'
+  
 #SQLite Information#
 SQLite:
   Filename: 'banlist'
+  
 #delete dat on ban#
 CleanOnBan: true
+
 #clear warnings on ban#
 ClearWarnOnBan: false
+
 Log:
   Enabled: true
+  
 #Max Warnings#
 MaxWarning:
   Enable: false
@@ -30,20 +36,21 @@ MaxWarning:
     Amt: 5
   #sec,min,hour,day,week,month#
     Mode: day
+    
 #Default labels#
 Label:
   Console: 'Server'
   Reason: 'Unsure'
-#change to true or false to enable lockdown#
+  
+#change to true/false to enable/disable lockdown#
 #also can be done ingame /lockdown#
 Lockdown: false
-Login:
+
 #Check for duplicates on Login#
+Login:
   DupeCheck:
     Enable: true
-#Auto Updater#
-AutoUpdater:
-  Enabled: true
+  
 #Chat#
 Chat:
   #Checks Chat Messages for a valid IP address#
@@ -80,12 +87,14 @@ Chat:
     Result: kick
     Silent: false
     Reason: 'Spam'
+    
 Muted:
   Vannila: true
   #When Vanilla: true allowed commands.#
   AllowedCommands:
   - '/login'
   - '/register'
+  
 #Jail Configuration#
 Jail:
   Mute: true
@@ -94,6 +103,7 @@ Jail:
   AllowedCommands:
   - '/login'
   - '/register'
+  
 Mode:
   Second: Second
   Minute: Minute

@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+/* COPYRIGHT (c) 2015 Deathmarine
  * This file is part of Ultrabans.
  * Ultrabans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import net.h31ix.updater.Updater;
-import net.h31ix.updater.Updater.UpdateResult;
-import net.h31ix.updater.Updater.UpdateType;
-
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -145,19 +141,6 @@ public class Ultrabans extends JavaPlugin {
 			db = new SQLite(this);
 		}
 		db.load();
-		//Updater
-		if(config.getBoolean("AutoUpdater.Enabled",true)){
-			Updater up = new Updater(this,this.getDescription().getName().toLowerCase(),this.getFile(),UpdateType.DEFAULT,true);
-			if(!up.getResult().equals(UpdateResult.SUCCESS)||up.pluginFile(this.getFile().getName())){
-				if(up.getResult().equals(UpdateResult.FAIL_NOVERSION)){
-					this.getLogger().info("Unable to connect to dev.bukkit.org.");
-				}else{
-					this.getLogger().info("No Updates found on dev.bukkit.org.");
-				}
-			}else{
-				this.getLogger().info("Update "+up.getLatestVersionString()+" found please restart your server.");
-			}
-		}
 		
 		this.getLogger().info("Loaded. "+((long) (System.currentTimeMillis()-time)/1000)+" secs.");
 	}
