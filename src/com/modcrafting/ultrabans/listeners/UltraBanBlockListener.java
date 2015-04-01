@@ -27,7 +27,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoBan;
 import com.modcrafting.ultrabans.util.BanType;
 
 public class UltraBanBlockListener implements Listener {
@@ -41,7 +41,7 @@ public class UltraBanBlockListener implements Listener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 		if (plugin.cache.containsKey(player.getUniqueId().toString())) {
-			for (BanInfo info : plugin.cache.get(player.getUniqueId()
+			for (InfoBan info : plugin.cache.get(player.getUniqueId()
 					.toString())) {
 				if (info.getType() == BanType.TEMPJAIL.getId()
 						|| info.getType() == BanType.JAIL.getId()) {
@@ -62,9 +62,9 @@ public class UltraBanBlockListener implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		if (plugin.cache.containsKey(player.getUniqueId().toString())) {
-			List<BanInfo> list = plugin.cache.get(player.getUniqueId()
+			List<InfoBan> list = plugin.cache.get(player.getUniqueId()
 					.toString());
-			for (BanInfo info : list) {
+			for (InfoBan info : list) {
 				if (info.getType() == BanType.TEMPJAIL.getId()
 						|| info.getType() == BanType.JAIL.getId()) {
 					if (info.getType() == BanType.TEMPJAIL.getId()
@@ -80,12 +80,12 @@ public class UltraBanBlockListener implements Listener {
 		}
 	}
 
-	private boolean tempjailCheck(Player player, BanInfo info) {
+	private boolean tempjailCheck(Player player, InfoBan info) {
 		long tempTime = info.getEndTime();
 		long now = System.currentTimeMillis() / 1000;
 		long diff = tempTime - now;
 		if (diff <= 0) {
-			List<BanInfo> list = plugin.cache.get(player.getUniqueId()
+			List<InfoBan> list = plugin.cache.get(player.getUniqueId()
 					.toString());
 			list.remove(info);
 			plugin.cache.put(player.getUniqueId().toString(), list);

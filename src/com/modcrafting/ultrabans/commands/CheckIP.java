@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+/* COPYRIGHT (c) 2015 Deathmarine
  * This file is part of Ultrabans.
  * Ultrabans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,44 +17,65 @@ package com.modcrafting.ultrabans.commands;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import com.modcrafting.ultrabans.Ultrabans;
 
-public class CheckIP extends CommandHandler{
+import com.modcrafting.ultrabans.Ultrabans;
+import com.modcrafting.ultrabans.util.Formatting;
+
+public class CheckIP extends CommandHandler {
 	public CheckIP(Ultrabans ultraBan) {
 		super(ultraBan);
 	}
-	public String command(final CommandSender sender, Command command, final String[] args) {
-		if (args.length < 1) 
+
+	public String command(final CommandSender sender, Command command,
+			final String[] args) {
+		if (args.length < 1)
 			return lang.getString("CheckIP.Arguments");
 		try {
-			String p = args[0];
-			String ip = plugin.getUBDatabase().getAddress(p);
-			InetAddress inet = null;
-			if(ip != null){
-				inet = InetAddress.getByName(ip);
-			}else{
-				OfflinePlayer n = plugin.getServer().getOfflinePlayer(p);
-				if(n!=null && n.isOnline()){
-					inet = n.getPlayer().getAddress().getAddress();
-					ip = inet.getHostAddress();
-					plugin.getUBDatabase().setAddress(n.getName().toLowerCase(), ip);
-				}else{
-					return lang.getString("CheckIP.NoPlayer");
-				}
+			String player_name = args[0];
+			OfflinePlayer n = plugin.getServer().getOfflinePlayer(
+					Formatting.expandName(player_name));
+			if (n == null) {
+				return lang.getString("CheckIP.NoPlayer");
 			}
-			sender.sendMessage(ChatColor.YELLOW + "------["+p+"]------");
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("CheckIP.MSG1")) 
+			String ip = plugin.getUBDatabase().getAddress(
+					n.getUniqueId().toString());
+			InetAddress inet = null;
+			if (ip != null)
+				inet = InetAddress.getByName(ip);
+			if (n.isOnline())
+				inet = n.getPlayer().getAddress().getAddress();
+			if (inet == null) {
+				return lang.getString("CheckIP.NoPlayer");
+			}
+			ip = inet.getHostAddress();
+			/*
+			 * 
+			 * String ip = plugin.getUBDatabase().getAddress(p); InetAddress
+			 * inet = null; if(ip != null){ inet = InetAddress.getByName(ip);
+			 * }else{ OfflinePlayer n = plugin.getServer().getOfflinePlayer(p);
+			 * if(n!=null && n.isOnline()){ inet =
+			 * n.getPlayer().getAddress().getAddress(); ip =
+			 * inet.getHostAddress();
+			 * plugin.getUBDatabase().setAddress(n.getName().toLowerCase(), ip);
+			 * }else{ return lang.getString("CheckIP.NoPlayer"); } }
+			 */
+			sender.sendMessage(ChatColor.YELLOW + "------[" + n.getName() + "]------");
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+					lang.getString("CheckIP.MSG1"))
 					+ ChatColor.GRAY + ip);
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("CheckIP.MSG2")) 
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+					lang.getString("CheckIP.MSG2"))
 					+ ChatColor.GRAY + inet.getHostName());
 		} catch (UnknownHostException e) {
-			sender.sendMessage(ChatColor.translateAlternateColorCodes('&', lang.getString("CheckIP.Exception")));
+			sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
+					lang.getString("CheckIP.Exception")));
 		}
-		
-		return null;		
+
+		return null;
 	}
 }

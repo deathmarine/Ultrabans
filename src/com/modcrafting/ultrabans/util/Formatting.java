@@ -17,11 +17,13 @@ package com.modcrafting.ultrabans.util;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 
 import com.modcrafting.ultrabans.Ultrabans;
 
@@ -31,11 +33,8 @@ public class Formatting {
 
 	public static String expandName(String p) {
 		HashSet<String> set = new HashSet<String>();
-		// Thanks Spigot changing to a collection using an uninstantiate object
-		// was completely unnecessary
-		Player[] array = (Player[]) Bukkit.getOnlinePlayers().toArray();
-		for (int n = 0; n < array.length; n++) {
-			String name = array[n].getName();
+		for (int n = 0; n < Bukkit.getOfflinePlayers().length; n++) {
+			String name = Bukkit.getOfflinePlayers()[n].getName();
 			if (name.equalsIgnoreCase(p))
 				return name;
 			if (containsIgnoreCase(name, p)) {
@@ -68,7 +67,14 @@ public class Formatting {
 		return Ultrabans.DEFAULT_REASON;
 	}
 
-	public static boolean validIP(String ip) {
+	/**
+	 * @deprecated Using InetAddress.getByName(String) allows for acceptance of IPv4/IPv6/HostName 
+	 * <br>Catching an exception will validate the address
+	 * @param ip
+	 * @return
+	 */
+	@Deprecated
+	public static boolean validateIP(String ip) {
 		if (ip == null || ip.isEmpty())
 			return false;
 		ip = ip.trim();
@@ -109,21 +115,39 @@ public class Formatting {
 		}
 		return sec;
 	}
-
+	
 	/**
-	 * Unsure if this method actually works with UUID's Test with newest
-	 * version.
-	 * 
-	 * @param name
+	 * Returns a comma delimited string from the array
+	 * @param array
 	 * @return
 	 */
-	@Deprecated
-	public static boolean deletePlyrdat(String name) {
-		if (Bukkit.getServer().getOfflinePlayer(name) != null
-				&& !Bukkit.getServer().getOfflinePlayer(name).isOnline()) {
-			return new File(Bukkit.getServer().getWorlds().get(0).getName()
-					+ "/players/", name + ".dat").delete();
+	public static String collapseArray(String[] array){
+		StringBuilder sb = new StringBuilder();
+		for(int i=0;i<array.length;i++){
+			sb.append(array[i]).append(",");
 		}
-		return false;
+		sb.deleteCharAt(sb.length()-1);
+		return sb.toString();
 	}
+	
+	
+	public static void deletePlyrdat(String name) {
+		@SuppressWarnings("deprecation")
+		OfflinePlayer player = Bukkit.getServer().getOfflinePlayer(name);
+		if (player != null && !player.isOnline()) {
+			for(World world : Bukkit.getServer().getWorlds()){
+				new File(world.getName() + "/playerdata/", player.getUniqueId().toString() + ".dat").delete();
+			}
+		}
+	}
+	
+	public static void deletePlayerdat(UUID uuid) {
+		OfflinePlayer player = Bukkit.getServer().getOfflinePlayer(uuid);
+		if (player != null && !player.isOnline()) {
+			for(World world : Bukkit.getServer().getWorlds()){
+				new File(world.getName() + "/playerdata/", uuid.toString() + ".dat").delete();
+			}
+		}
+	}
+	
 }

@@ -18,7 +18,7 @@ package com.modcrafting.ultrabans;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoBan;
 import com.modcrafting.ultrabans.util.BanType;
 
 public class UltrabansAPI {
@@ -26,6 +26,7 @@ public class UltrabansAPI {
 	public UltrabansAPI(Ultrabans instance){
 		plugin = instance;
 	}
+	
 	public void addPlayer(final String uuid, final String reason, final String admin, final long time, final BanType type){
 		plugin.getServer().getScheduler().runTaskAsynchronously(Ultrabans.getPlugin(),new Runnable(){
 			@Override
@@ -36,17 +37,17 @@ public class UltrabansAPI {
 	}
 	
 	public void banPlayer(final String uuid, final String reason, final String admin){
-		List<BanInfo> list = new ArrayList<BanInfo>();
+		List<InfoBan> list = new ArrayList<InfoBan>();
 		if(plugin.cache.containsKey(uuid))
 			list = plugin.cache.get(uuid);
-				list.add(new BanInfo(uuid, reason, admin, 0, BanType.BAN.getId()));
+				list.add(new InfoBan(uuid, reason, admin, 0, BanType.BAN.getId()));
 		plugin.cache.put(uuid, list);
 		addPlayer(uuid, reason, admin, 0, BanType.BAN);
 	}
 	
 	public void ipbanPlayer(final String uuid, String ip, final String reason, final String admin){
-		BanInfo info = new BanInfo(uuid, reason, admin, 0, BanType.IPBAN.getId());
-		List<BanInfo> list = new ArrayList<BanInfo>();
+		InfoBan info = new InfoBan(uuid, reason, admin, 0, BanType.IPBAN.getId());
+		List<InfoBan> list = new ArrayList<InfoBan>();
 		if(plugin.cacheIP.containsKey(uuid))
 			list = plugin.cache.get(uuid);
 		if(plugin.cacheIP.containsKey(uuid))
@@ -58,10 +59,10 @@ public class UltrabansAPI {
 	}
 	
 	public void jailPlayer(final String uuid, final String reason, final String admin){
-		List<BanInfo> list = new ArrayList<BanInfo>();
+		List<InfoBan> list = new ArrayList<InfoBan>();
 		if(plugin.cache.containsKey(uuid))
 			list = plugin.cache.get(uuid);
-		list.add(new BanInfo(uuid, reason, admin, 0, BanType.JAIL.getId()));
+		list.add(new InfoBan(uuid, reason, admin, 0, BanType.JAIL.getId()));
 		plugin.cache.put(uuid, list);
 		addPlayer(uuid, reason, admin, 0, BanType.JAIL);
 	}
@@ -89,26 +90,26 @@ public class UltrabansAPI {
 		addPlayer(uuid, reason, admin, 0, BanType.KICK);
 	}
 	public void permabanPlayer(final String uuid, final String reason, final String admin){
-		List<BanInfo> list = new ArrayList<BanInfo>();
+		List<InfoBan> list = new ArrayList<InfoBan>();
 		if(plugin.cache.containsKey(uuid))
 			list = plugin.cache.get(uuid);
-		list.add(new BanInfo(uuid, reason, admin, 0, BanType.PERMA.getId()));
+		list.add(new InfoBan(uuid, reason, admin, 0, BanType.PERMA.getId()));
 		plugin.cache.put(uuid, list);
 		addPlayer(uuid, reason, admin, 0, BanType.PERMA);
 	}
 
 	public void tempbanPlayer(String uuid, String reason, long temp, String admin) {
-		List<BanInfo> list = new ArrayList<BanInfo>();
+		List<InfoBan> list = new ArrayList<InfoBan>();
 		if(plugin.cache.containsKey(uuid))
 			list = plugin.cache.get(uuid);
-		list.add(new BanInfo(uuid, reason, admin, 0, BanType.TEMPBAN.getId()));
+		list.add(new InfoBan(uuid, reason, admin, 0, BanType.TEMPBAN.getId()));
 		plugin.cache.put(uuid, list);
 		addPlayer(uuid, reason, admin, temp, BanType.TEMPBAN);
 	}
 
 	public void tempipbanPlayer(String uuid, String ip, String reason, long temp, String admin) {
-		BanInfo info = new BanInfo(uuid, reason, admin, 0, BanType.TEMPIPBAN.getId());
-		List<BanInfo> list = new ArrayList<BanInfo>();
+		InfoBan info = new InfoBan(uuid, reason, admin, 0, BanType.TEMPIPBAN.getId());
+		List<InfoBan> list = new ArrayList<InfoBan>();
 		if(plugin.cacheIP.containsKey(uuid))
 			list = plugin.cache.get(uuid);
 		if(plugin.cacheIP.containsKey(uuid))
@@ -120,10 +121,10 @@ public class UltrabansAPI {
 	}
 
 	public void tempjailPlayer(String uuid, String reason, long temp, String admin) {
-		List<BanInfo> list = new ArrayList<BanInfo>();
+		List<InfoBan> list = new ArrayList<InfoBan>();
 		if(plugin.cache.containsKey(uuid))
 			list = plugin.cache.get(uuid);
-		list.add(new BanInfo(uuid, reason, admin, 0, BanType.TEMPJAIL.getId()));
+		list.add(new InfoBan(uuid, reason, admin, 0, BanType.TEMPJAIL.getId()));
 		addPlayer(uuid, reason, admin, temp, BanType.TEMPJAIL);
 	}
 	

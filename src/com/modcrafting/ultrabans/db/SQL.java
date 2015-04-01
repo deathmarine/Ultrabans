@@ -19,9 +19,12 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 import java.util.logging.Level;
+
 import org.bukkit.configuration.file.YamlConfiguration;
+
 import com.modcrafting.ultrabans.Ultrabans;
 
 public class SQL extends Database {
@@ -37,7 +40,8 @@ public class SQL extends Database {
 		username = config.getString("MySQL.User", "root");
 		password = config.getString("MySQL.Password", "root");
 		bantable = config.getString("MySQL.Table", "banlist");
-		iptable = config.getString("MySQL.IPTable", "banlistip");
+		iptable = config.getString("MySQL.IPTable", "iptable");
+		aliastable = config.getString("MySQL.AliasTable", "aliastable");
 	}
 
 	public Connection getSQLConnection() {
@@ -61,7 +65,7 @@ public class SQL extends Database {
 	}
 
 	public String SQLCreateBansTable = "CREATE TABLE IF NOT EXISTS %table% ("
-			+ "`uuid` varchar(32) NOT NULL,"
+			+ "`uuid` varchar(36) NOT NULL,"
 			+ "`reason` text NOT NULL,"
 			+ "`admin` varchar(32) NOT NULL,"
 			+ "`time` bigint(20) NOT NULL,"
@@ -70,21 +74,26 @@ public class SQL extends Database {
 			+ "`type` int(1) NOT NULL DEFAULT '0',"
 			+ "PRIMARY KEY (`id`) USING BTREE"
 			+ ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;";
-	public String SQLCreateBanipTable = "CREATE TABLE IF NOT EXISTS %table% ("
-			+ "`uuid` varchar(32) NOT NULL," + "`lastip` tinytext NOT NULL,"
+
+	public String SQLCreateIPTable = "CREATE TABLE IF NOT EXISTS %table% ("
+			+ "`ip` varchar(45) NOT NULL," 
+			+ "`uuid` varchar(36) NOT NULL,"
+			+ "PRIMARY KEY (`ip`)"
+			+ ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;";
+
+	public String SQLCreateAliasTable = "CREATE TABLE IF NOT EXISTS %table% ("
+			+ "`name` varchar(32) NOT NULL," 
+			+ "`uuid` varchar(36) NOT NULL,"
 			+ "PRIMARY KEY (`name`)"
 			+ ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;";
 
 	public void load() {
 		connection = getSQLConnection();
 		try {
-			PreparedStatement s = connection
-					.prepareStatement(SQLCreateBansTable.replaceAll("%table%",
-							bantable));
-			s.execute();
-			s = connection.prepareStatement(SQLCreateBansTable.replaceAll(
-					"%table%", iptable));
-			s.execute();
+			Statement s = connection.createStatement();
+			s.executeUpdate(SQLCreateBansTable.replaceAll("%table%",bantable));
+			s.executeUpdate(SQLCreateIPTable.replaceAll("%table%", iptable));
+			s.executeUpdate(SQLCreateAliasTable.replaceAll("%table%", aliastable));
 			s.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

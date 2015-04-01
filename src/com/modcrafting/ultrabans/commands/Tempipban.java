@@ -22,7 +22,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoBan;
 import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 public class Tempipban  extends CommandHandler {
@@ -87,7 +87,7 @@ public class Tempipban  extends CommandHandler {
 		String offlineip = plugin.getUBDatabase().getAddress(name);
 		if(offlineip != null){
 			if(plugin.cacheIP.containsKey(offlineip)){
-				for(BanInfo info: plugin.cache.get(offlineip)){
+				for(InfoBan info: plugin.cache.get(offlineip)){
 					if(info.getType() == BanType.TEMPBAN.getId() 
 					|| info.getType() == BanType.BAN.getId()){
 						String failed = lang.getString("TempIpBan.Failed");

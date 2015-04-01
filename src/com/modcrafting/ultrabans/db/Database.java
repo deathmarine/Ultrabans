@@ -15,21 +15,26 @@
  */
 package com.modcrafting.ultrabans.db;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoBan;
 
 public abstract class Database {
 	Ultrabans plugin;
 	String bantable;
 	String iptable;
+	String aliastable;
+	
 	Connection connection;
 
 	public Database(Ultrabans instance) {
@@ -40,27 +45,30 @@ public abstract class Database {
 
 	public abstract void load();
 
+	//XXX:Rewrite
 	public void initialize() {
 		connection = getSQLConnection();
 		try {
-			PreparedStatement ps = connection.prepareStatement("SELECT * FROM "
-					+ bantable + " WHERE type != 8 AND type != 5");
+			PreparedStatement ps = connection.prepareStatement(
+					"SELECT * FROM " + bantable + " WHERE type != 8 AND type != 5");
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				String puuid = rs.getString("uuid");
-				List<BanInfo> list = new ArrayList<BanInfo>();
-				if (plugin.cache.containsKey(puuid.toLowerCase()))
-					list = plugin.cache.get(puuid.toLowerCase());
-				list.add(new BanInfo(rs.getString("uuid"), rs
+				String uuid = rs.getString("uuid");
+				
+				List<InfoBan> list = new ArrayList<InfoBan>();
+				if (plugin.cache.containsKey(uuid))
+					list = plugin.cache.get(uuid);
+				
+				list.add(new InfoBan(rs.getString("uuid"), rs
 						.getString("reason"), rs.getString("admin"), rs
 						.getLong("temptime"), rs.getInt("type")));
-				plugin.cache.put(puuid.toLowerCase(), list);
+				plugin.cache.put(uuid.toLowerCase(), list);
 				if (rs.getInt("type") == 1 || rs.getInt("type") == 11) {
-					list = new ArrayList<BanInfo>();
-					String ip = getAddress(puuid);
+					list = new ArrayList<InfoBan>();
+					String ip = getAddress(uuid);
 					if (ip != null && plugin.cacheIP.containsKey(ip))
 						list = plugin.cacheIP.get(ip);
-					list.add(new BanInfo(rs.getString("uuid"), rs
+					list.add(new InfoBan(rs.getString("uuid"), rs
 							.getString("reason"), rs.getString("admin"), rs
 							.getLong("temptime"), rs.getInt("type")));
 					plugin.cacheIP.put(ip, list);
@@ -72,66 +80,55 @@ public abstract class Database {
 					"Unable to retreive connection", ex);
 		}
 	}
-
-	public void setAddress(String uuid, String logIp) {
-		try {
-			connection = getSQLConnection();
-			PreparedStatement ps = connection.prepareStatement("REPLACE INTO "
-					+ iptable + " (uuid,lastip) VALUES(?,?)");
-			ps.setString(1, uuid);
-			ps.setString(2, logIp);
-			ps.executeUpdate();
-			close(ps, null);
-		} catch (SQLException ex) {
-			Error.execute(plugin, ex);
-		}
+	
+	public void putAddress(String uuid, String ip) throws SQLException{
+		connection = getSQLConnection();
+		PreparedStatement ps = connection.prepareStatement(
+				"REPLACE INTO " + iptable + " (uuid,ip) VALUES(?,?)");
+		ps.setString(1, uuid);
+		ps.setString(2, ip);
+		ps.executeUpdate();
+		close(ps, null);
 		return;
 	}
 
-	public String getAddress(String uuid) {
-		try {
-			connection = getSQLConnection();
-			PreparedStatement ps = connection.prepareStatement("SELECT * FROM "
-					+ iptable + " WHERE uuid = ?");
-			ps.setString(1, uuid);
-			ResultSet rs = ps.executeQuery();
-			String ip = null;
-			while (rs.next()) {
-				ip = rs.getString("lastip");
+	public List<InetAddress> getIPAddress(String uuid) throws SQLException{
+		connection = getSQLConnection();
+		PreparedStatement ps = connection.prepareStatement(
+				"SELECT * FROM " + iptable + " WHERE uuid = ?");
+		ps.setString(1, uuid);
+		ResultSet rs = ps.executeQuery();
+		List<InetAddress> ip = new ArrayList<InetAddress>();
+		while (rs.next()) {
+			try {
+				ip.add(InetAddress.getByName(rs.getString("ip")));
+			} catch (UnknownHostException ex) {
+				Error.execute(plugin, ex);
 			}
-			close(ps, rs);
-			return ip;
-		} catch (SQLException ex) {
-			Error.execute(plugin, ex);
 		}
-		return null;
+		close(ps, rs);
+		return ip;
+	}
+	
+	public List<UUID> getUUID(String ip) throws SQLException {
+		connection = getSQLConnection();
+		PreparedStatement ps = connection.prepareStatement(
+				"SELECT * FROM " + iptable + " WHERE ip = ?");
+		ps.setString(1, ip);
+		ResultSet rs = ps.executeQuery();
+		List<UUID> uuid = new ArrayList<UUID>();
+		while (rs.next()) {
+			uuid.add(UUID.fromString(rs.getString("uuid")));
+		}
+		close(ps, rs);
+		return uuid;
 	}
 
-	public String getUUID(String ip) {
+	public boolean matchIPAddress(String uuid, String ip) {
 		try {
 			connection = getSQLConnection();
-			PreparedStatement ps = connection.prepareStatement("SELECT * FROM "
-					+ iptable + " WHERE lastip = ?");
-			ps.setString(1, ip);
-			ResultSet rs = ps.executeQuery();
-			String uuid = null;
-			while (rs.next()) {
-				uuid = rs.getString("uuid");
-			}
-			close(ps, rs);
-			return uuid;
-		} catch (SQLException ex) {
-			Error.execute(plugin, ex);
-		}
-		return null;
-	}
-
-	public boolean matchAddress(String uuid, String ip) {
-		try {
-			connection = getSQLConnection();
-			PreparedStatement ps = connection
-					.prepareStatement("SELECT lastip FROM " + iptable
-							+ " WHERE uuid = ? AND lastip = ?");
+			PreparedStatement ps = connection.prepareStatement(
+				"SELECT ip FROM " + iptable	+ " WHERE uuid = ? AND ip = ?");
 			ps.setString(1, uuid);
 			ps.setString(2, ip);
 			ResultSet rs = ps.executeQuery();
@@ -147,34 +144,21 @@ public abstract class Database {
 		return false;
 	}
 
-	public void updateAddress(String uuid, String ip) {
-		try {
-			connection = getSQLConnection();
-			PreparedStatement ps = connection.prepareStatement("UPDATE "
-					+ iptable + " SET lastip = ? WHERE uuid = ?");
-			ps.setString(1, ip);
-			ps.setString(2, uuid);
-			ps.executeUpdate();
-			close(ps, null);
-		} catch (SQLException ex) {
-			Error.execute(plugin, ex);
-		}
-	}
-
-	public void addPlayer(String uuid, String reason, String admin,
+	//XXX:Down rewrite
+	public void addUUID(String uuid, String alias, String reason, String admin,
 			long tempTime, int type) {
 		try {
 			connection = getSQLConnection();
 			PreparedStatement ps = connection
 					.prepareStatement("INSERT INTO "
 							+ bantable
-							+ " (uuid,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?)");
-			ps.setLong(5, tempTime);
+							+ " (uuid,alias,reason,admin,time,temptime,type) VALUES(?,?,?,?,?,?,?)");
 			ps.setString(1, uuid);
-			ps.setString(2, reason);
-			ps.setString(3, admin);
-			ps.setLong(4, System.currentTimeMillis() / 1000);
-			ps.setLong(6, type);
+			ps.setString(3, reason);
+			ps.setString(4, admin);
+			ps.setLong(5, System.currentTimeMillis() / 1000);
+			ps.setLong(6, tempTime);
+			ps.setLong(7, type);
 			ps.executeUpdate();
 			close(ps, null);
 		} catch (SQLException ex) {
@@ -218,16 +202,16 @@ public abstract class Database {
 		return true;
 	}
 
-	public List<BanInfo> listRecords(String uuid) {
+	public List<InfoBan> listRecords(String uuid) {
 		try {
 			connection = getSQLConnection();
 			PreparedStatement ps = connection.prepareStatement("SELECT * FROM "
 					+ bantable + " WHERE uuid = ?");
 			ps.setString(1, uuid);
 			ResultSet rs = ps.executeQuery();
-			List<BanInfo> bans = new ArrayList<BanInfo>();
+			List<InfoBan> bans = new ArrayList<InfoBan>();
 			while (rs.next()) {
-				bans.add(new BanInfo(rs.getString("uuid"), rs
+				bans.add(new InfoBan(rs.getString("uuid"), rs
 						.getString("reason"), rs.getString("admin"), rs
 						.getLong("temptime"), rs.getInt("type")));
 			}
@@ -239,7 +223,7 @@ public abstract class Database {
 		return null;
 	}
 
-	public List<BanInfo> listRecent(String number) {
+	public List<InfoBan> listRecent(String number) {
 		Integer num = Integer.parseInt(number.trim());
 		try {
 			connection = getSQLConnection();
@@ -247,9 +231,9 @@ public abstract class Database {
 					+ bantable + " ORDER BY time DESC LIMIT ?");
 			ps.setInt(1, num);
 			ResultSet rs = ps.executeQuery();
-			List<BanInfo> bans = new ArrayList<BanInfo>();
+			List<InfoBan> bans = new ArrayList<InfoBan>();
 			while (rs.next()) {
-				bans.add(new BanInfo(rs.getString("uuid"), rs
+				bans.add(new InfoBan(rs.getString("uuid"), rs
 						.getString("reason"), rs.getString("admin"), rs
 						.getLong("temptime"), rs.getInt("type")));
 			}
@@ -263,7 +247,7 @@ public abstract class Database {
 		return null;
 	}
 
-	public List<BanInfo> maxWarns(String uuid) {
+	public List<InfoBan> maxWarns(String uuid) {
 		try {
 			connection = getSQLConnection();
 			PreparedStatement ps = connection.prepareStatement("SELECT * FROM "
@@ -271,9 +255,10 @@ public abstract class Database {
 			ps.setString(1, uuid);
 			ps.setInt(2, 2);
 			ResultSet rs = ps.executeQuery();
-			List<BanInfo> bans = new ArrayList<BanInfo>();
+			List<InfoBan> bans = new ArrayList<InfoBan>();
 			while (rs.next()) {
-				bans.add(new BanInfo(rs.getString("uuid"), rs
+				String[] alias = rs.getString("alias").split(",");
+				bans.add(new InfoBan(rs.getString("uuid"), alias, rs
 						.getString("reason"), rs.getString("admin"), rs
 						.getLong("temptime"), rs.getInt("type")));
 			}
@@ -305,7 +290,7 @@ public abstract class Database {
 		try {
 			connection = getSQLConnection();
 			PreparedStatement ps = connection.prepareStatement("SELECT * FROM "
-					+ iptable + " WHERE lastip = ?");
+					+ iptable + " WHERE ip = ?");
 			ps.setString(1, ip);
 			ResultSet rs = ps.executeQuery();
 			List<String> bans = new ArrayList<String>();

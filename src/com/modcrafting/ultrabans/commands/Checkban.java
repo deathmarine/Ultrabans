@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+/* COPYRIGHT (c) 2015 Deathmarine
  * This file is part of Ultrabans.
  * Ultrabans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,40 +22,48 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoBan;
 import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
-public class Checkban extends CommandHandler{
+public class Checkban extends CommandHandler {
 	public Checkban(Ultrabans ultraBan) {
 		super(ultraBan);
 	}
 
-	public String command(final CommandSender sender, Command command, String[] args) {
+	public String command(final CommandSender sender, Command command,
+			String[] args) {
 		if (args.length < 1)
 			return lang.getString("CheckBan.Arguments");
 		String name = args[0];
 		name = Formatting.expandName(name);
 		OfflinePlayer check = plugin.getServer().getOfflinePlayer(name);
-		if(check != null)
+		if (check != null)
 			name = check.getName();
-		List<BanInfo> bans = plugin.getUBDatabase().listRecords(name);
+		String uuid = check.getUniqueId().toString();
+
+		List<InfoBan> bans = plugin.getUBDatabase().listRecords(uuid);
 		if (bans.isEmpty()) {
 			String msg = lang.getString("CheckBan.None");
 			if (msg.contains(Ultrabans.AMOUNT))
-				msg = msg.replace(Ultrabans.AMOUNT, String.valueOf(bans.size()));
+				msg = msg
+						.replace(Ultrabans.AMOUNT, String.valueOf(bans.size()));
 			if (msg.contains(Ultrabans.VICTIM))
 				msg = msg.replace(Ultrabans.VICTIM, name);
 			return msg;
 		}
 		String msg = lang.getString("CheckBan.Header");
-		if(msg.contains(Ultrabans.AMOUNT)) msg=msg.replace(Ultrabans.AMOUNT, String.valueOf(bans.size()));
-		if(msg.contains(Ultrabans.VICTIM)) msg=msg.replace(Ultrabans.VICTIM, bans.get(0).getName());
+		if (msg.contains(Ultrabans.AMOUNT))
+			msg = msg.replace(Ultrabans.AMOUNT, String.valueOf(bans.size()));
+		if (msg.contains(Ultrabans.VICTIM))
+			msg = msg.replace(Ultrabans.VICTIM, bans.get(0).getName());
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
-		for(BanInfo ban : bans){
-			sender.sendMessage(ChatColor.RED + BanType.toCode(ban.getType()) + ": " + ChatColor.GREEN + ban.getReason() + ChatColor.AQUA +" by " + ban.getAdmin());
+		for (InfoBan ban : bans) {
+			sender.sendMessage(ChatColor.RED + BanType.toCode(ban.getType())
+					+ ": " + ChatColor.GREEN + ban.getReason() + ChatColor.AQUA
+					+ " by " + ban.getAdmin());
 		}
 		return null;
 	}
-	
+
 }

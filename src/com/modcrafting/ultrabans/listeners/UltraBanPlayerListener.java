@@ -32,7 +32,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoBan;
 import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
@@ -54,12 +54,13 @@ public class UltraBanPlayerListener implements Listener {
 		// TODO Set IP...
 		String reason = Ultrabans.DEFAULT_REASON;
 		String admin = Ultrabans.DEFAULT_ADMIN;
+		
 		final Player player = event.getPlayer();
 		String ip = event.getAddress().getHostAddress();
 
 		plugin.getUBDatabase().setAddress(player.getUniqueId().toString(), ip);
 		if (plugin.cacheIP.containsKey(ip)) {
-			for (BanInfo info : plugin.cacheIP.get(player.getUniqueId()
+			for (InfoBan info : plugin.cacheIP.get(player.getUniqueId()
 					.toString())) {
 				if (info.getType() == BanType.IPBAN.getId()
 						|| info.getType() == BanType.TEMPIPBAN.getId()) {
@@ -81,7 +82,7 @@ public class UltraBanPlayerListener implements Listener {
 		}
 
 		if (plugin.cache.containsKey(player.getUniqueId().toString())) {
-			for (BanInfo info : plugin.cache.get(player.getUniqueId()
+			for (InfoBan info : plugin.cache.get(player.getUniqueId()
 					.toString())) {
 				if (info.getType() == BanType.BAN.getId()
 						|| info.getType() == BanType.TEMPBAN.getId()) {
@@ -151,7 +152,7 @@ public class UltraBanPlayerListener implements Listener {
 		String reason = Ultrabans.DEFAULT_ADMIN;
 		String admin = Ultrabans.DEFAULT_REASON;
 		if (plugin.cacheIP.containsKey(ip)) {
-			for (BanInfo info : plugin.cacheIP.get(ip)) {
+			for (InfoBan info : plugin.cacheIP.get(ip)) {
 				if (info.getType() == BanType.IPBAN.getId()
 						|| info.getType() == BanType.TEMPIPBAN.getId()) {
 					// TODO:TempCheck via Type
@@ -181,9 +182,9 @@ public class UltraBanPlayerListener implements Listener {
 
 		if (config.getBoolean("Jail.Vannila", true)
 				&& plugin.cache.containsKey(player.getUniqueId().toString())) {
-			List<BanInfo> list = plugin.cache.get(player.getUniqueId()
+			List<InfoBan> list = plugin.cache.get(player.getUniqueId()
 					.toString());
-			for (BanInfo info : list) {
+			for (InfoBan info : list) {
 				if (info.getType() == BanType.TEMPJAIL.getId()
 						|| info.getType() == BanType.JAIL.getId()) {
 					if (tempjailCheck(player, info)
@@ -221,9 +222,9 @@ public class UltraBanPlayerListener implements Listener {
 		}
 		if (plugin.cache.containsKey(player.getUniqueId().toString())
 				&& config.getBoolean("Jail.Mute", true)) {
-			List<BanInfo> list = plugin.cache.get(player.getUniqueId()
+			List<InfoBan> list = plugin.cache.get(player.getUniqueId()
 					.toString());
-			for (BanInfo info : list) {
+			for (InfoBan info : list) {
 				if (info.getType() == BanType.TEMPJAIL.getId()
 						|| info.getType() == BanType.JAIL.getId()) {
 					if (tempjailCheck(player, info))
@@ -245,12 +246,12 @@ public class UltraBanPlayerListener implements Listener {
 		}
 	}
 
-	private boolean tempjailCheck(Player player, BanInfo info) {
+	private boolean tempjailCheck(Player player, InfoBan info) {
 		long tempTime = info.getEndTime();
 		long now = System.currentTimeMillis() / 1000;
 		long diff = tempTime - now;
 		if (diff <= 0) {
-			List<BanInfo> list = plugin.cache.get(player.getUniqueId()
+			List<InfoBan> list = plugin.cache.get(player.getUniqueId()
 					.toString());
 			list.remove(info);
 			plugin.cache.put(player.getUniqueId().toString(), list);
@@ -407,9 +408,9 @@ public class UltraBanPlayerListener implements Listener {
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
 		if (plugin.cache.containsKey(player.getUniqueId().toString())) {
-			List<BanInfo> list = plugin.cache.get(player.getUniqueId()
+			List<InfoBan> list = plugin.cache.get(player.getUniqueId()
 					.toString());
-			for (BanInfo info : list) {
+			for (InfoBan info : list) {
 				if (info.getType() == BanType.TEMPJAIL.getId()
 						|| info.getType() == BanType.JAIL.getId()) {
 					if (tempjailCheck(player, info))

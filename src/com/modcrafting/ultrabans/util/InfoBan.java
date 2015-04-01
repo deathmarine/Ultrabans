@@ -15,28 +15,37 @@
  */
 package com.modcrafting.ultrabans.util;
 
-public class BanInfo {
-	private String name;
+public class InfoBan {
+	private String uuid;
+	private String[] aliases;
 	private String reason;
 	private String admin;
 	private long endTime;
 	private int type;
 
-	public BanInfo(String name, String reason, String admin, long endTime,
-			int type) {
-		this.setName(name);
+	public InfoBan(String uuid, String[] aliases, String reason, String admin, long endTime, int type) {
+		this.setUuid(uuid);
+		this.setAliases(aliases);
 		this.setReason(reason);
 		this.setAdmin(admin);
 		this.setEndTime(endTime);
 		this.setType(type);
 	}
 
-	public String getName() {
-		return name;
+	public String getUuid() {
+		return uuid;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public String[] getAliases() {
+		return aliases;
+	}
+
+	public void setAliases(String[] aliases) {
+		this.aliases = aliases;
 	}
 
 	public String getReason() {

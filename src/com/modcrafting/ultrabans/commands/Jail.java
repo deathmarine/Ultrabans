@@ -21,7 +21,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoBan;
 import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
@@ -67,7 +67,7 @@ public class Jail extends CommandHandler{
 		if(name.equalsIgnoreCase(admin))
 			return lang.getString("Jail.Emo");
 		if(plugin.cache.containsKey(name.toLowerCase())){
-			for(BanInfo info: plugin.cache.get(name.toLowerCase())){
+			for(InfoBan info: plugin.cache.get(name.toLowerCase())){
 				if(info.getType() == BanType.JAIL.getId()){
 					String msg = lang.getString("Jail.Failed");
 					if(msg.contains(Ultrabans.VICTIM)) 

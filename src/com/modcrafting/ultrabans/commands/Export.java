@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+/* COPYRIGHT (c) 2015 Deathmarine
  * This file is part of Ultrabans.
  * Ultrabans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoBan;
 import com.modcrafting.ultrabans.util.BanType;
 
 public class Export extends CommandHandler{
@@ -36,7 +36,7 @@ public class Export extends CommandHandler{
 		try{
 			BufferedWriter banlist = new BufferedWriter(new FileWriter("banned-players.txt",true));
 			for(String p : plugin.cache.keySet()){
-				for(BanInfo info : plugin.cache.get(p)){
+				for(InfoBan info : plugin.cache.get(p)){
 					if(info.getType() == BanType.BAN.getId()){
 						banlist.newLine();
 						banlist.write(g(p, info.getAdmin(), info.getReason()));
@@ -46,7 +46,7 @@ public class Export extends CommandHandler{
 			banlist.close();
 			BufferedWriter iplist = new BufferedWriter(new FileWriter("banned-ips.txt",true));
 			for(String p : plugin.cacheIP.keySet()){
-				for(BanInfo info : plugin.cacheIP.get(p)){
+				for(InfoBan info : plugin.cacheIP.get(p)){
 					if(info.getType() == BanType.IPBAN.getId()){
 						iplist.newLine();
 						iplist.write(g(p, info.getAdmin(), info.getReason()));

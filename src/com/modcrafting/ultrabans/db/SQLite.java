@@ -22,6 +22,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
+
 import com.modcrafting.ultrabans.Ultrabans;
 
 public class SQLite extends Database {
@@ -31,18 +32,32 @@ public class SQLite extends Database {
 		super(instance);
 		dbname = plugin.getConfig().getString("SQLite.Filename", "banlist");
 		bantable = "banlist";
-		iptable = "banlistip";
+		iptable = "iptable";
+		aliastable = "aliastable";
 	}
 
 	public String SQLiteCreateBansTable = "CREATE TABLE IF NOT EXISTS banlist ("
 			+ "`uuid` TEXT,"
+			+"`alias` TEXT"
 			+ "`reason` TEXT,"
 			+ "`admin` TEXT,"
 			+ "`time` INTEGER,"
 			+ "`temptime` INTEGER ,"
-			+ "`id` INTEGER PRIMARY KEY," + "`type` INTEGER DEFAULT '0'" + ");";
-	public String SQLiteCreateBanipTable = "CREATE TABLE IF NOT EXISTS banlistip ("
-			+ "`uuid` TEXT," + "`lastip` TEXT," + "PRIMARY KEY (`name`)" + ");";
+			+ "`id` INTEGER PRIMARY KEY," 
+			+ "`type` INTEGER DEFAULT '0'" 
+			+ ");";
+	
+	public String SQLCreateIPTable = "CREATE TABLE IF NOT EXISTS %table% ("
+			+ "`ip` TEXT," 
+			+ "`uuid` TEXT,"
+			+ "PRIMARY KEY (`ip`)"
+			+ ");";
+
+	public String SQLCreateAliasTable = "CREATE TABLE IF NOT EXISTS %table% ("
+			+ "`name` TEXT," 
+			+ "`uuid` TEXT,"
+			+ "PRIMARY KEY (`name`)"
+			+ ");";
 
 	public Connection getSQLConnection() {
 		File dataFolder = new File(plugin.getDataFolder(), dbname + ".db");
@@ -78,7 +93,8 @@ public class SQLite extends Database {
 		try {
 			Statement s = connection.createStatement();
 			s.executeUpdate(SQLiteCreateBansTable);
-			s.executeUpdate(SQLiteCreateBanipTable);
+			s.executeUpdate(SQLCreateIPTable);
+			s.executeUpdate(SQLCreateAliasTable);
 			s.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

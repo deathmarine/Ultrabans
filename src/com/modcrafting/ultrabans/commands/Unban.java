@@ -25,7 +25,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoBan;
 import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
@@ -73,7 +73,7 @@ public class Unban extends CommandHandler {
 		
 		if(Formatting.validIP(name)){
 			if(plugin.cacheIP.containsKey(name)){
-				for(BanInfo info : plugin.cacheIP.get(name)){
+				for(InfoBan info : plugin.cacheIP.get(name)){
 					name = info.getName();
 					reason = info.getReason();
 					admin = info.getAdmin();
@@ -93,9 +93,9 @@ public class Unban extends CommandHandler {
 			}
 		}
 
-		List<BanInfo> list = new ArrayList<BanInfo>();
+		List<InfoBan> list = new ArrayList<InfoBan>();
 		if(plugin.cache.containsKey(name.toLowerCase())){
-			for(BanInfo info : plugin.cache.get(name.toLowerCase())){
+			for(InfoBan info : plugin.cache.get(name.toLowerCase())){
 				switch(BanType.fromID(info.getType())){
 					case BAN:
 					case IPBAN:
@@ -125,8 +125,8 @@ public class Unban extends CommandHandler {
 			}
 		}
 		if(count!=0){
-			List<BanInfo> lt = plugin.cache.get(name.toLowerCase());
-			for(BanInfo info: list){
+			List<InfoBan> lt = plugin.cache.get(name.toLowerCase());
+			for(InfoBan info: list){
 				if(config.getBoolean("UnbansLog.Enable", true)){
 					reason = info.getReason();
 					if(config.getBoolean("UnbansLog.LogReason",true) && reason != null){

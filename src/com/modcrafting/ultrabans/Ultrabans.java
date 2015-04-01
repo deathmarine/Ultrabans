@@ -18,10 +18,11 @@ package com.modcrafting.ultrabans;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -29,6 +30,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.modcrafting.ultrabans.commands.Ban;
+import com.modcrafting.ultrabans.commands.CheckID;
 import com.modcrafting.ultrabans.commands.CheckIP;
 import com.modcrafting.ultrabans.commands.Checkban;
 import com.modcrafting.ultrabans.commands.Clean;
@@ -61,13 +63,18 @@ import com.modcrafting.ultrabans.db.SQL;
 import com.modcrafting.ultrabans.db.SQLite;
 import com.modcrafting.ultrabans.listeners.UltraBanBlockListener;
 import com.modcrafting.ultrabans.listeners.UltraBanPlayerListener;
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoAlias;
+import com.modcrafting.ultrabans.util.InfoBan;
+import com.modcrafting.ultrabans.util.InfoIP;
 import com.modcrafting.ultrabans.util.Jailtools;
 
 public class Ultrabans extends JavaPlugin {
 	public HashSet<String> muted = new HashSet<String>();
-	public Map<String, List<BanInfo>> cache = new HashMap<String, List<BanInfo>>();
-	public Map<String, List<BanInfo>> cacheIP = new HashMap<String, List<BanInfo>>();
+	
+	public Set<InfoBan> cache = new HashSet<InfoBan>();
+	public Set<InfoIP> cacheIP = new HashSet<InfoIP>();
+	public Set<InfoAlias> cacheAlias = new HashSet<InfoAlias>();
+	
 	public Jailtools jail = new Jailtools(this);
 	public UltrabansAPI api = new UltrabansAPI(this);
 	
@@ -149,6 +156,7 @@ public class Ultrabans extends JavaPlugin {
 		getCommand("ban").setExecutor(new Ban(this));
 		getCommand("checkban").setExecutor(new Checkban(this));
 		getCommand("checkip").setExecutor(new CheckIP(this));
+		getCommand("checkuuid").setExecutor(new CheckID(this));
 		getCommand("dupeip").setExecutor(new DupeIP(this));
 		getCommand("importbans").setExecutor(new Import(this));
 		getCommand("exportbans").setExecutor(new Export(this));
@@ -198,6 +206,42 @@ public class Ultrabans extends JavaPlugin {
 
 	public UltrabansAPI getAPI() {
 		return api;
+	}
+	
+	public boolean addInfoBan(InfoBan ban){
+		return cache.add(ban);
+	}
+	
+	/**
+	 * Returns a List of IP addresses matching UUID from Local Cache
+	 * @param uuid
+	 * @return
+	 */
+	public List<String> checkIPofUUID(String uuid){
+		List<String> list = new ArrayList<String>();
+		InfoIP[] breakdown = (InfoIP[]) cacheIP.toArray();
+		for(int i = 0; i<breakdown.length; i++){
+			if(breakdown[i].getUuid().equals(uuid)){
+				list.add(breakdown[i].getIp());
+			}
+		}
+		return list;
+	}
+	
+	/**
+	 * Returns a List of UUIDs matching an IP address from Local Cache
+	 * @param uuid
+	 * @return
+	 */
+	public List<String> checkUUIDofIP(String ip){
+		List<String> list = new ArrayList<String>();
+		InfoIP[] breakdown = (InfoIP[]) cacheIP.toArray();
+		for(int i = 0; i<breakdown.length; i++){
+			if(breakdown[i].getIp().equals(ip)){
+				list.add(breakdown[i].getUuid());
+			}
+		}
+		return list;
 	}
 	
 }

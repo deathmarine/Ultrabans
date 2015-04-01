@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+/* COPYRIGHT (c) 2015 Deathmarine
  * This file is part of Ultrabans.
  * Ultrabans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.BanInfo;
+import com.modcrafting.ultrabans.util.InfoBan;
 import com.modcrafting.ultrabans.util.BanType;
 
 public class History extends CommandHandler{
@@ -33,14 +33,14 @@ public class History extends CommandHandler{
 		String size = "5";
 		if (args.length > 0) 
 			size = args[0];
-		List<BanInfo> bans = plugin.getUBDatabase().listRecent(size);
+		List<InfoBan> bans = plugin.getUBDatabase().listRecent(size);
 		if(bans.size() < 1)
 			return lang.getString("History.Failed");
 		String msg = lang.getString("History.Header");
 		if(msg.contains(Ultrabans.AMOUNT)) 
 			msg = msg.replace(Ultrabans.AMOUNT, args[0]);
 		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', msg));
-		for(BanInfo ban : bans){
+		for(InfoBan ban : bans){
 			Date date = new Date();
 			date.setTime(ban.getEndTime()*1000);
 			String dateStr = date.toString();
