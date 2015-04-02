@@ -1,4 +1,4 @@
-/* COPYRIGHT (c) 2013 Deathmarine (Joshua McCurry)
+/* COPYRIGHT (c) 2015 Deathmarine
  * This file is part of Ultrabans.
  * Ultrabans is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.modcrafting.ultrabans.Ultrabans;
-import com.modcrafting.ultrabans.util.InfoBan;
+import com.modcrafting.ultrabans.util.BanInfo;
 import com.modcrafting.ultrabans.util.BanType;
 import com.modcrafting.ultrabans.util.Formatting;
 
@@ -36,7 +36,7 @@ public class Unban extends CommandHandler {
 
 	public String command(CommandSender sender, Command command, String[] args) {
 		if (args.length < 1)
-			return lang.getString("Ban.Arguments");
+			return lang.getString("Unban.Arguments");
 		boolean broadcast = true;
 		String admin = Ultrabans.DEFAULT_ADMIN;
 		String reason;
@@ -73,7 +73,7 @@ public class Unban extends CommandHandler {
 		
 		if(Formatting.validIP(name)){
 			if(plugin.cacheIP.containsKey(name)){
-				for(InfoBan info : plugin.cacheIP.get(name)){
+				for(BanInfo info : plugin.cacheIP.get(name)){
 					name = info.getName();
 					reason = info.getReason();
 					admin = info.getAdmin();
@@ -93,9 +93,9 @@ public class Unban extends CommandHandler {
 			}
 		}
 
-		List<InfoBan> list = new ArrayList<InfoBan>();
+		List<BanInfo> list = new ArrayList<BanInfo>();
 		if(plugin.cache.containsKey(name.toLowerCase())){
-			for(InfoBan info : plugin.cache.get(name.toLowerCase())){
+			for(BanInfo info : plugin.cache.get(name.toLowerCase())){
 				switch(BanType.fromID(info.getType())){
 					case BAN:
 					case IPBAN:
@@ -125,8 +125,8 @@ public class Unban extends CommandHandler {
 			}
 		}
 		if(count!=0){
-			List<InfoBan> lt = plugin.cache.get(name.toLowerCase());
-			for(InfoBan info: list){
+			List<BanInfo> lt = plugin.cache.get(name.toLowerCase());
+			for(BanInfo info: list){
 				if(config.getBoolean("UnbansLog.Enable", true)){
 					reason = info.getReason();
 					if(config.getBoolean("UnbansLog.LogReason",true) && reason != null){
